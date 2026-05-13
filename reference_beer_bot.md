@@ -13,9 +13,21 @@ metadata:
 - **SSH key:** `~/.ssh/internal` (configured in `~/.ssh/config`)
 - **SSH command:** `ssh 192.168.12.3`
 - **Repo path on Pi:** `~/github/jax-ale-exchange/discord/beer-bot/`
+- **Local clone:** `/home/zenko/github/beer-bot/`
+- **GitHub remote:** `git@github.com:kyotodesertfox/jax-discord-beer-box.git`
 - **Entry point:** `src/main.py`
-- **Secrets:** `secrets/.env` (contains `BEER_BOT_TOKEN`) — not in git
+- **Secrets:** `secrets/.env` (contains `BEER_BOT_TOKEN`, `ANTHROPIC_API_KEY`, `MEMBER_SALT`, `GUILD_ID`) — gitignored, never commit
 - **Runs as:** systemd service on the Pi (do not restart — user handles that)
+
+## Git Workflow
+
+**Edit locally → push → pull on Pi.** Never edit directly on Pi.
+```
+# After making changes locally:
+git add ... && git commit -m "..." && git push
+ssh -i ~/.ssh/internal 192.168.12.3 "cd ~/github/jax-ale-exchange/discord/beer-bot && git pull"
+```
+Pi was previously edited directly and had uncommitted work. All synced as of 2026-05-13 (commit 543764b). Going forward, local is source of truth.
 
 ## What It Does
 
