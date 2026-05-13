@@ -47,10 +47,12 @@ Producer confirms physical stock exists
 
 **Platform fee structure:**
 - Entry (ETH → token): flat ETH amount, initialized at 0 (free) — upgradeable via setEntryFee()
-- Exit (token → ETH): 500 bps (5%) initial value — upgradeable via setExitFee(), lower over time as liquidity deepens
+- Exit (token → ETH): 500 bps (5%) total, split at Router:
+  - 2% (`lpRewardFeeBps`) → exit pair contract as ETH, distributed to LP holders as token rewards
+  - 3% (remainder) → Treasury as permanent floor / accumulated fees
 - No USDC support, ever — users who want stable must handle ETH→USDC off-platform themselves
-- All platform fees route to Treasury
 - Both fees live in the Router (direction-aware: path[0]==WETH = entry, path[last]==WETH = exit)
+- See [[project_lp_rewards]] for full LP reward design
 
 **Core design principles (locked):**
 - Everything must be UUPS upgradeable from day one — full mutability now, progressive lockdown later

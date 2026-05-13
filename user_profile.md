@@ -39,6 +39,11 @@ Physical-world blockchain integration — craft beer backed by real ETH collater
 - Comfortable with blockchain primitives: UUPS proxies, storage gaps, ERC721, AMM math
 - Not a beginner — talk to him like a peer, not a student
 
+## Session Setup
+
+- **Always launch Claude from `~/`** — memory is symlinked to resolve correctly from that path
+- **If the working directory is NOT `/home/zenko` at session start, warn him immediately** so he can exit and relaunch from the correct place before any work begins
+
 ## What He Values
 
 - Authenticity over hype

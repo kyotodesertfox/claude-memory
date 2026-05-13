@@ -137,27 +137,73 @@ Handles listings, sales, and redemptions.
 ---
 
 ## Treasury.sol (`contracts/treasury/`)
-Fee governance, ETH floor accumulation, NFT vending, and $BEER stake management.
+Fee governance, ETH floor accumulation, NFT vending, $BEER stake management, and LP reward minting.
 
-**Key storage (post-upgrade):**
+**Key storage (current):**
 - `address tokenDeployer`, `address nftDeployer`, `address dexFactory`
 - `uint256 dexEntryFeeBps`, `uint256 dexExitFeeBps`, `uint256 marketplaceFeeBps`
 - `uint256 accumulatedFees`, `mapping(address => uint256) nftPrices`
-- `address beerToken`, `uint256 stakeRatioBps`, `uint256 minListingBalance` ← NEW
-- `uint256 nextBatchId` (pre-increment; 0 = sentinel), `mapping(uint256 => Batch) batches`, `mapping(address => bool) isTrustedCaller` ← NEW
+- `address beerToken`, `uint256 stakeRatioBps`, `uint256 minListingBalance`
+- `uint256 nextBatchId`, `mapping(uint256 => Batch) batches`, `mapping(address => bool) isTrustedCaller`
+- `address weth`, `uint256 lpRewardFeeBps` ← NEW (LP rewards)
 
 **Key functions:**
-- `postStake(nftContract, cids[], beerToEmit)` → batchId — locks stake, mints NFTs to brewer
+- `postStake(nftContract, cids[], beerToEmit)` → batchId — ⚠️ PENDING REDESIGN: currently takes $BEER, should be ETH-payable
 - `markListed(batchId, listingId)` — isTrustedCaller only
 - `onRedeem(batchId)` — isTrustedCaller only; releases pro-rata stake to brewer
 - `slashStake(batchId)` — onlyOwner; stake stays in Treasury
-- `setTrustedCaller(address, bool)` — onlyOwner
-- `validateListingCaller(batchId, caller, nftContract)` — view; used by Marketplace
-- `maxEmittableFor(wallet)`, `requiredStakeFor(beerToEmit)` — frontend helpers
-- `purchaseInventoryNFT(nftContract, tokenId)` — ETH-based floor purchase (pre-existing)
+- `receiveAndMintLPReward(rewardToken, to)` payable — isTrustedCaller; converts ETH to tokens at spot price, mints to LP holder ← NEW
+- `withdrawFees(to, amount)` — onlyOwner; draws from `accumulatedFees` only, never touches floor
+- `floorBalance()` — `address(this).balance - accumulatedFees`; permanent floor, structurally untouchable
 - `mintLaborReward(token, to, amount)` — onlyOwner
-- `floorBalance()`, `floorRatio(token, weth)` — ETH floor metrics (pre-existing)
+- `setWeth(address)`, `setLpRewardFeeBps(uint256)` ← NEW
 
-**Gap:** `uint256[36]`
+**Gap:** `uint256[34]`
 
-**Why:** [[project_beer_dex]]
+## DEXPair.sol (`contracts/dex/`)
+AMM pair, BeaconProxy. All pairs upgraded simultaneously via `Factory.upgradePairs(newImpl)`.
+
+**Key storage (current):**
+- `address factory`, `address token0`, `address token1`, `address weth`
+- `uint112 reserve0`, `uint112 reserve1`, `uint32 blockTimestampLast`
+- `uint256 price0CumulativeLast`, `uint256 price1CumulativeLast`, `uint256 kLast`
+- `address rewardsTreasury`, `uint256 rewardPerTokenStored` ← NEW
+- `mapping(address => uint256) userRewardPerTokenPaid`, `mapping(address => uint256) pendingRewards` ← NEW
+
+**Key functions:**
+- `rewardToken()` — view, derived: `token0 == weth ? token1 : token0`
+- `claimRewards(address account)` — updates reward snapshot, forwards accrued ETH to Treasury, Treasury mints tokens to account
+- `setRewardsTreasury(address)` — factory-only
+- `receive()` payable — accumulates reward ETH into `rewardPerTokenStored`
+- `mint(address to)` — calls `_updateReward(to)` before minting LP
+- `burn(address to)` — standard LP removal (Router calls claimRewards before burn)
+
+**Gap:** `uint256[38]`
+
+## DEXFactory.sol (`contracts/dex/`)
+UUPS upgradeable. Manages BeaconProxy pair creation and LP reward configuration.
+
+**Key storage (current):**
+- `address beacon`, `address feeTo`, `address feeToSetter`, `address tokenDeployer`
+- `mapping(address => mapping(address => address)) getPair`, `address[] allPairs`
+- `address pairTreasury` ← NEW — auto-wired to new pairs on creation
+
+**Key functions:**
+- `createPair(tokenA, tokenB, weth)` — now also calls `setRewardsTreasury(pairTreasury)` on new pair if set
+- `upgradePairs(newImpl)` — upgrades all pairs simultaneously via beacon
+- `setPairTreasury(address)` — onlyOwner ← NEW
+- `batchConfigurePairRewards(address[] pairs)` — migrates existing pairs ← NEW
+
+**Gap:** `uint256[43]`
+
+## Router.sol (`contracts/dex/`)
+NOT upgradeable — immutable constructor args (factory, WETH, treasury). Requires fresh deploy on any change.
+
+**Current exit fee split (token → ETH):**
+- `lpReward = ethOut * lpRewardFeeBps / 10000` → sent to exit pair (accumulates as LP rewards)
+- `treasuryFee = ethOut * dexExitFeeBps / 10000 - lpReward` → sent to Treasury
+- `userProceeds = ethOut - lpReward - treasuryFee`
+
+**`removeLiquidityETH`:** calls `pair.claimRewards(msg.sender)` before transferring LP tokens — auto-claim fires before balance drops to zero.
+
+**Why:** [[project_beer_dex]] [[project_lp_rewards]]

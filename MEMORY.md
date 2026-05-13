@@ -18,3 +18,5 @@
 - [Contract Architecture](project_contracts.md) — all contracts: storage layouts, deployed addresses (Hekla 167000), upgrade status, post-deploy config steps
 - [Check Existing Files](feedback_check_existing_files.md) — run find before creating any new file; contracts often already exist in unexpected directories
 - [Core Philosophy](project_philosophy.md) — brewer-first but Treasury-ultimate; no value sinks ever; pool-specific token rewards
+- [LP Reward System](project_lp_rewards.md) — per-pool token rewards funded by 2% exit fee split; Synthetix-style accrual; auto-claim on LP removal
+- [Memory Infrastructure](project_memory_infra.md) — master location ~/.claude/memory/, GitHub backup, daily cron sync, disaster recovery
