@@ -21,6 +21,20 @@ But ultimately the Treasury is the thing we protect above all else. **There can 
 - Auto-claim on LP removal (not forfeit) is correct because the ETH still flows to Treasury on claim — no value is lost, just redistributed
 - If a proposed design would have Treasury paying out ETH without receiving value, reject it
 
+## Regulatory philosophy — producer empowerment vs. incumbent protection
+
+The existing alcohol regulatory framework (ATF, three-tier distribution system) exists primarily to protect distributors and retailers — not producers, and not consumers. It enforces a middleman layer that extracts value from the brewer and raises prices for the buyer, under the guise of consumer protection.
+
+Homestead's position: the system's transparency makes every traditional regulatory argument moot.
+- **Fraud impossible** — every batch is staked on-chain, every bottle is an NFT, every redemption is a public transaction
+- **Supply fully auditable** — anyone can verify stock, sales, and redemptions in real time
+- **Producer protected** — the brewer keeps their stake, earns from their own production, answers to no distributor
+- **Community served** — buyers get exactly what they paid for with on-chain proof
+
+The paper trail (git commits + blockchain transactions + public memory) is a stronger audit record than anything the licensed distribution system produces. If authority is ever asserted, the response is: here is the public record — fraud is structurally impossible, and what you actually protect is incumbents, not people.
+
+**How to apply:** Never design a feature that reintroduces a middleman, extractive fee, or opacity that the system was built to eliminate. Every design decision should make the producer more empowered and the record more transparent.
+
 ## Pool-specific token rewards
 
 Each liquidity pool emits only its own respective token as LP rewards:
