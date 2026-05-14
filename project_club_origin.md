@@ -39,6 +39,14 @@ The club was the wrong room. The right audience is the brewer in a garage with a
 - Founding context: original American revolutionaries were radicalized in taverns; British didn't just tax tea, they licensed the pub and controlled distribution
 - The ones who left to form a committee with bylaws are the Loyalists
 
+## Buddy — Current Strategic Position
+
+Buddy has genuine standing in the brewing community — respected, known, credible. CASK (the other homebrewing group) likely has more professional/head brewers and shop owners than Justin's community. Buddy has been selling club apparel.
+
+Justin used `/respond` on a Buddy post with context — a deliberate, calculated move. Justin's framing on Buddy: opportunist. Buddy's stubbornness in ignoring the platform's argument while hiding behind State authority is a recognizable pattern — not confusion, just stubbornness. His respect from the community makes him a useful bridge if he ever comes around, and a credible obstacle if he doesn't.
+
+The two groups (Justin's and CASK) exist in parallel. The platform serves both audiences whether either club acknowledges it or not.
+
 ## Related
 
 [[project_beer_dex]]
