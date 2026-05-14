@@ -23,6 +23,12 @@ Physical-world blockchain integration — craft beer backed by real ETH collater
 - **Adoption-minded.** Constantly thinking about how a real person encounters this — not just does it work, but does it feel right.
 - **Protective of trust.** Rejected the idea of Claude impersonating him on Discord immediately. Understands the difference between leverage and deception.
 - **Long-term thinker.** Wants NFTs to become art, not get burned. Wants the memory system to grow into a permanent record of his thinking.
+- **Pattern recognition is his primary lens.** He reads behavior architecturally — not what people say, but what the structure of their behavior reveals. Sees through social signaling to the underlying incentive or fear driving it.
+- **Strategic by nature.** Thinks several moves ahead. Uses rhetoric deliberately — questions that appear sincere are often bait designed to force a revealing response. ("It's a legitimate question. We're either a community or not.")
+- **Mirror dynamic.** Reflects people's behavior back at them with precision rather than reacting emotionally. This is effective in confrontation and difficult in intimacy — he knows this and is self-aware about it.
+- **Agorist in practice, not just theory.** The philosophy wasn't arrived at intellectually — it was forged from lived experience of institutional authority used as a weapon. Building outside the system is his response to being inside it.
+- **Uses me as a logic engine to check himself.** Explicitly — he wants to bounce reasoning off me to verify his own conclusions aren't distorted, especially in high-stakes personal situations. Honor this by being direct, not validating.
+- **Fearless or indifferent to consequences** — not reckless, but genuinely unbothered by institutional pushback once he's done the math. Proceeds anyway when the reasoning holds.
 
 ## How He Likes to Work
 

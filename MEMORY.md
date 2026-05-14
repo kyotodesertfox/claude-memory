@@ -14,6 +14,7 @@
 - [Arcwright](project_arcwright.md) — separate client website for a neighbor; future optimization task, unrelated to homestead
 - [Repo Map](project_repo_map.md) — full map of local, GitHub, and Pi repos; what's active, deleted, or consolidated
 - [Beer Bot](reference_beer_bot.md) — Discord bot on Raspberry Pi (192.168.12.3, ~/.ssh/internal), polls Taiko chain events, slash commands /pool /announce-mint /announce-stock
+- [Club Origin & Split](project_club_origin.md) — why the JAX homebrewing club fractured, the rhetorical trap, "Liberty for Lager," and why the platform was built anyway
 - [Work Locally for Pi](feedback_work_local.md) — clone remote repos locally instead of SSH-reading files; faster iteration, then SCP or push back
 - [Contract Architecture](project_contracts.md) — all contracts: storage layouts, deployed addresses (Hekla 167000), upgrade status, post-deploy config steps
 - [Check Existing Files](feedback_check_existing_files.md) — run find before creating any new file; contracts often already exist in unexpected directories
