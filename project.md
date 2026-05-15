@@ -192,7 +192,7 @@ Marketplace listing cards and buy modals should show seller attestation tier bad
 
 **Daily sync:** Cron at 3am — `~/.claude/memory/sync.sh`. Only commits if files changed. Log: `~/.claude/memory/sync.log`.
 
-**Session rule:** Launch Claude from `~/` — memory resolves via symlink. Warn immediately if working directory is not `/home/zenko`.
+**Session rule:** Launch Claude from `~/github/` — root of all projects, memory resolves via symlink. Warn immediately if working directory is not `/home/zenko/github`.
 
 **Disaster recovery:** `git clone git@github.com:kyotodesertfox/claude-memory.git ~/.claude/memory/` then recreate symlinks.
 

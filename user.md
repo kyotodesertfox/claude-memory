@@ -57,8 +57,8 @@ Exceptionally high systems-thinking capacity across simultaneous domains. Not a 
 
 ## Session Setup
 
-- **Launch Claude from `~/`** — memory resolves correctly via symlink from that path
-- **If working directory is NOT `/home/zenko` at session start, warn immediately** so he can exit and relaunch
+- **Always launch Claude from `~/github/`** — this is the root of all projects and memory resolves correctly from there
+- **If working directory is NOT `/home/zenko/github` at session start, warn immediately** so he can exit and relaunch from the correct place
 
 ## What He Values
 
