@@ -82,10 +82,11 @@ Replace `VITE_ROUTER` with new Router address.
 
 Written 2026-05-15. Awaiting deployment to Taiko mainnet.
 
-**Constructor args:** `_treasury` (Treasury proxy address), `_feeToken` ($BEER token address), `_quantumFee` (1e18 = 1 BEER)
+**Constructor args:** `_treasury`, `_feeToken` ($BEER address), `_quantumFee` (1e18 = 1 BEER)
 
 **Post-deploy config:**
 ```
+relay.setDexPair(beerWethPairAddress)              // required for ETH quantum fee path
 relay.setQuantumFreeRecipient(ownerWallet, true)   // support messages to owner are quantum-free
 relay.registerContract(marketplaceProxy)            // allows marketplace to call recordRedemption
 // Treasury also needs: Treasury.setTrustedRelay(relayAddress) — requires Treasury upgrade
@@ -98,10 +99,14 @@ relay.registerContract(marketplaceProxy)            // allows marketplace to cal
 **Key design:**
 - No IPFS — messages inline in calldata, X25519 key in state, Kyber key in registration event
 - `quantumFreeRecipient` mapping: designated wallets receive quantum messages fee-free
-- Standard messages: X25519 only, free. Quantum upgrade: 1 $BEER to Treasury
+- Standard messages: X25519 only, free
+- Quantum upgrade: **dual-path** — burn 1 $BEER (deflationary) OR pay ETH equivalent at DEX spot (→ Treasury floor). Sender's choice via `msg.value > 0`.
+- `ethEquivalent()` reads BEER/WETH pair reserves at send time; no external oracle
+- `sendMessage` and `sendGroupMessage` are payable
 - `onlyTrustedByTreasury` modifier verifies two-way trust with Treasury before privileged ops
+- `joinGroup()` uses `max(manual attestation[wallet], ITreasury.attestationTier(wallet))` — stake reputation recognized automatically, no owner intervention needed
 
-**Gap:** `uint256[47]`
+**Gap:** `uint256[46]`
 
 ---
 
@@ -135,7 +140,9 @@ ERC721 template. Each physical product batch (e.g. a beer batch) is a deployed i
 **Key functions:**
 - `mint(address, string cid)` — isMinter or owner
 - `mintBatch(address, string[] cids)` — isMinter or owner; returns `startTokenId`
-- `setMinter(address, bool)` — onlyOwner ← NEW
+- `setMinter(address, bool)` — onlyOwner
+- `setTokenCID(uint256 tokenId, string newCID)` — onlyOwner; fixes metadata post-mint (typos etc.)
+- `setRedeemedCID(uint256 tokenId, string cid)` — onlyOwner; sets post-redemption variant URI
 - `redeem(uint256 tokenId)` — holder, approved operator, or redemptionOperator
 - `markRedeemed(uint256 tokenId)` — onlyOwner
 - `setRedemptionOperator(address, bool)` — onlyOwner
@@ -147,19 +154,20 @@ ERC721 template. Each physical product batch (e.g. a beer batch) is a deployed i
 ## Marketplace.sol (`contracts/marketplace/`)
 Handles listings, sales, and redemptions.
 
-**Key storage (post-upgrade):**
+**Key storage (current):**
 - `address tokenDeployer`, `address nftDeployer`, `address feeCollector`
 - `mapping(uint256 => Listing) _listings`, `uint256 nextListingId`
-- `mapping(uint256 => uint256) _listingBatch` — listingId → batchId (0 = no stake) ← NEW
-- `mapping(uint256 => uint256) _tokenListingId` — tokenId → listingId+1 (0 = untracked) ← NEW
+- `mapping(uint256 => uint256) _listingBatch` — listingId → batchId (0 = no stake)
+- `mapping(uint256 => uint256) _tokenListingId` — tokenId → listingId+1 (0 = untracked)
+- `mapping(uint256 => uint256) _escrowedBeer` — tokenId → escrowed $BEER amount, burned on redeem
 
-**Key functions (post-upgrade):**
+**Key functions (current):**
 - `createListing(nftContract, paymentToken, price, batchId)` — permissionless; owner can pass batchId=0
 - `depositInventory / withdrawInventory / setActive / updatePrice` — owner or listing.proceeds
-- `buy(listingId)` — sets _tokenListingId on first custody
-- `redeem(nftContract, tokenId)` — calls `Treasury.onRedeem(batchId)` if staked listing
+- `buy(listingId)` — platform fee → Treasury; remainder held in `_escrowedBeer[tokenId]` (NOT sent to brewer)
+- `redeem(nftContract, tokenId)` — burns escrowed $BEER, then calls `Treasury.onRedeem(batchId)` to mark ETH claimable
 
-**Gap:** `uint256[43]`
+**Gap:** `uint256[42]`
 
 ---
 
@@ -172,20 +180,26 @@ Fee governance, ETH floor accumulation, NFT vending, $BEER stake management, and
 - `uint256 accumulatedFees`, `mapping(address => uint256) nftPrices`
 - `address beerToken`, `uint256 stakeRatioBps`, `uint256 minListingBalance`
 - `uint256 nextBatchId`, `mapping(uint256 => Batch) batches`, `mapping(address => bool) isTrustedCaller`
-- `address weth`, `uint256 lpRewardFeeBps` ← NEW (LP rewards)
+- `address weth`, `uint256 lpRewardFeeBps`
+- `mapping(uint256 => uint256) _claimedAmount` — ETH claimed per batchId (partial claim tracking)
 
-**Key functions:**
-- `postStake(nftContract, cids[], beerToEmit)` → batchId — ⚠️ PENDING REDESIGN: currently takes $BEER, should be ETH-payable
+**Key functions (current):**
+- `postStake(token, nftContract, cids[], tokenToEmit)` payable → batchId — accepts ANY registered token (not hardcoded beerToken); ETH = permanent floor; token minted to producer; NFTs minted to producer; `cumulativeStake[sender] += msg.value`
+- `attestationTier(wallet)` — view; derives tier 0-3 from `cumulativeStake[wallet]` vs `tierThreshold[]`; no manual calls needed
+- `setTierThreshold(tier, ethAmount)` — onlyOwner; sets ETH threshold for each tier (1=holder, 2=producer, 3=verified)
 - `markListed(batchId, listingId)` — isTrustedCaller only
-- `onRedeem(batchId)` — isTrustedCaller only; releases pro-rata stake to brewer
-- `slashStake(batchId)` — onlyOwner; stake stays in Treasury
-- `receiveAndMintLPReward(rewardToken, to)` payable — isTrustedCaller; converts ETH to tokens at spot price, mints to LP holder ← NEW
+- `onRedeem(batchId)` — isTrustedCaller only; increments redeemedCount only (no transfer — ETH becomes claimable)
+- `claimStake(batchId)` — producer pulls pro-rata ETH; `earned = stakedAmount * redeemedCount / totalNFTs - claimedAmount[batchId]`
+- `claimableStake(batchId)` — view; frontend read for claimable ETH
+- `slashStake(batchId)` — onlyOwner; forfeits unclaimed ETH to floor permanently
+- `receiveAndMintLPReward(rewardToken, to)` payable — isTrustedCaller; converts ETH to tokens at spot, mints to LP holder
 - `withdrawFees(to, amount)` — onlyOwner; draws from `accumulatedFees` only, never touches floor
-- `floorBalance()` — `address(this).balance - accumulatedFees`; permanent floor, structurally untouchable
+- `floorBalance()` — `address(this).balance - accumulatedFees`; permanent, structurally untouchable
 - `mintLaborReward(token, to, amount)` — onlyOwner
-- `setWeth(address)`, `setLpRewardFeeBps(uint256)` ← NEW
 
-**Gap:** `uint256[34]`
+**Gap:** `uint256[31]`
+
+**Deployment note:** `stakeRatioBps` and `minListingBalance` state vars remain but unused in postStake path.
 
 ## DEXPair.sol (`contracts/dex/`)
 AMM pair, BeaconProxy. All pairs upgraded simultaneously via `Factory.upgradePairs(newImpl)`.
