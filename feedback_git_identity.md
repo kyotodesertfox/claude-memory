@@ -7,12 +7,12 @@ metadata:
   originSessionId: bb2f3712-7c8e-4d4d-81ef-635507cd95dd
 ---
 
-Never use "Lonewolf" in this project. Git identity is:
-- name: Homestead
+Default git identity for all repos:
+- name: Justin
 - email: 19782272+kyotodesertfox@users.noreply.github.com
 
-Never add Claude AI branding to commits (no Co-Authored-By: Claude lines).
+Exception — homestead/DEX/contracts repos use name: Homestead (same email).
 
-**Why:** User explicitly corrected this — "Lonewolf" is a different identity, Homestead is the project persona. Claude branding is unwanted in commit history.
+Never add Claude AI branding to commits (no Co-Authored-By lines). Never use "Lonewolf".
 
-**How to apply:** Every git commit in this project uses the Homestead identity with no co-author lines.
+**How to apply:** Set with `git config user.name` / `git config user.email` when first working in a repo. No need to verify before every commit.

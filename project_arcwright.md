@@ -7,7 +7,7 @@ metadata:
   originSessionId: bb2f3712-7c8e-4d4d-81ef-635507cd95dd
 ---
 
-`kyotodesertfox/arcwright` — welding business site built for free for a neighbor in Jacksonville. Deployed on Netlify at arcwrightwelding.com. Repo now lives **locally at `~/github/arcwright/`** (cloned with `--filter=blob:limit=400k --depth 1` to skip 2.6GB of project photos). Pi copy at `~/github/arcwright/` can be deleted.
+`kyotodesertfox/arcwright` — welding business site built for free for a neighbor in Jacksonville. Deployed on Netlify at arcwrightwelding.com. Repo lives at **`/home/zenko/github/arcwright/`** (cloned with `--filter=blob:limit=400k --depth 1` to skip 2.6GB of project photos). Pi copy at `~/github/arcwright/` can be deleted.
 
 **Stack:** React 19 + Vite, Framer Motion (`motion/react`), Tailwind v4 with `@theme` custom props (`--color-weld-red: #cc0000`, `--color-weld-silver`, `--color-weld-black`). White content area between dark navbar/footer.
 

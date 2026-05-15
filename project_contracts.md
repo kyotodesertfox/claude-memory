@@ -78,6 +78,33 @@ Replace `VITE_ROUTER` with new Router address.
 
 ---
 
+## HomesteadRelay.sol (`contracts/relay/`) — NOT YET DEPLOYED
+
+Written 2026-05-15. Awaiting deployment to Taiko mainnet.
+
+**Constructor args:** `_treasury` (Treasury proxy address), `_feeToken` ($BEER token address), `_quantumFee` (1e18 = 1 BEER)
+
+**Post-deploy config:**
+```
+relay.setQuantumFreeRecipient(ownerWallet, true)   // support messages to owner are quantum-free
+relay.registerContract(marketplaceProxy)            // allows marketplace to call recordRedemption
+// Treasury also needs: Treasury.setTrustedRelay(relayAddress) — requires Treasury upgrade
+```
+
+**beer-bot config (after deploy):**
+- Set `CONTRACTS["relay"]` in `src/config.py`
+- Set `OWNER_ADDRESS` in `src/config.py`
+
+**Key design:**
+- No IPFS — messages inline in calldata, X25519 key in state, Kyber key in registration event
+- `quantumFreeRecipient` mapping: designated wallets receive quantum messages fee-free
+- Standard messages: X25519 only, free. Quantum upgrade: 1 $BEER to Treasury
+- `onlyTrustedByTreasury` modifier verifies two-way trust with Treasury before privileged ops
+
+**Gap:** `uint256[47]`
+
+---
+
 ## masterTemplate.sol (`contracts/core/`)
 ERC20 token template. Every fungible token in the ecosystem (e.g. $BEER) is a deployed instance.
 
