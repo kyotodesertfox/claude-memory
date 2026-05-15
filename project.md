@@ -157,6 +157,22 @@ Every state transition provable via contract events. No manufactured status.
 
 ---
 
+## Producer Onboarding Wizard (Pending — Task #3)
+
+Generic multi-step flow for any new producer entering the platform. No identities — only wallets. Keith Wright (welder) is the prototype non-beer use case; his fabrication & service vouchers go through the exact same flow as a brewer. The wizard copy must not read as beer-specific.
+
+**Steps:**
+1. **Choose / deploy token** — pick an existing registered token or deploy a new one via TokenDeployer (name, symbol). This is the producer's token identity.
+2. **Stake ETH** — calls `postStake(token, nftContract, cids[], tokenToEmit)` with ETH value. Stakes ETH to Treasury floor, mints chosen token to producer, mints NFT batch, builds `cumulativeStake` reputation. Single transaction, everything happens at once.
+3. **NFT collection setup + IPFS upload** — producer uploads batch metadata/images, CIDs passed into `postStake`. This step feeds directly into step 2.
+4. **First listing** — `Marketplace.createListing(nftContract, paymentToken, price, batchId)`. Completes the onboarding loop; producer is live.
+
+**Re-entry for returning producers:** The "Post More Stake" button at the bottom of StakePanel is the entry point — not the wizard. Wizard is first-timers only.
+
+**Token-agnostic architecture:** `postStake` accepts any `ITokenDeployer.isRegistered()` token. No code changes needed for Keith vs. a brewer vs. any future producer type. The platform is product-agnostic by design.
+
+---
+
 ## Attestation Tier Display (Pending UI Feature)
 
 Marketplace listing cards and buy modals should show seller attestation tier badge pulled from `Treasury.attestationTier(listing.proceeds)`. Tier 0-3 mapped to colors (gray/sky/hub-green/amber).
