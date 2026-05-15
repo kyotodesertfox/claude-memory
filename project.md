@@ -157,6 +157,21 @@ Every state transition provable via contract events. No manufactured status.
 
 ---
 
+## Pending Tasks
+
+| # | Task | Notes |
+|---|------|-------|
+| 1 | Fix NFT metadata spelling error | Use `setTokenCID(tokenId, newCID)` on nftTemplate — user will provide tokenId when ready |
+| 2 | Transfer ownership of all deployed contracts | Treasury, Marketplace, nftTemplate instances, TokenDeployer, NFTDeployer, DEXFactory, HomesteadRelay (after deploy) |
+| 3 | Build generic producer onboarding wizard | Multi-step UI — see onboarding section below |
+| 4 | Deploy HomesteadRelay.sol | Not yet deployed; post-deploy: setDexPair, setQuantumFreeRecipient, registerContract(marketplace), Treasury.setTrustedRelay(relay) |
+| 5 | Seller attestation tier badges on marketplace listing cards | Read `Treasury.attestationTier(listing.proceeds)`, show tier badge (gray/sky/green/amber) |
+| 6 | Shiny cards for high-attestation sellers (Tier 3) | Burning/electrical border effect — likely tsparticles or pure CSS @keyframes. ~30-50 lines + wrapper component. Do not implement until user says to. |
+| 7 | Order tracking UI | "Domino's style" 5-step tracker modal — see order tracking section below |
+| 8 | Wire "Post More Stake" button in StakePanel | Currently a dead button — links to producer onboarding wizard when built |
+
+---
+
 ## Producer Onboarding Wizard (Pending — Task #3)
 
 Generic multi-step flow for any new producer entering the platform. No identities — only wallets. Keith Wright (welder) is the prototype non-beer use case; his fabrication & service vouchers go through the exact same flow as a brewer. The wizard copy must not read as beer-specific.
