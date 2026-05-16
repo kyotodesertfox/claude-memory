@@ -1,8 +1,10 @@
 ---
 name: project
 description: "All Homestead project context — beer DEX, farm ecosystem, philosophy, LP rewards, club origin, Inference Room, order tracking, repo map, memory infra, pending features"
-metadata:
+metadata: 
+  node_type: memory
   type: project
+  originSessionId: 4d10e6c7-3013-43a7-b1f4-1cad366cf7fd
 ---
 
 ## Core: Beer DEX Economic Flow
@@ -60,6 +62,56 @@ But the Treasury is the thing we protect above all else. **There can never be a 
 - Any time Treasury mints tokens, ETH must flow INTO Treasury first or simultaneously — never mint against nothing
 - Auto-claim on LP removal (not forfeit) is correct — ETH still flows to Treasury, no value lost
 - If a proposed design has Treasury paying out ETH without receiving value, reject it
+
+### Component Failure Priority — The Relay Dilemma
+
+**The dilemma:** `Marketplace.redeem()` must call both Treasury (economic settlement) and HomesteadRelay (attestation/provenance). If both are atomic and Relay fails, the $BEER burn and stake release are blocked — Treasury and producer are harmed by a broken attestation layer. If Relay is best-effort, the economic settlement always completes but provenance may have a gap.
+
+**The resolution:** Economic settlement is the critical path. Attestation is the provenance layer. A component failure in attestation must NEVER revert irreversible economic operations. Priority order is locked:
+
+1. **Treasury** — burn and onRedeem complete atomically, or nothing does
+2. **Producer** — stake unlocks when settlement completes; they can make buyer whole if attestation fails
+3. **Relay** — best-effort, wrapped so its failure cannot revert the parent transaction
+
+**The reasoning:** If Relay had veto power over settlement, a buggy or unset Relay would hold ALL redemptions hostage — directly violating "Treasury above all." Conversely, firing economic consequences from inside the Relay (inverted call order) is dangerous: you'd be triggering irreversible operations without guaranteeing the full chain completes.
+
+**The rule derived from this:** Any ancillary component (Relay, future oracle, future subsidy system) that sits downstream of a Treasury operation must be called best-effort. No secondary system gets veto power over the economic layer. The producer is the human backstop for buyer-facing failures.
+
+### Physical Redemption — The Barcode Problem
+
+**The problem:** Physical goods like eggs or handcrafted items cannot carry a scannable barcode. The system cannot force buyers to call `Marketplace.redeem()` after receiving goods. If they never redeem, the brewer's ETH stake stays locked in Treasury permanently. This looks like a design gap but is actually coherent.
+
+**The resolution:** The QR code at point of physical exchange is not a product identifier — it is a deep link to `Marketplace.redeem(tokenId)`. When the buyer scans it and confirms in their wallet, that signature IS the co-presence proof. Both escrows resolve atomically at that moment:
+
+1. Buyer's $BEER burned from Marketplace escrow (delivery confirmed)
+2. Brewer's ETH stake in Treasury flips to claimable (unlock key received)
+3. Relay records the attestation on top (best-effort provenance)
+
+Nothing freezes in the intended flow because the buyer's wallet signature at the moment of handoff IS the redemption. The QR is a UX bridge, not a barcode.
+
+**`markRedeemed()` — the honest penalty:** Owner-only bypass for genuine edge cases (dead phone, buyer refuses to scan). The brewer's ETH stake stays permanently locked if they use it — that IS the penalty for not completing the loop. It is self-punishing by design. A dishonest brewer who marks delivery without delivering also freezes their own stake. Mutual dependency enforces honesty; the contract cannot force it.
+
+**The rule derived from this:** The system's job is to eliminate as many vectors for dishonesty as possible, not to eliminate trust entirely. Some level of honesty will always be required at the edges. Build the incentive structure so that dishonesty is costly to the dishonest party — then accept the residual.
+
+### $FARM Governance Token — Design Philosophy
+
+$FARM is the platform's governance token. It is not an inventory token (that's $BEER) and not a reserve currency (that's ETH). It represents governance weight — the right to influence platform direction.
+
+**Emission sources (ETH-backed, clean under Treasury rule):**
+- `postStake` — when a producer stakes ETH, $FARM mints proportional to ETH staked alongside $BEER
+- LP reward claim — when an LP holder claims rewards, $FARM mints alongside the pool's native token
+
+**Burn sink:** Quantum messaging fees. Active platform communication burns $FARM, creating equilibrium between emission (participation) and burn (usage).
+
+**No hard cap — ever.** Continuous emission tied to active participation. This is non-negotiable.
+
+**Why:** Concentration of governance power leads to hostile takeover. A hard cap rewards early participants permanently — they accumulate governance weight and eventually dominate the platform regardless of current participation. The JAX club is the lived example: power concentrated among officers who used it to resist the very system that made them unnecessary. The platform must never recreate that dynamic on-chain.
+
+**The anti-concentration mechanism:** Continuous emission dilutes inactive holders. A whale who stops staking and stops providing liquidity gets continuously diluted as new $FARM flows to active participants. The burn sink accelerates this — a large holder who uses the platform burns their own supply. No punitive mechanism needed; the math does it.
+
+**Open design question:** Raw $FARM balance vs. time-weighted snapshot for voting power. Time-weighted (voting power = $FARM earned in last N days) is the strongest anti-concentration design but complex to implement. Continuous emission with no cap achieves most of the same effect through dilution alone. Decision deferred.
+
+**$BEER is NOT a utility/fee token.** It is an inventory token backing real physical assets. Using it as a platform fee currency conflates commodity claims with platform utility. Quantum messaging fees should not burn $BEER.
 
 ### Regulatory philosophy
 
@@ -137,23 +189,30 @@ inferenceroom.ai — AI agent infrastructure platform. Taiko's Head of Ecosystem
 
 ---
 
-## Order Tracking (Pending Feature)
+## Order Tracking (BUILT)
 
 "Domino's style" order tracking — each active purchase shows on-chain derived status:
 
 1. **Listed** — NFT on Marketplace, awaiting buyer
 2. **Purchased** — Buyer paid $BEER, escrow locked
-3. **In Delivery** — Coordination phase (HomesteadChat)
-4. **Redeemed** — $BEER burned, NFT redeemed, ZK-sealed proof
+3. **In Delivery** — Coordination phase (HomesteadRelay messages)
+4. **Redeemed** — $BEER burned, NFT redeemed, attestation recorded
 5. **Stake Claimable** — Brewer's pro-rata ETH stake claimable from Treasury
 
-Every state transition provable via contract events. No manufactured status.
+**UI location:** `apps/exchange/src/components/OrderTrackingModal.jsx` — modal with 5-step horizontal progress tracker, animated progress bar, order detail panel (price, seller, listing#, batch#), "Confirm Delivery" button (calls `Marketplace.redeem`).
 
-**Quantum Chat Subsidy:** Sellers can flag `subsidizedQuantum = true`. Buyer gets quantum encryption at no cost — seller covers the 1 $BEER fee, deducted at `claimStake(batchId)`. Market signal: subsidized quantum listings signal higher seller trust.
+**Wired via `MyOrdersSection`** in `apps/exchange/src/pages/profile/Page.jsx` — reads wallet's NFTs via `balanceOf` + `tokenOfOwnerByIndex`, batches `getTokenListing` calls, filters to marketplace purchases only, shows `OrderCard` grid. Click → `OrderTrackingModal`.
 
-**Contract changes needed:** Add `subsidizedQuantum bool` to Listing struct, `setSubsidizedQuantum(listingId, bool)`, subsidy accounting in claimStake.
+**Step derivation logic (on-chain, no manufactured status):**
+- `!hasListing` → step 1 (in wallet, never sold via marketplace)
+- `hasListing && !redeemed` → step 3 (purchased → in delivery)
+- `redeemed && claimable > 0n` → step 5 (stake claimable)
+- `redeemed && claimable == 0n` → step 4 (redeemed, stake already claimed or no batch)
+- Step 2 (Purchased) is not yet derivable on-chain without a `purchased` event filter — currently skipped
 
-**UI needed:** Order Details modal, 5-step visual tracker, embedded quantum chat panel filtered to order participants, attestation tier badges on both wallet addresses, subsidy badge on listing cards.
+**Quantum Chat Subsidy (BUILT — design changed from original plan):** Seller specifies `subsidyCount` when calling `Marketplace.createListing()`. Marketplace collects `subsidyCount * relay.quantumFee()` $FARM upfront at listing creation. Per message: Relay calls `Marketplace.chargeSubsidy(nftContract, tokenId, fee)` — burns $FARM from listing's balance. If balance is exhausted, sender pays normally. Unused $FARM auto-returned to seller on `setActive(false)`. Seller can also manually reclaim via `reclaimSubsidy(listingId)`.
+
+**Original design (discarded):** `subsidizedQuantum bool` in Listing struct, deducted from ETH stake at claimStake. Not implemented — replaced with pre-paid $FARM session model which avoids per-message gas overhead and per-redemption accounting complexity.
 
 ---
 
@@ -163,36 +222,50 @@ Every state transition provable via contract events. No manufactured status.
 |---|------|-------|
 | 1 | Fix NFT metadata spelling error | Use `setTokenCID(tokenId, newCID)` on nftTemplate — user will provide tokenId when ready |
 | 2 | Transfer ownership of all deployed contracts | Treasury, Marketplace, nftTemplate instances, TokenDeployer, NFTDeployer, DEXFactory, HomesteadRelay (after deploy) |
-| 3 | Build generic producer onboarding wizard | Multi-step UI — see onboarding section below |
-| 4 | Deploy HomesteadRelay.sol | Not yet deployed; post-deploy: setDexPair, setQuantumFreeRecipient, registerContract(marketplace), Treasury.setTrustedRelay(relay) |
-| 5 | Seller attestation tier badges on marketplace listing cards | Read `Treasury.attestationTier(listing.proceeds)`, show tier badge (gray/sky/green/amber) |
+| 3 | ~~Build generic producer onboarding wizard~~ | **DONE** — `OnboardingWizard.jsx`, multi-step, floor-stake path for first-timers |
+| 4 | Deploy contracts — phased rollout | Phase 0 (upgrade existing), Phase 1 (staking live), Phase 2 ($FARM + emission), Phase 3 (HomesteadRelay). See project_contracts.md. |
+| 5 | ~~Seller reputation badges on marketplace listing cards~~ | **DONE** — `ReputationBadge` component in `market/Page.jsx`; reads `Treasury.attestationTier(listing.proceeds)`; labeled "Reputation" (not "Attestation"); tier 0 = no badge, 1 = Holder (sky), 2 = Producer (green), 3 = Trusted (amber) |
 | 6 | Shiny cards for high-attestation sellers (Tier 3) | Burning/electrical border effect — likely tsparticles or pure CSS @keyframes. ~30-50 lines + wrapper component. Do not implement until user says to. |
-| 7 | Order tracking UI | "Domino's style" 5-step tracker modal — see order tracking section below |
-| 8 | Wire "Post More Stake" button in StakePanel | Currently a dead button — links to producer onboarding wizard when built |
+| 7 | ~~Order tracking UI~~ | **DONE** — `OrderTrackingModal.jsx` + `MyOrdersSection` wired in profile page |
+| 8 | ~~Wire "Post More Stake" button in StakePanel~~ | **DONE** — opens OnboardingWizard with `skipInitial` |
+| 9 | ~~Deploy $stkHomestead stake pool token~~ | **DEFERRED — Phase 4** (mint mechanics TBD; key question: receipt token minted on postStake, burned on claimStake?) |
+| 10 | ~~Mobile modal responsiveness~~ | **DONE** — `overflow-x-hidden` on layout root; wallet card Address full-width, ETH/Stake in `grid-cols-2`; HomesteadChat FAB now full-screen on mobile (`fixed inset-0 sm:inset-auto`); Disconnect moved from header to wallet card as text link (red, `text-xs`); chain name colored to match chain dot (emerald/amber) |
+| 11 | ~~Live staking position cards~~ | **DONE** — `StakingPositionCards` in profile staking tab; reads `cumulativeStake` (ETH Staked) + batch enumeration for claimable ETH; Claim button fires `claimStake(batchId)` |
 
 ---
 
-## Producer Onboarding Wizard (Pending — Task #3)
+## Producer Onboarding Wizard (BUILT — Task #3)
 
-Generic multi-step flow for any new producer entering the platform. No identities — only wallets. Keith Wright (welder) is the prototype non-beer use case; his fabrication & service vouchers go through the exact same flow as a brewer. The wizard copy must not read as beer-specific.
+`apps/exchange/src/components/OnboardingWizard.jsx`. Generic multi-step flow for any producer. No identities — only wallets. Keith Wright (welder) goes through the exact same flow as a brewer. Copy is product-agnostic.
 
-**Steps:**
-1. **Choose / deploy token** — pick an existing registered token or deploy a new one via TokenDeployer (name, symbol). This is the producer's token identity.
-2. **Stake ETH** — calls `postStake(token, nftContract, cids[], tokenToEmit)` with ETH value. Stakes ETH to Treasury floor, mints chosen token to producer, mints NFT batch, builds `cumulativeStake` reputation. Single transaction, everything happens at once.
-3. **NFT collection setup + IPFS upload** — producer uploads batch metadata/images, CIDs passed into `postStake`. This step feeds directly into step 2.
-4. **First listing** — `Marketplace.createListing(nftContract, paymentToken, price, batchId)`. Completes the onboarding loop; producer is live.
+**Steps (step index in component):**
+- `-1` — Floor stake only (first-timers with no token yet): calls `postStake(ZERO, ZERO, [], 0n)` with ETH
+- `0` — Select token (from TokenDeployer registry)
+- `1` — Select NFT collection (from NFTDeployer registry)
+- `2` — Batch details (CIDs, tokenToEmit)
+- `3` — Post stake: `postStake(token, nft, cids[], parseEther(tokenToEmit))`
+- `4` — Create listing: `Marketplace.createListing(nft, token, parseEther(price), batchId)`
+- `5` — Done
 
-**Re-entry for returning producers:** The "Post More Stake" button at the bottom of StakePanel is the entry point — not the wizard. Wizard is first-timers only.
+**Re-entry:** "Post More Stake" in StakePanel opens wizard with `skipInitial` (skips floor-stake step).
 
-**Token-agnostic architecture:** `postStake` accepts any `ITokenDeployer.isRegistered()` token. No code changes needed for Keith vs. a brewer vs. any future producer type. The platform is product-agnostic by design.
+**Treasury change:** `postStake` now accepts `address(0)` for both `token` and `nftContract` — floor-only stake for first-timers who haven't deployed a token yet. `cumulativeStake` always increments regardless.
+
+## Mint $BEER — Admin Panel
+
+Direct `mintToWallet`/`mintToPool` is an **admin-only** feature (gated by `isMinter` role), NOT the canonical producer mint path. Canonical minting is via `postStake` (collateralized).
+
+**Location:** `$BEER Portfolio` modal → Staking tab → bottom section (amber color, "Admin" badge).
+
+**Destinations:** Self (connected wallet) / Wallet (custom `0x` address input, for favors/labor) / Pool (BEER/WETH pair). Wallet destination validates address format before enabling Mint button.
 
 ---
 
-## Attestation Tier Display (Pending UI Feature)
+## Attestation Tier Display (BUILT)
 
-Marketplace listing cards and buy modals should show seller attestation tier badge pulled from `Treasury.attestationTier(listing.proceeds)`. Tier 0-3 mapped to colors (gray/sky/hub-green/amber).
+`ReputationBadge` component in `apps/exchange/src/pages/market/Page.jsx`. Reads `Treasury.attestationTier(listing.proceeds)` (proceeds = index 3 of listing tuple = seller address). Labeled "Reputation" in UI (never "Attestation"). Tier 0 = no badge shown. Tier 1 = Holder (sky blue). Tier 2 = Producer (hub-green). Tier 3 = Trusted (amber). Badge shown on both listing card body and listing modal header (alongside seller address).
 
-**Premium seller cards (Pending):** High-attestation sellers (Tier 3 = Verified) get visually distinct "shiny" listing cards — burning/electrical/plasma border effect. Previously built as a feature branch on a deleted repo. Library was likely `tsparticles` (`@tsparticles/react` + `@tsparticles/preset-fire` or `@tsparticles/preset-plasma`) or a pure CSS approach with `@keyframes` on `box-shadow`/border gradient. Either way, re-implementing is ~30-50 lines + a wrapper component. **Do not implement until user says to — save this as a to-do.**
+**Premium seller cards (Pending):** High-attestation sellers (Tier 3 = Trusted) get visually distinct "shiny" listing cards — burning/electrical/plasma border effect. Previously built as a feature branch on a deleted repo. Library was likely `tsparticles` (`@tsparticles/react` + `@tsparticles/preset-fire` or `@tsparticles/preset-plasma`) or a pure CSS approach with `@keyframes` on `box-shadow`/border gradient. Either way, re-implementing is ~30-50 lines + a wrapper component. **Do not implement until user says to — save this as a to-do.**
 
 ---
 

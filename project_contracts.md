@@ -26,29 +26,44 @@ Pinned records at `contracts/.deploys/pinned-contracts/167000/`
 
 ---
 
-## Full deployment checklist (all pending changes as of 2026-05-13)
+## Full deployment checklist (updated 2026-05-15)
 
-Commits: b147250 (stake system), 782399b (LP rewards). Deploy everything together in one window.
+Commits include stake system, LP rewards, contract audit fixes (burn/burnFrom, trustedRelay, getReserves 3-value, relay wiring, onTokenMinted removal).
+
+**Phased rollout plan (avoid one large risky deploy):**
+- **Phase 0** — Upgrade existing contracts (masterTemplate, Treasury, DEXPair, Marketplace, nftTemplate, Router, Factory) + wire post-upgrade config
+- **Phase 1** — Staking live; $FARM off (`setFarmToken(0)`, `setFarmStakeBps(0)`) — verify postStake, claimStake, attestation tiers
+- **Phase 2** — Deploy $FARM token, seed FARM/WETH pair, enable $FARM emission (`setFarmToken`, `setFarmStakeBps`, `setFarmLpBps`)
+- **Phase 3** — Deploy HomesteadRelay (UUPS), wire to Treasury + Marketplace, enable quantum chat + delivery messages
+- **Phase 4 (deferred)** — $stkHomestead stake pool token (TBD mint mechanics)
+
+Deploy in order — HomesteadRelay depends on Treasury being upgraded first.
 
 ### Step 1 — Deploy new implementations (order matters)
 
-1. Deploy new **Treasury** impl → call `upgradeProxy(newImpl)` on Treasury proxy
-2. Deploy new **DexPair** impl → call `Factory.upgradePairs(newImpl)` (upgrades all pairs via beacon)
-3. Deploy new **Marketplace** impl → call `upgradeProxy(newImpl)` on Marketplace proxy
-4. Deploy new **nftTemplate** impl → call `upgradeProxy(newImpl)` on each nftTemplate instance
-5. Deploy new **Router** (not upgradeable — fresh deploy, immutable constructor args: factory, WETH, treasury)
-6. Deploy new **Factory** impl → call `upgradeProxy(newImpl)` on Factory proxy
+1. Deploy new **masterTemplate** impl → upgrade each token proxy (burn/burnFrom added, onTokenMinted removed)
+2. Deploy new **Treasury** impl → call `upgradeProxy(newImpl)` on Treasury proxy (trustedRelay added, gap 31→30)
+3. Deploy new **DEXPair** impl → call `Factory.upgradePairs(newImpl)` (getReserves now returns 3 values)
+4. Deploy new **Marketplace** impl → call `upgradeProxy(newImpl)` on Marketplace proxy (relay field added, gap 42→41)
+5. Deploy new **nftTemplate** impl → call `upgradeProxy(newImpl)` on each nftTemplate instance
+6. Deploy new **Router** (not upgradeable — fresh deploy, immutable constructor args: factory, WETH, treasury)
+7. Deploy new **Factory** impl → call `upgradeProxy(newImpl)` on Factory proxy
+8. **Deploy HomesteadRelay** — must be AFTER Treasury upgrade (needs trustedRelay to exist on-chain)
+   - Now UUPS upgradeable — deploy impl + ERC1967 proxy, call `initialize(_treasury, _feeToken, _quantumFee)`
+   - `initialize` args: `_treasury`, `_feeToken` ($BEER address), `_quantumFee` (1e18 = 1 BEER)
 
 ### Step 2 — Wire Treasury
 
 ```
-Treasury.setBeerToken(beerTokenAddress)
-Treasury.setStakeRatioBps(1000)          // 10%
-Treasury.setMinListingBalance(X)
+Treasury.setFarmToken(farmTokenAddress)   // $FARM governance token (deploy first, seed FARM/WETH pair first)
+Treasury.setFarmStakeBps(1000)            // 10% of ETH staked value emitted as $FARM at spot
+Treasury.setFarmLpBps(500)               // 5% of LP reward ETH value emitted as $FARM at spot
 Treasury.setWeth(wethAddress)
 Treasury.setLpRewardFeeBps(200)          // 2% of exit fee to LP rewards
+farmToken.setMinter(treasuryProxy, true)          // Treasury must mint $FARM on stake + LP claim
 Treasury.setTrustedCaller(marketplaceProxy, true)
 Treasury.setTrustedCaller(beerWethPairAddress, true)   // LP reward claim path
+Treasury.setTrustedRelay(homesteadRelayAddress)        // NEW — unlocks recordRedemption
 ```
 
 ### Step 3 — Wire Factory
@@ -63,15 +78,38 @@ Factory.batchConfigurePairRewards([beerWethPairAddress])   // migrates existing 
 ```
 // On each deployed nftTemplate:
 nftTemplate.setMinter(treasuryProxyAddress, true)
+nftTemplate.setRedemptionOperator(marketplaceProxy, true)  // allows Marketplace.redeem() to mark redeemed
 ```
 
-### Step 5 — Update frontend .env
+### Step 5 — Wire Marketplace
+
+```
+Marketplace.setRelay(homesteadRelayAddress)        // enables best-effort attestation on redeem
+Marketplace.setFarmToken(farmTokenAddress)         // NEW — required for quantum subsidy collection
+```
+
+### Step 5b — Wire Relay to Marketplace
+
+```
+relay.setMarketplace(marketplaceProxy)             // NEW — enables chargeSubsidy on delivery messages
+```
+
+### Step 6 — Wire HomesteadRelay
+
+```
+relay.setDexPair(beerWethPairAddress)              // required for ETH quantum fee path
+relay.setQuantumFreeRecipient(ownerWallet, true)   // support messages to owner are quantum-free
+relay.registerContract(marketplaceProxy)            // allows Marketplace to call recordRedemption
+```
+
+### Step 7 — Update frontend .env
 
 Replace `VITE_ROUTER` with new Router address.
 
 ### Notes
 - Old Router stays live until new one is deployed — no gap in trading
-- `postStake` still takes $BEER collateral (pending ETH redesign — separate task)
+- HomesteadRelay MUST be deployed after Treasury upgrade — it calls `Treasury.trustedRelay()` on construction
+- Marketplace.setRelay and Treasury.setTrustedRelay must both point to the same relay address
 - `withdrawFees` is onlyOwner (you); transfer to multisig before significant TVL
 - `floorBalance()` is the permanent ETH floor — never withdrawable
 - `accumulatedFees` is the owner-withdrawable operational pool (exit fees)
@@ -106,7 +144,13 @@ relay.registerContract(marketplaceProxy)            // allows marketplace to cal
 - `onlyTrustedByTreasury` modifier verifies two-way trust with Treasury before privileged ops
 - `joinGroup()` uses `max(manual attestation[wallet], ITreasury.attestationTier(wallet))` — stake reputation recognized automatically, no owner intervention needed
 
-**Gap:** `uint256[46]`
+**Additional storage:**
+- `address public marketplace` — set via `setMarketplace(address)`; enables subsidy charging on delivery messages
+
+**`sendDeliveryMessage(to, encryptedPayload, quantumReady, nftContract, tokenId)`:** Specialized send for buyer-seller delivery coordination. If `quantumReady && quantumFee > 0`, tries `marketplace.chargeSubsidy(nftContract, tokenId, fee)` first (best-effort try/catch). If subsidy fails or no marketplace set, falls back to standard `_chargeQuantumFee(recipient)` from sender.
+
+**Upgradeable:** UUPS (converted — not yet deployed, no migration needed)
+**Gap:** `uint256[45]` (marketplace slot added, 46→45)
 
 ---
 
@@ -160,14 +204,22 @@ Handles listings, sales, and redemptions.
 - `mapping(uint256 => uint256) _listingBatch` — listingId → batchId (0 = no stake)
 - `mapping(uint256 => uint256) _tokenListingId` — tokenId → listingId+1 (0 = untracked)
 - `mapping(uint256 => uint256) _escrowedBeer` — tokenId → escrowed $BEER amount, burned on redeem
+- `address public relay` — best-effort attestation relay (set via `setRelay`)
+- `address public farmToken` — $FARM token for quantum messaging subsidy collection
+- `mapping(uint256 => uint256) private _subsidyBalance` — listingId → $FARM held for quantum delivery messages
 
 **Key functions (current):**
-- `createListing(nftContract, paymentToken, price, batchId)` — permissionless; owner can pass batchId=0
-- `depositInventory / withdrawInventory / setActive / updatePrice` — owner or listing.proceeds
+- `createListing(nftContract, paymentToken, price, batchId, subsidyCount)` — `subsidyCount > 0` collects `subsidyCount * relay.quantumFee()` $FARM upfront; owner can pass batchId=0
+- `depositInventory / withdrawInventory / setActive / updatePrice` — owner or listing.proceeds; `setActive(false)` auto-returns unused $FARM subsidy balance to seller
 - `buy(listingId)` — platform fee → Treasury; remainder held in `_escrowedBeer[tokenId]` (NOT sent to brewer)
-- `redeem(nftContract, tokenId)` — burns escrowed $BEER, then calls `Treasury.onRedeem(batchId)` to mark ETH claimable
+- `redeem(nftContract, tokenId)` — burns escrowed $BEER, calls `Treasury.onRedeem(batchId)`, then best-effort `relay.recordRedemption()`
+- `getTokenListing(tokenId)` — view; returns `(listingId, batchId)` for any token sold via marketplace
+- `chargeSubsidy(nftContract, tokenId, fee)` — relay-only; decrements `_subsidyBalance[listingId]`, burns $FARM; returns false if insufficient balance (sender pays normally)
+- `reclaimSubsidy(listingId)` — seller or owner; manually reclaims unused $FARM
+- `subsidyBalance(listingId)` — view
+- `setRelay(address)`, `setFarmToken(address)` — onlyOwner
 
-**Gap:** `uint256[42]`
+**Gap:** `uint256[39]`
 
 ---
 
@@ -178,7 +230,7 @@ Fee governance, ETH floor accumulation, NFT vending, $BEER stake management, and
 - `address tokenDeployer`, `address nftDeployer`, `address dexFactory`
 - `uint256 dexEntryFeeBps`, `uint256 dexExitFeeBps`, `uint256 marketplaceFeeBps`
 - `uint256 accumulatedFees`, `mapping(address => uint256) nftPrices`
-- `address beerToken`, `uint256 stakeRatioBps`, `uint256 minListingBalance`
+- `address farmToken`, `uint256 farmStakeBps`, `uint256 farmLpBps` ← repurposed from dead beerToken/stakeRatioBps/minListingBalance slots; $FARM emitted at DEX spot price proportional to ETH staked/LP reward
 - `uint256 nextBatchId`, `mapping(uint256 => Batch) batches`, `mapping(address => bool) isTrustedCaller`
 - `address weth`, `uint256 lpRewardFeeBps`
 - `mapping(uint256 => uint256) _claimedAmount` — ETH claimed per batchId (partial claim tracking)

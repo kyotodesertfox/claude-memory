@@ -1,8 +1,10 @@
 ---
 name: feedback
 description: "All behavioral rules — git, files, process, communication, and memory"
-metadata:
+metadata: 
+  node_type: memory
   type: feedback
+  originSessionId: 4d10e6c7-3013-43a7-b1f4-1cad366cf7fd
 ---
 
 ## Git & Commits
@@ -30,6 +32,22 @@ metadata:
 ## Process Management
 
 **Never restart services:** Never run `systemctl restart`, `pkill`, `nohup`, or any process restart command. After making changes to bot code, stop at "the file is updated — restart the bot when ready." User handles all process management.
+
+---
+
+## Smart Contract / Frontend Scaling Rule
+
+**Rule:** Contracts always handle decimal scaling. The UI always passes human-readable integer amounts (via `BigInt`). Never use `parseEther` or `parseUnits` to scale token amounts on the UI side before passing to a contract function.
+
+**Why:** Keeps the decimal logic in one place (the contract), makes the UI intent unambiguous, and prevents double-scaling bugs (e.g. `parseEther(tokenToEmit)` + contract `amount * 10**decimals()` = 1e36 catastrophe).
+
+**How to apply:** When writing any contract function that accepts a token amount, scale internally (`amount * 10 ** decimals()`). When writing UI code that calls such a function, pass `BigInt(humanAmount)`.
+
+**Legitimate exceptions — do not apply the rule here:**
+
+1. **`msg.value` / ETH transaction value** — EVM wire format requires wei. `parseEther(ethAmount)` for the `value` field is non-negotiable, not UI logic.
+2. **Swap and liquidity amounts (Router/DEXPair)** — AMM reserves and constant-product invariant math are base-units-native. Scaling inside the DEX would break the invariant check. Structural exception.
+3. **Marketplace `price` field** — Whole-number-only pricing (you cannot deliver half an egg). Contract scales with `* 1e18` on `createListing` and `updatePrice`. UI passes `BigInt(price)`.
 
 ---
 
