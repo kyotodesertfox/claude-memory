@@ -9,20 +9,23 @@ metadata:
 
 All contracts live at `~/github/homestead/contracts/`. All are UUPS upgradeable (OZ). **Never reorder or delete storage variables** — add new ones above `__gap` and reduce gap size accordingly.
 
-## Deployed addresses (Taiko Hekla, chainId 167000)
+## Deployed addresses (Taiko mainnet, chainId 167000)
 Pinned records at `contracts/.deploys/pinned-contracts/167000/`
+`.env` and `contract_addresses.txt` are the authoritative address references.
 
-| Contract | Deployed address |
-|---|---|
-| Treasury (proxy) | 0xFAC3fF5D6FA146177792E9C4D48F7195c9447c0D |
-| Marketplace (proxy) | 0x53439131029767302542893a83313180717DA791 |
-| nftTemplate (impl) | 0x889BB10409C93de5d49a186d473D8293c1209DF8 |
-| TokenDeployer | 0x757fE132A402B96Ec41D084e089B9c91E112dcc6 |
-| NFTDeployer | 0x69f49a3E8A645999CAC67CD304C59366F0CD802D |
-| DEXFactory | 0xC95C39d2E18a9c560C4365E6bEbffb89CB8d0832 |
-| Router | 0x07460A6c6b036019e2ff5Ed8F7462c2Aa0f8BC07 |
-| masterTemplate (impl) | 0x0c5C014397d4f58e0ae90CF2a9FdaaB9738e5402 |
-| DEXPair (beacon impl) | 0x86e1092329e108267EB57A9a10fB62CDFF3edaeC |
+| Contract | Proxy | Current Impl | Old Impl |
+|---|---|---|---|
+| Treasury | 0x631f9D082019E25a2BfD219BF235cA0b742206EC | **0x62F23283649d56b49EA76e522Fa9C52f7ADf57e5** ✓ upgraded | 0xFAC3fF5D6FA146177792E9C4D48F7195c9447c0D |
+| Marketplace | 0x2321bDF62364ee38Fcf6b631C9742f6BF61B66Aa | 0x53439131029767302542893a83313180717DA791 | — |
+| DEXFactory | 0xC72096f120cBb6a8f9e942864b885e1bb5060Cf2 | 0xC95C39d2E18a9c560C4365E6bEbffb89CB8d0832 | — |
+| TokenDeployer | 0xB367B1e95BB9336731809AB1CF35c3D211dc1065 | 0x757fE132A402B96Ec41D084e089B9c91E112dcc6 | — |
+| NFTDeployer | 0x2A879059CfA27f707F1756DbfC6f683071099cC9 | 0x69f49a3E8A645999CAC67CD304C59366F0CD802D | — |
+| masterTemplate | 0x5a320af586CBDD2Cc732BD76bF2Ce74fD51f2d00 (BEER) | 0x0c5C014397d4f58e0ae90CF2a9FdaaB9738e5402 | — |
+| nftTemplate | 0x210970F39B3AD4081090100Ed871fE42C54C2101 (BEER NFT) | 0x889BB10409C93de5d49a186d473D8293c1209DF8 | — |
+| DEXPair (beacon impl) | — | 0x86e1092329e108267EB57A9a10fB62CDFF3edaeC | — |
+| Router (immutable) | — | 0x07460A6c6b036019e2ff5Ed8F7462c2Aa0f8BC07 | — |
+| WETH | — | 0xA51894664A773981C6C112C43ce576f315d5b1B6 | — |
+| BEER/WETH pair | — | 0x7Bbdb6214b0592031933345C8E75186f90d01222 | — |
 
 ---
 
