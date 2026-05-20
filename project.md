@@ -11,7 +11,7 @@ metadata:
 
 This DEX (originally $ART) is now a physical beer production marketplace. The full economic flow (locked 2026-05-15):
 
-1. **Brewer stakes ETH → gets token minted** — ETH enters Treasury as permanent floor. `postStake()` is ETH-payable; caller specifies which registered token to mint. `cumulativeStake[wallet] += msg.value` builds on-chain reputation.
+1. **Producer stakes ETH → gets stkHomestead 1:1** — `postStake()` takes no args, just ETH. Mints stkHomestead via mintExact (base units). `cumulativeStake[wallet] += msg.value` builds reputation. stkHomestead is collateral credential, never burned (except in claimStake pro-rata). **Flow is now separate**: postStake → openLot(token, amount) → approve → mintLotNFTs.
 2. **Brewer buys production NFT with $BEER** — Treasury vends production NFTs for $BEER collateral.
 3. **Brewer relists NFT on Marketplace** — listed price in $BEER.
 4. **Buyer acquires $BEER via DEX and purchases NFT** — $BEER held in Marketplace escrow (`_escrowedBeer[tokenId]`), NOT sent to brewer immediately.

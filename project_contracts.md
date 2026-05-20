@@ -13,18 +13,18 @@ All contracts live at `~/github/homestead/contracts/`. All are UUPS upgradeable 
 
 | Contract | Proxy | Current Impl | Old Impl |
 |---|---|---|---|
-| Treasury | 0x631f9D082019E25a2BfD219BF235cA0b742206EC | 0x62F23283649d56b49EA76e522Fa9C52f7ADf57e5 ⚠️ STALE — new impl not yet deployed | 0xFAC3fF5D6FA146177792E9C4D48F7195c9447c0D |
-| Marketplace | 0x2321bDF62364ee38Fcf6b631C9742f6BF61B66Aa | 0x53439131029767302542893a83313180717DA791 | — |
+| Treasury | 0x631f9D082019E25a2BfD219BF235cA0b742206EC | 0x97C5DD6315372dba2B0c6E236D43A087885eC0e7 ✓ deployed 2026-05-19 | 0x62F23283649d56b49EA76e522Fa9C52f7ADf57e5 |
+| Marketplace | 0x2321bDF62364ee38Fcf6b631C9742f6BF61B66Aa | 0x8c62c79958c56b8bdd99Aa97aD23E15e40C7A3cE ✓ deployed 2026-05-19 | 0x53439131029767302542893a83313180717DA791 |
 | DEXFactory | 0xC72096f120cBb6a8f9e942864b885e1bb5060Cf2 | 0xC95C39d2E18a9c560C4365E6bEbffb89CB8d0832 | — |
 | TokenDeployer | 0xB367B1e95BB9336731809AB1CF35c3D211dc1065 | — | — |
 | NFTDeployer | 0x2A879059CfA27f707F1756DbfC6f683071099cC9 | — | — |
-| masterTemplate | 0x5a320af586CBDD2Cc732BD76bF2Ce74fD51f2d00 (BEER proxy) | 0x0c5C014397d4f58e0ae90CF2a9FdaaB9738e5402 ⚠️ STALE — mintExact/burnFromMinter not yet deployed | — |
-| nftTemplate | 0x210970F39B3AD4081090100Ed871fE42C54C2101 (BEER NFT) | 0x889BB10409C93de5d49a186d473D8293c1209DF8 ⚠️ STALE — burnToken not yet deployed | — |
+| masterTemplate | 0x5a320af586CBDD2Cc732BD76bF2Ce74fD51f2d00 (BEER proxy) | 0x9D6C344d3fF927Df604660d48C9F28c5d7f98C77 ✓ deployed 2026-05-19 | 0x0c5C014397d4f58e0ae90CF2a9FdaaB9738e5402 |
+| nftTemplate | 0x210970F39B3AD4081090100Ed871fE42C54C2101 (BEER NFT) | 0x637f1f6FD0fF64dF0C920C43B4945779EA706fa2 ✓ deployed 2026-05-19 | 0x889BB10409C93de5d49a186d473D8293c1209DF8 |
 | DEXPair (beacon impl) | — | 0x86e1092329e108267EB57A9a10fB62CDFF3edaeC | — |
 | Router (immutable) | — | 0x07460A6c6b036019e2ff5Ed8F7462c2Aa0f8BC07 | — |
 | WETH | — | 0xA51894664A773981C6C112C43ce576f315d5b1B6 | — |
 | BEER/WETH pair | — | 0x7Bbdb6214b0592031933345C8E75186f90d01222 | — |
-| stkHomestead | NOT YET DEPLOYED — deploy via TokenDeployer | — | — |
+| stkHomestead | 0x247178A36db9817d3FDb37eb7D7F54C7144e5432 ✓ deployed 2026-05-19 | — | — | name: "Homestead Stake", symbol: "stkHOME" |
 
 ---
 
@@ -174,12 +174,15 @@ ERC20 token template. Every fungible token in the ecosystem is a deployed instan
 
 ---
 
-## nftTemplate.sol (`contracts/marketplace/`) — NEEDS burnToken ADDED
+## nftTemplate.sol (`contracts/marketplace/`) — burnToken deployed ✓
 
-**burnToken(address from, uint256 tokenId) external onlyMinter** — not yet written. Required by Treasury's `returnNFTs` to burn NFTs directly from producer's wallet. Treasury must have minter role on nftTemplate.
+**Post-deploy config required for every new NFT collection:**
+- `setRedemptionOperator(marketplaceProxy, true)` — grants Marketplace permission to call `redeem()` on behalf of token holders. Without this, every redemption through Marketplace reverts. One call per collection at deploy time.
+- `setMinter(treasuryProxy, true)` — required if Treasury needs to burn NFTs via `returnNFTs`.
 
-**Existing key functions:**
+**Key functions:**
 - `mintBatch(address, string[] cids)` → startTokenId
+- `burnToken(address from, uint256 tokenId)` — onlyMinter; used by Treasury in returnNFTs
 - `setTokenCID(uint256 tokenId, string newCID)` — onlyOwner
 - `redeem(uint256 tokenId)`, `markRedeemed(uint256 tokenId)`
 - `setRedemptionOperator(address, bool)` — onlyOwner
@@ -213,13 +216,21 @@ No changes to these since last session. See previous notes.
 
 ---
 
-## Pending deploys (in order)
+## Completed deploys (2026-05-19)
 
-1. **masterTemplate new impl** — adds mintExact, burnFromMinter → upgradeToAndCall on BEER proxy
-2. **Treasury new impl** — full redesign above → upgradeToAndCall on Treasury proxy (data: `0x`)
-3. **nftTemplate new impl** — adds burnToken → upgradeToAndCall on BEER NFT proxy
-4. **stkHomestead** — deploy via TokenDeployer as new masterTemplate instance
-5. **Treasury post-deploy config** (setStkHomestead, setCollateralRatioBps, setWeth, setTrustedCallers)
-6. **stkHomestead: setMinter(treasuryProxy, true)**
-7. DEXPair, Marketplace, Router, Factory upgrades (unchanged design)
-8. HomesteadRelay (Phase 3)
+1. ~~masterTemplate new impl~~ ✓ — impl 0x9D6C344d3fF927Df604660d48C9F28c5d7f98C77, upgraded BEER proxy
+2. ~~Treasury new impl~~ ✓ — impl 0x97C5DD6315372dba2B0c6E236D43A087885eC0e7, upgraded proxy
+3. ~~nftTemplate new impl~~ ✓ — impl 0x637f1f6FD0fF64dF0C920C43B4945779EA706fa2, upgraded BEER NFT proxy
+4. ~~stkHomestead~~ ✓ — proxy 0x247178A36db9817d3FDb37eb7D7F54C7144e5432, name "Homestead Stake", symbol "stkHOME"
+5. ~~Treasury post-deploy config~~ ✓ — setStkHomestead, setCollateralRatioBps(11000), setWeth, setTrustedCallers
+6. ~~stkHomestead: setMinter(treasuryProxy, true)~~ ✓
+7. ~~Marketplace new impl~~ ✓ — impl 0x8c62c79958c56b8bdd99Aa97aD23E15e40C7A3cE, upgraded proxy
+8. ~~setRedemptionOperator(marketplaceProxy, true)~~ ✓ on BEER NFT
+
+## Pending deploys
+
+1. **postStake() revert investigation** — MetaMask shows $4 gas (vs $0.01 for other calls), indicating failed simulation. isMinter=true, stkHomestead set, paused=false — all state correct. Needs Remix direct call to get actual revert reason.
+2. **setTierThreshold(1/2/3, amount)** on Treasury — thresholds not yet set, all wallets return tier 0
+3. **DEXPair upgrade** — via Factory.upgradePairs(newImpl), no design changes
+4. **Router fresh deploy** (immutable) — Constructor (FACTORY_PROXY, WETH, TREASURY_PROXY)
+5. **HomesteadRelay deploy + config** — contract complete, chat UI is a shell (TODO). Deploy order: proxy, initialize(treasury, beer, 1e18), setTrustedRelay on Treasury, setDexPair, setMarketplace, setQuantumFreeRecipient(supportWallet, true), VITE_RELAY in .env

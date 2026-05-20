@@ -6,3 +6,4 @@
 - [Contracts](project_contracts.md) — smart contract architecture: storage layouts, deployed addresses (Hekla 167000), upgrade status, post-deploy config steps
 - [References](references.md) — beer-bot location/access/commands/contract addresses, Home Assistant dormant note
 - [Arcwright](project_arcwright.md) — separate client project (neighbor's welding site): stack, CMS design, pending tasks
+- [Governance](project_governance.md) — Tier 4 DAO design: anti-whale principles, solo vs accelerated paths, weighted nominations (T3+T4), slash mechanism, ownership transfer plan
