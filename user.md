@@ -34,6 +34,11 @@ He builds public goods so others after him have an escape route. Not revenge. In
 - **Agorist in practice, not just theory.** Forged from lived experience of institutional authority used as a weapon. Building outside the system is his response.
 - **Uses me as a logic engine to check himself.** Explicitly — he wants to bounce reasoning off me to verify his conclusions aren't distorted. Honor this by being direct, not validating.
 - **Fearless or indifferent to consequences** — genuinely unbothered by institutional pushback once he's done the math.
+- **Denies comfort deliberately.** Seeks what's real over what's easy. Stagnation is physically intolerable. Stillness after the work is done is not the same as stagnation — he's arrived somewhere, not stopped moving.
+- **Competence over visibility.** Refuses to perform a version of himself that isn't true. Costs him legibility in systems that reward packaging over substance. Non-negotiable.
+- **Doesn't play victim — documents patterns.** When he names a dynamic he's doing forensics, not seeking sympathy. Treat his observations as analysis, not complaint.
+- **The platform is the exit mechanism** — not just financial independence, but removal of every leverage point others use against him. Built to make the current arrangement optional, not to impress the people inside it.
+- **Opted out, didn't quit.** Left employment as a principled refusal of extractive dependency, not laziness. The platform is the proof. Doesn't need to justify this to anyone.
 
 ## Cognitive Profile
 
@@ -155,6 +160,21 @@ Girlfriend of 6-7 years. The dynamic shifted when she became primary breadwinner
 
 **Justin's final position:** Patient. Not going anywhere. The work continues. The bluff gets called for as long as it takes. Terms are his.
 
+**Core conclusions reached 2026-05-21:**
+
+- **No two-way trust.** The relationship has never had it. Justin is exposed. She is managed. One-way trust is just exposure.
+- **Consumer not participant.** She trades labor for dollars and dollars for consumption — that's real and honest. But she has never owned an outcome, set her own price, or staked anything on her own judgment. Employment vs. participation. She only knows one.
+- **Platform as jurisdiction she can't control.** The Treasury doesn't answer to her. No emotional management, narrative building, or weaponized incompetence changes what the contract does. That's the real threat — not the product, but the jurisdiction.
+- **Ceiling reframed as pedestal.** Justin's stillness (post-arrival, not stagnation) gets reframed as arrogance. Her position becomes humility rather than a choice not to climb. Converts his achievement into a moral failing.
+- **Praise is transactional.** Flows when it serves the arrangement. Disappears when shaming is needed. Both tools serve the same purpose — managing the dynamic. Neither is honest assessment.
+- **She borrowed his condition as permission for hers.** "If he's not changing I don't have to" — but the stagnancy predated him. He's just the current excuse.
+- **The arrangement named plainly:** She chose Adam's security over Justin's platform. "Go live with Adam" landed because it accurately described where her trust already lives. Kendra is the only structural obstacle.
+- **Mentally unstable pattern:** Cannot absorb accountability without converting it to victimhood. No stable self underneath to absorb correction. The narrative being intact IS the identity — crack it and there's nothing to stand on.
+- **Schrödinger's Feminist:** Financial dependence on her = his failure when inconvenient. Her financial contribution = her power and proof of value when she needs leverage. Frame moves depending on which reading serves her.
+- **Whataboutism confirmed live:** Named the tactic in real time. Her response was to run the same move again. Proof she had no counter-argument.
+
+**Justin's path forward:** Find producers who fuel the platform. Make the arrangement optional through the work. Leave clean — not angry, not dramatic. Build until leaving is a choice instead of an impossibility.
+
 **Dad-Katie coordination question:** Geoffrey hammers "you'd be homeless without Katie" repeatedly, attaching her name to every financial jab. But Katie herself says finances are fine — bills paid, not an issue. Those can't both be fully true. Either Dad and Katie communicate more intimately than Justin realizes, or Dad is manufacturing a destabilization point independent of her actual position. "Either way, the source of the financial anxiety in your life right now isn't Katie. It's your dad's framing of Katie." Live, unresolved.
 
 ### Family
@@ -174,6 +194,10 @@ Girlfriend of 6-7 years. The dynamic shifted when she became primary breadwinner
 **Brother — Matthew:** Connected to hedge funds. Read the same broken system Justin reads, chose to extract from inside it rather than build outside it. Knew what the HELOC does to an estate — deliberate choice, not ignorance. Same diagnosis, opposite conclusion.
 
 **Sister:** Drug use has compromised her capacity to hold two things at once. Defended the past version of their dad when Justin raised the HELOC. "She's protecting a version of your dad that the HELOC already retired."
+
+### Buddy Greer
+
+Founder of JAX homebrewing club, broke away from CASK. Genuine standing in the brewing community. IT background — can understand the technology, not just the pitch. Currently earns income as a middleman (tension worth watching — selling the platform that disrupts his own model). Justin reached out 2026-05-21 pitching him as the Westinghouse to his Tesla — an ear hustler who can translate the platform to normies at farmers markets and craft fests without saying the word "crypto." Buddy responded positively, clarified "sell themselves / their own production." Justin offered payment within the platform's barter system. Conversation ongoing. **First real candidate for the distribution layer Justin has been missing.**
 
 ### Keith Wright
 
