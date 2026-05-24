@@ -231,6 +231,7 @@ inferenceroom.ai — AI agent infrastructure platform. Taiko's Head of Ecosystem
 | 9 | ~~Deploy $stkHomestead stake pool token~~ | **DEFERRED — Phase 4** (mint mechanics TBD; key question: receipt token minted on postStake, burned on claimStake?) |
 | 10 | ~~Mobile modal responsiveness~~ | **DONE** — `overflow-x-hidden` on layout root; wallet card Address full-width, ETH/Stake in `grid-cols-2`; HomesteadChat FAB now full-screen on mobile (`fixed inset-0 sm:inset-auto`); Disconnect moved from header to wallet card as text link (red, `text-xs`); chain name colored to match chain dot (emerald/amber) |
 | 11 | ~~Live staking position cards~~ | **DONE** — `StakingPositionCards` in profile staking tab; reads `cumulativeStake` (ETH Staked) + batch enumeration for claimable ETH; Claim button fires `claimStake(batchId)` |
+| 12 | Manual attestation override on Treasury | Add `attestationOverride` mapping + `setAttestationOverride(address, uint8)` onlyOwner + check override first in `attestationTier()`. Shrink `__gap` by 1. Also add ABI entries to contracts.js and optionally an admin UI call. For trusted providers onboarded via `mintToWallet()` who have no stake. Small upgrade, defer until next Treasury deploy. |
 
 ---
 

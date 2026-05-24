@@ -24,7 +24,7 @@ All contracts live at `~/github/homestead/contracts/`. All are UUPS upgradeable 
 | Router (immutable) | — | 0x07460A6c6b036019e2ff5Ed8F7462c2Aa0f8BC07 | — |
 | WETH | — | 0xA51894664A773981C6C112C43ce576f315d5b1B6 | — |
 | BEER/WETH pair | — | 0x7Bbdb6214b0592031933345C8E75186f90d01222 | — |
-| stkHomestead | 0x247178A36db9817d3FDb37eb7D7F54C7144e5432 ✓ deployed 2026-05-19 | — | — | name: "Homestead Stake", symbol: "stkHOME" |
+| stkHomestead | 0x247178A36db9817d3FDb37eb7D7F54C7144e5432 ✓ deployed 2026-05-19 | — | — | name: "Homestead Stake", symbol: "stkHomestead" |
 
 ---
 
