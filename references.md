@@ -1,11 +1,15 @@
 ---
 name: references
 description: "External system pointers — beer-bot, Pi access, Discord, contract addresses"
-metadata:
+metadata: 
+  node_type: memory
   type: reference
+  originSessionId: 523c0fda-fe57-4f72-a00b-62954e51ac16
 ---
 
-## Beer-Bot (Discord)
+## Beer-Bot (Discord) — DORMANT
+
+**Status as of 2026-05-24:** JAX Discord server is dead — the beer group has disbanded. Bot is likely still running on the Pi but has no active audience. Pi itself is being phased out in favor of the laptop. Do not prioritize any work here unless user explicitly asks.
 
 - **Host:** Raspberry Pi at `192.168.12.3` — `ssh 192.168.12.3` (key: `~/.ssh/internal`)
 - **Repo on Pi:** `~/github/jax-ale-exchange/discord/beer-bot/`

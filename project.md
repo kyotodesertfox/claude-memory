@@ -216,6 +216,18 @@ inferenceroom.ai — AI agent infrastructure platform. Taiko's Head of Ecosystem
 
 ---
 
+## Branch Status (2026-05-24)
+
+- `main` — current production branch. Contains admin console, Homestead back-links in beer/egg/spa navbars, all prior features.
+- `feature/home-tabbed-card` — **NOT merged to main**. Contains tabbed home page + TreasuryHealth component (publicly visible on-chain data panel). User deliberately held back — not ready to go live yet.
+- Admin console was cherry-picked from `feature/home-tabbed-card` onto a clean `feature/admin-console` branch and merged to main separately (2026-05-24).
+
+## Strategic Pause
+
+Development intentionally paused as of 2026-05-24. No new features until real user activity warrants them. Upgrades (Router UUPS, DEXPair claimRewards, Treasury lpShareBps) are designed and documented in `project_contracts.md` but deferred until usage hits a wall that requires them.
+
+---
+
 ## Pending Tasks
 
 | # | Task | Notes |
@@ -283,7 +295,7 @@ Direct `mintToWallet`/`mintToPool` is an **admin-only** feature (gated by `isMin
 
 **GitHub (kyotodesertfox/):** `homestead` (active, private), `jax-discord-beer-box` (active), `arcwright` (active), `jax-brewers` (active), `jax-points-tracker` (fork). Deleted: `farm-solidity`, `farm-eggs`, `jax-website`, `jax-discord-bot`, `jax-discord-ai-bot`.
 
-**Pi (192.168.12.3):** `~/github/jax-ale-exchange/discord/beer-bot/` (active service). Pi copy of arcwright deleted 2026-05-13.
+**Pi (192.168.12.3):** `~/github/jax-ale-exchange/discord/beer-bot/` (was active service — JAX Discord server is now dead, group disbanded 2026-05-24). Pi being phased out — primary development has moved to laptop. Pi no longer the primary deployment target.
 
 ---
 

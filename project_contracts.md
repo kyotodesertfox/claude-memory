@@ -231,6 +231,28 @@ No changes to these since last session. See previous notes.
 
 1. **postStake() revert investigation** — MetaMask shows $4 gas (vs $0.01 for other calls), indicating failed simulation. isMinter=true, stkHomestead set, paused=false — all state correct. Needs Remix direct call to get actual revert reason.
 2. **setTierThreshold(1/2/3, amount)** on Treasury — thresholds not yet set, all wallets return tier 0
-3. **DEXPair upgrade** — via Factory.upgradePairs(newImpl), no design changes
-4. **Router fresh deploy** (immutable) — Constructor (FACTORY_PROXY, WETH, TREASURY_PROXY)
-5. **HomesteadRelay deploy + config** — contract complete, chat UI is a shell (TODO). Deploy order: proxy, initialize(treasury, beer, 1e18), setTrustedRelay on Treasury, setDexPair, setMarketplace, setQuantumFreeRecipient(supportWallet, true), VITE_RELAY in .env
+3. **HomesteadRelay deploy + config** — contract complete, chat UI is a shell (TODO). Deploy order: proxy, initialize(treasury, beer, 1e18), setTrustedRelay on Treasury, setDexPair, setMarketplace, setQuantumFreeRecipient(supportWallet, true), VITE_RELAY in .env
+
+## Coordinated upgrade — Router + Treasury + DEXPair (do together)
+
+These three must be deployed as one release. Do NOT deploy Router before DEXPair upgrade.
+
+### Treasury upgrade
+- Replace `lpRewardFeeBps` (absolute bps of trade value) with `lpShareBps` (ratio of collected fee, 0–10000)
+- `lpShareBps = 4000` means 40% of any collected fee goes to LPs, 60% to Treasury
+- Applies uniformly to ALL fees (entry and exit) — single control point
+- After upgrade: call `setLpShareBps(4000)` (40/60 split)
+- Storage: repurpose slot 15 (`lpRewardFeeBps` → `lpShareBps`), same slot, value changes from 200 → 4000
+
+### DEXPair upgrade
+- Add `claimRewards(address lp)` function — allows LPs to claim accumulated ETH rewards sent by Router
+- Deploy new impl, then call `Factory.upgradePairs(newImpl)`
+
+### Router — convert to UUPS + fee logic
+- Convert from immutable to UUPS (inherit UUPSUpgradeable, replace constructor with initialize())
+- Implement entry fee: deduct `dexEntryFeeBps` from `msg.value` before swap
+- Unified `_distributeFee(uint256 fee, address pair)` helper used for both entry and exit:
+  - `lpShare = fee * ITreasury.lpShareBps() / 10000` → sent to pair
+  - `treasuryShare = fee - lpShare` → sent to Treasury
+- Currently deployed Router (verified on Taikoscan): entry fee NOT collected, exit fee goes 100% to Treasury (no LP split), no claimRewards call on removeLiquidity
+- VITE_ROUTER must be updated in .env after Router upgrade
