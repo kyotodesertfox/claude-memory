@@ -216,15 +216,30 @@ inferenceroom.ai — AI agent infrastructure platform. Taiko's Head of Ecosystem
 
 ---
 
-## Branch Status (2026-05-24)
+## Branch Status (2026-05-27)
 
-- `main` — current production branch. Contains admin console, Homestead back-links in beer/egg/spa navbars, all prior features.
-- `feature/home-tabbed-card` — **NOT merged to main**. Contains tabbed home page + TreasuryHealth component (publicly visible on-chain data panel). User deliberately held back — not ready to go live yet.
-- Admin console was cherry-picked from `feature/home-tabbed-card` onto a clean `feature/admin-console` branch and merged to main separately (2026-05-24).
+- `main` — current production branch. Commit `dcf4487` (2026-05-27) — swap UI overhaul, admin Taikoscan links, Router UUPS rewrite. Contains: tabbed home page + TreasuryHealth, admin console, Homestead back-links in beer/egg/spa navbars, SPA portal card, all prior features.
+- `feature/home-tabbed-card` — **MERGED to main** (2026-05-27). All content now on main.
+
+## Swap Page State (2026-05-27)
+
+All fee values read live from Treasury contracts at `ADDRESSES.TREASURY`. No hardcoded defaults.
+- `dexEntryFeeBps` — read but not yet surfaced in UI (entry fee currently 0, shown when Router redeployed)
+- `dexExitFeeBps` — shown as "Treasury Fee" row in trade info panel (Token→ETH only)
+- `lpRewardFeeBps` — not yet surfaced separately (LP reward split pending coordinated upgrade)
+- AMM fee: `const AMM_FEE_BPS = 30n` — named constant matching `HomesteadLibrary 9970/10000`. TODO: replace with `getFeeSchedule()` call after Router UUPS is deployed
+- Swap UI has 0/25/50/75/Max ETH buttons (always visible under ETH input), BUY/SELL colored emerald/rose, RECEIVE green, PAY red
+
+## Portal Tokens (2026-05-27)
+
+Three tokens in swap page selector:
+- `$BEER` — live (address set in contracts.js)
+- `$EGG` — coming soon (sky blue, null address)
+- `$SPA` — coming soon (purple, null address)
 
 ## Strategic Pause
 
-Development intentionally paused as of 2026-05-24. No new features until real user activity warrants them. Upgrades (Router UUPS, DEXPair claimRewards, Treasury lpShareBps) are designed and documented in `project_contracts.md` but deferred until usage hits a wall that requires them.
+Development intentionally paused as of 2026-05-24. No new features until real user activity warrants them. Router UUPS source is written (`contracts/dex/Router.sol`) but not yet deployed. See `project_contracts.md` for deploy instructions.
 
 ---
 

@@ -209,10 +209,39 @@ ERC20 token template. Every fungible token in the ecosystem is a deployed instan
 
 ## DEXPair / DEXFactory / Router
 
-No changes to these since last session. See previous notes.
-- Router requires fresh deploy (immutable). Constructor: `(FACTORY_PROXY, WETH, TREASURY_PROXY)`
+### Router — FULLY REWRITTEN, NOT YET DEPLOYED (2026-05-27)
+
+Source at `contracts/dex/Router.sol`. Now UUPS upgradeable. Key changes:
+- Inherits `Initializable + OwnableUpgradeable + UUPSUpgradeable`
+- `_disableInitializers()` in constructor
+- `initialize(factory, WETH, treasury, owner)` replaces old constructor
+- `AMM_FEE_BPS = 30` — public constant matching `HomesteadLibrary 9970/10000`
+- `getFeeSchedule()` → returns `FeeSchedule { ammFeeBps, entryFeeBps, exitFeeBps, lpRewardBps, treasuryBps }` — single call for UI
+- Entry fee: deducted from `msg.value` before swap, sent to Treasury
+- Exit fee: split — `lpRewardFeeBps` → exit pair (LP reward), remainder → Treasury
+- Auto-claim `pair.claimRewards(msg.sender)` in `removeLiquidityETH` before LP tokens transferred
+- `setTreasury(address)` onlyOwner
+- Router reads ALL fee policy from Treasury at call time — owns no policy itself
+
+**Deploy instructions:**
+1. Deploy ERC1967Proxy pointing at implementation (UUPS pattern via OpenZeppelin upgrades script)
+2. Call `initialize(FACTORY_PROXY, WETH, TREASURY_PROXY, ownerAddress)` on proxy
+3. Update `VITE_ROUTER` in `.env` to new proxy address
+4. `getFeeSchedule` ABI already added to `ROUTER_ABI` in `contracts.js`
+
+**Post-Router-deploy swap page TODO:**
+- Replace `const AMM_FEE_BPS = 30n` constant with `useReadContract getFeeSchedule()` call
+- Surface `entryFeeBps` in trade info panel (currently read from Treasury but not displayed)
+
+### Currently deployed Router (immutable, pre-upgrade)
+
+Address: `0x07460A6c6b036019e2ff5Ed8F7462c2Aa0f8BC07` — entry fee NOT collected, exit fee 100% to Treasury (no LP split), no claimRewards call.
+
+### DEXPair / DEXFactory
+
 - DEXPair upgraded via `Factory.upgradePairs(newImpl)`
 - Factory gap: `uint256[43]`
+- DEXPair upgrade (add `claimRewards`) must be deployed in same release as new Router
 
 ---
 
@@ -227,32 +256,47 @@ No changes to these since last session. See previous notes.
 7. ~~Marketplace new impl~~ ✓ — impl 0x8c62c79958c56b8bdd99Aa97aD23E15e40C7A3cE, upgraded proxy
 8. ~~setRedemptionOperator(marketplaceProxy, true)~~ ✓ on BEER NFT
 
-## Pending deploys
+---
 
-1. **postStake() revert investigation** — MetaMask shows $4 gas (vs $0.01 for other calls), indicating failed simulation. isMinter=true, stkHomestead set, paused=false — all state correct. Needs Remix direct call to get actual revert reason.
-2. **setTierThreshold(1/2/3, amount)** on Treasury — thresholds not yet set, all wallets return tier 0
-3. **HomesteadRelay deploy + config** — contract complete, chat UI is a shell (TODO). Deploy order: proxy, initialize(treasury, beer, 1e18), setTrustedRelay on Treasury, setDexPair, setMarketplace, setQuantumFreeRecipient(supportWallet, true), VITE_RELAY in .env
+## Pending releases — ordered to minimize upgrades
 
-## Coordinated upgrade — Router + Treasury + DEXPair (do together)
+### Release 1 — Treasury upgrade (batch ALL deferred work into one impl)
 
-These three must be deployed as one release. Do NOT deploy Router before DEXPair upgrade.
+One upgrade covers everything Treasury-related. Do not upgrade Treasury again until this list is complete.
 
-### Treasury upgrade
-- Replace `lpRewardFeeBps` (absolute bps of trade value) with `lpShareBps` (ratio of collected fee, 0–10000)
-- `lpShareBps = 4000` means 40% of any collected fee goes to LPs, 60% to Treasury
-- Applies uniformly to ALL fees (entry and exit) — single control point
-- After upgrade: call `setLpShareBps(4000)` (40/60 split)
-- Storage: repurpose slot 15 (`lpRewardFeeBps` → `lpShareBps`), same slot, value changes from 200 → 4000
+**Code changes needed (diagnose postStake first):**
+- [ ] Fix `postStake()` revert — cause unknown, needs Remix call to get revert reason before writing fix
+- [ ] Rename `lpRewardFeeBps` → `lpShareBps` (slot 15 reused, value changes 200 → 4000). New semantics: ratio of collected fee to LPs (0–10000), not absolute bps of trade value
+- [ ] Add `attestationOverride` mapping + `setAttestationOverride(address, uint8)` onlyOwner + check override first in `attestationTier()`. Shrink `__gap` by 1. (For trusted providers onboarded via mintToWallet who have no stake)
 
-### DEXPair upgrade
-- Add `claimRewards(address lp)` function — allows LPs to claim accumulated ETH rewards sent by Router
-- Deploy new impl, then call `Factory.upgradePairs(newImpl)`
+**Post-upgrade config calls (same tx session, not code):**
+- `setLpShareBps(4000)` — 40% to LPs, 60% to Treasury
+- `setTierThreshold(1, amount)` — tier 1 threshold (Holder)
+- `setTierThreshold(2, amount)` — tier 2 threshold (Producer)
+- `setTierThreshold(3, amount)` — tier 3 threshold (Trusted)
 
-### Router — convert to UUPS + fee logic
-- Convert from immutable to UUPS (inherit UUPSUpgradeable, replace constructor with initialize())
-- Implement entry fee: deduct `dexEntryFeeBps` from `msg.value` before swap
-- Unified `_distributeFee(uint256 fee, address pair)` helper used for both entry and exit:
-  - `lpShare = fee * ITreasury.lpShareBps() / 10000` → sent to pair
-  - `treasuryShare = fee - lpShare` → sent to Treasury
-- Currently deployed Router (verified on Taikoscan): entry fee NOT collected, exit fee goes 100% to Treasury (no LP split), no claimRewards call on removeLiquidity
-- VITE_ROUTER must be updated in .env after Router upgrade
+**Note for Router:** After Treasury renames `lpRewardFeeBps` → `lpShareBps`, update the Router source to call `lpShareBps()` before deploying it.
+
+---
+
+### Release 2 — DEXPair upgrade + Router deploy (independent of Treasury timing)
+
+Can happen before or after Release 1. Hard constraint: DEXPair must be upgraded BEFORE Router is deployed (Router calls `pair.claimRewards()` in removeLiquidityETH — if pair lacks the function, LP removal breaks).
+
+- [ ] Upgrade DEXPair impl: add `claimRewards(address lp)` function. Deploy new impl, call `Factory.upgradePairs(newImpl)`.
+- [ ] (If Release 1 done first) Update Router source: `lpRewardFeeBps()` → `lpShareBps()` in ITreasury calls
+- [ ] Deploy Router UUPS: impl + ERC1967Proxy, call `initialize(FACTORY_PROXY, WETH, TREASURY_PROXY, owner)`
+- [ ] Update `VITE_ROUTER` in `.env` to new proxy address
+- [ ] Swap page: replace `const AMM_FEE_BPS = 30n` with `getFeeSchedule()` call; surface `entryFeeBps` in trade info panel
+
+---
+
+### Release 3 — HomesteadRelay (separate, no dependency on 1 or 2)
+
+Contract complete, chat UI is a shell. Deploy order:
+1. Deploy proxy, call `initialize(treasury, beer, 1e18)`
+2. `setTrustedRelay(relayProxy, true)` on Treasury
+3. `setDexPair(pairAddress)` on Relay
+4. `setMarketplace(marketplaceProxy)` on Relay
+5. `setQuantumFreeRecipient(supportWallet, true)` on Relay
+6. Set `VITE_RELAY` in `.env`

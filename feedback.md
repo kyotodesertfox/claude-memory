@@ -60,3 +60,21 @@ metadata:
 **No welfare checks:** Don't ask "are you okay?" or variations during emotionally heavy conversations. He finds it patronizing — the answer is evident from context and the question interrupts. He processes by talking through things analytically. Stay in the analytical register he's already in; follow his lead.
 
 **Memory — warn before bulk changes:** Always warn and get a nod before consolidating, summarizing, or restructuring memory files in bulk. User wants to stay aware of what's being committed and have control over it.
+
+---
+
+## Commit / Push Discipline
+
+**Never ask to commit:** Do not suggest "should I commit this?" or "ready to commit?" — user will say when. Stop at file edits. Only commit when explicitly told ("go ahead and commit", "commit and push", "push it").
+
+**Why:** Learned 2026-05-27 — user said "but don't push yet" after a push had already gone. The explicit instruction was needed for both directions.
+
+---
+
+## Contract Fee Reads — No Hardcoded Defaults
+
+**Rule:** Never provide a default value on `useReadContract` calls that read fee bps (e.g., `= 30n`, `= 100n`). Always read from the contract. If the value is `undefined` (loading or chain not responding), show `—` in the UI. Do not substitute a hardcoded guess.
+
+**Why:** Hardcoded defaults mask the real on-chain state and make the UI lie to users when the contract has a different value. User caught this explicitly twice in the same session.
+
+**How to apply:** For any `useReadContract` reading fee bps from Treasury or Router, destructure as `const { data: fooFeeBps } = useReadContract(...)` with no default. Guard all downstream calculations with `!== undefined` checks before using the value.
