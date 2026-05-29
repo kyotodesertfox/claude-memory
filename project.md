@@ -24,7 +24,7 @@ This DEX (originally $ART) is now a physical beer production marketplace. The fu
 
 **Deflationary:** $BEER supply shrinks with every successful delivery. ETH accumulates in floor (unclaimed). Real-world activity strengthens the token economy.
 
-**Key open decisions:** Flat 1 BEER per item vs. variable price per SKU; $BEER minting authority controls.
+**Key open decisions:** $BEER minting authority controls. Variable pricing is resolved — Marketplace `createListing` accepts any uint256 `price` (stored as `price * 1e18`), so 1/6/12 EGG tiers are a UI-only change.
 
 ---
 
@@ -216,10 +216,9 @@ inferenceroom.ai — AI agent infrastructure platform. Taiko's Head of Ecosystem
 
 ---
 
-## Branch Status (2026-05-27)
+## Branch Status (2026-05-28)
 
-- `main` — current production branch. Commit `dcf4487` (2026-05-27) — swap UI overhaul, admin Taikoscan links, Router UUPS rewrite. Contains: tabbed home page + TreasuryHealth, admin console, Homestead back-links in beer/egg/spa navbars, SPA portal card, all prior features.
-- `feature/home-tabbed-card` — **MERGED to main** (2026-05-27). All content now on main.
+- `main` — current production branch. Latest commit `cff3d55` (2026-05-28). Recent additions: EGG token/NFT/pair wired into contracts + env + admin + market + swap + home pages; CreateListingModal supports BEER|EGG collection picker with collection-specific metadata fields; tanned SVG egg placeholder cards on market + home pages; EGG swap fully live with correct `wethIsToken0` reserve ordering.
 
 ## Swap Page State (2026-05-27)
 
@@ -230,11 +229,11 @@ All fee values read live from Treasury contracts at `ADDRESSES.TREASURY`. No har
 - AMM fee: `const AMM_FEE_BPS = 30n` — named constant matching `HomesteadLibrary 9970/10000`. TODO: replace with `getFeeSchedule()` call after Router UUPS is deployed
 - Swap UI has 0/25/50/75/Max ETH buttons (always visible under ETH input), BUY/SELL colored emerald/rose, RECEIVE green, PAY red
 
-## Portal Tokens (2026-05-27)
+## Portal Tokens (2026-05-28)
 
 Three tokens in swap page selector:
 - `$BEER` — live (address set in contracts.js)
-- `$EGG` — coming soon (sky blue, null address)
+- `$EGG` — **live** (yellow dot, wired to EGG_TOKEN + EGG_WETH_PAIR; `wethIsToken0: true` because WETH address sorts below EGG address in that pair)
 - `$SPA` — coming soon (purple, null address)
 
 ## Strategic Pause
@@ -259,6 +258,7 @@ Development intentionally paused as of 2026-05-24. No new features until real us
 | 10 | ~~Mobile modal responsiveness~~ | **DONE** — `overflow-x-hidden` on layout root; wallet card Address full-width, ETH/Stake in `grid-cols-2`; HomesteadChat FAB now full-screen on mobile (`fixed inset-0 sm:inset-auto`); Disconnect moved from header to wallet card as text link (red, `text-xs`); chain name colored to match chain dot (emerald/amber) |
 | 11 | ~~Live staking position cards~~ | **DONE** — `StakingPositionCards` in profile staking tab; reads `cumulativeStake` (ETH Staked) + batch enumeration for claimable ETH; Claim button fires `claimStake(batchId)` |
 | 12 | Manual attestation override on Treasury | Add `attestationOverride` mapping + `setAttestationOverride(address, uint8)` onlyOwner + check override first in `attestationTier()`. Shrink `__gap` by 1. Also add ABI entries to contracts.js and optionally an admin UI call. For trusted providers onboarded via `mintToWallet()` who have no stake. Small upgrade, defer until next Treasury deploy. |
+| 13 | Deploy 3 EGG NFT tier contracts | Single Egg (1 EGG), Half Dozen (6 EGG), Dozen (12 EGG) — each a separate NFT contract deployed via nftDeployer with its own artwork and marketplace listing. Pricing is UI-only (pass 1/6/12 as price arg). CreateListingModal collection picker will need to support all three tiers. |
 
 ---
 

@@ -24,6 +24,9 @@ All contracts live at `~/github/homestead/contracts/`. All are UUPS upgradeable 
 | Router (immutable) | — | 0x07460A6c6b036019e2ff5Ed8F7462c2Aa0f8BC07 | — |
 | WETH | — | 0xA51894664A773981C6C112C43ce576f315d5b1B6 | — |
 | BEER/WETH pair | — | 0x7Bbdb6214b0592031933345C8E75186f90d01222 | — |
+| EGG token | 0xc20A6C27B12FC81C5FBF46b30AAb6CF912A3C03a | — | — |
+| EGG NFT ("Homestead Eggs", $EGGNFT) | 0xB90bC6186bA7d480584E06F92ecb15DAf653DE5C | 0x637f1f6FD0fF64dF0C920C43B4945779EA706fa2 | — | setMinter(Treasury ✓), setRedemptionOperator(Marketplace ✓) |
+| EGG/WETH pair | — | 0xF6ed80b5e3b66279822494eC3eeC6AEe00932662 | — | WETH is token0 (WETH addr < EGG addr) |
 | stkHomestead | 0x247178A36db9817d3FDb37eb7D7F54C7144e5432 ✓ deployed 2026-05-19 | — | — | name: "Homestead Stake", symbol: "stkHomestead" |
 
 ---

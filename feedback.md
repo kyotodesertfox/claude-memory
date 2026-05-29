@@ -71,6 +71,16 @@ metadata:
 
 ---
 
+## Contract Versioning — Enforce on Every Upgrade
+
+**Rule:** Every time a contract is modified and committed, bump its `VERSION` constant (`uint256 public constant VERSION = N;`) in the Solidity file AND update the matching entry in `EXPECTED_VERSIONS` in `apps/exchange/src/contracts.js`. Never commit a contract change without doing both.
+
+**Why:** User wants a quick way to tell if a deployed contract is behind what's in the repo. The admin panel reads `VERSION` on-chain and compares against the hardcoded `EXPECTED_VERSIONS` map.
+
+**How to apply:** At the start of any contract edit session, check the current `VERSION` constant. Before committing, confirm the bump happened in both the `.sol` file and `contracts.js`. Flag if either is missing.
+
+---
+
 ## Contract Fee Reads — No Hardcoded Defaults
 
 **Rule:** Never provide a default value on `useReadContract` calls that read fee bps (e.g., `= 30n`, `= 100n`). Always read from the contract. If the value is `undefined` (loading or chain not responding), show `—` in the UI. Do not substitute a hardcoded guess.
