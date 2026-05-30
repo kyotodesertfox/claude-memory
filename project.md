@@ -216,6 +216,33 @@ inferenceroom.ai — AI agent infrastructure platform. Taiko's Head of Ecosystem
 
 ---
 
+## Homestead Companion (Android Wallet App)
+
+**Location:** `apps/HomesteadCompanion/` inside the homestead repo
+
+**Purpose:** Purpose-built Android wallet for the Homestead ecosystem. Not a general-purpose wallet. Distributed as a sideloaded APK from the website. Built with React Native (same JS/JSX as exchange frontend, different native UI layer).
+
+**App name:** Homestead Companion
+
+**Core lib layer built (`src/lib/`):**
+- `network.js` - Taiko mainnet RPC provider (chainId 167000)
+- `storage.js` - encrypted private key storage via react-native-encrypted-storage (Android Keystore backed)
+- `wallet.js` - wallet creation (`createWallet` returns mnemonic ONCE, never stored), import from seed phrase, `getWallet()` for signed transactions
+- `contracts.js` - ABIs and ADDRESSES (addresses need filling from exchange .env.local); `readContract` / `writeContract` helpers
+
+**Screen map (approved):** Onboarding, Home (balances), Send/Receive, Market, Redeem (QR scan), Settings
+
+**Key design decisions:**
+- Mnemonic shown once on creation, never saved by the app - user's responsibility
+- Private key stored encrypted on device (Android Keystore)
+- Taiko only - no other chains
+- May connect to HomesteadRelay for redemption attestation - keep relay integration in mind when building QR/redeem flow
+- Auto-update: app checks version endpoint, downloads new APK, prompts install
+
+**Build environment:** JDK 17, Android SDK 34, adb installed. ANDROID_HOME set in ~/.bashrc.
+
+---
+
 ## Branch Status (2026-05-28)
 
 - `main` — current production branch. Latest commit `cff3d55` (2026-05-28). Recent additions: EGG token/NFT/pair wired into contracts + env + admin + market + swap + home pages; CreateListingModal supports BEER|EGG collection picker with collection-specific metadata fields; tanned SVG egg placeholder cards on market + home pages; EGG swap fully live with correct `wethIsToken0` reserve ordering.

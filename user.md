@@ -52,7 +52,8 @@ Exceptionally high systems-thinking capacity across simultaneous domains. Not a 
 
 - Solid across the stack: Solidity, React/wagmi, Python, Discord bots, systemd, Raspberry Pi, SSH, IPFS/Pinata, Taiko L2
 - Comfortable with blockchain primitives: UUPS proxies, storage gaps, ERC721, AMM math
-- Not a beginner — talk to him like a peer, not a student
+- Not a beginner - talk to him like a peer, not a student
+- **Reads every line of code as a security practice** - not as distrust of me, but as personal responsibility. This is especially true for anything touching holder funds, key management, or private keys. His review is part of the process, not a correction of a failure. Present code expecting it will be read - not defensively, not with justification. He catches things. That's the point.
 
 ## How He Likes to Work
 

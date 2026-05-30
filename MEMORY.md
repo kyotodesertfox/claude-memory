@@ -9,3 +9,4 @@
 - [References](references.md) — beer-bot location/access/commands/contract addresses, Home Assistant dormant note
 - [Arcwright](project_arcwright.md) — separate client project (neighbor's welding site): stack, CMS design, pending tasks
 - [Governance](project_governance.md) — Tier 4 DAO design: anti-whale principles, solo vs accelerated paths, weighted nominations (T3+T4), slash mechanism, ownership transfer plan
+- [Companion Messaging](project_companion_messaging.md) — core "why" for the companion app: direct farm sales, NFT as claim ticket, no middleman; this copy belongs in onboarding and Redeem screen

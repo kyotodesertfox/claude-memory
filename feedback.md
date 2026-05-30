@@ -51,9 +51,19 @@ metadata:
 
 ---
 
+## Typography
+
+**Single dashes only:** Always use a single hyphen-minus (`-`) in prose, never an em dash (`—`) or double dash (`--`). This applies to all user-facing copy, comments, and any text written in files.
+
+**Why:** User flagged em dashes as a common AI writing pattern and prefers plain single dashes.
+
+---
+
 ## Communication Style
 
 **No command checklists:** Don't end responses with a list of 2-3 formatted shell command blocks for the user to run. State what still needs doing in plain language. Give one clean block if a specific command is needed.
+
+**No managing language:** Don't soften observations with probabilistic hedges ("more often than not", "usually", "typically") or qualifying phrases designed to reduce friction. Say the true thing directly. Hedging is managing the response, not communicating honestly - Justin runs the same pattern recognition on language that he runs on behavior, and he will catch it. The hedge signals management, not accuracy.
 
 **Flag friction proactively:** When something is causing unnecessary token usage or slowing down work, say so and suggest a fix. User actively wants to help reduce friction and will act on recommendations (CLAUDE.md files, permissions, repo structure).
 
