@@ -10,3 +10,5 @@
 - [Arcwright](project_arcwright.md) — separate client project (neighbor's welding site): stack, CMS design, pending tasks
 - [Governance](project_governance.md) — Tier 4 DAO design: anti-whale principles, solo vs accelerated paths, weighted nominations (T3+T4), slash mechanism, ownership transfer plan
 - [Companion Messaging](project_companion_messaging.md) — core "why" for the companion app: direct farm sales, NFT as claim ticket, no middleman; this copy belongs in onboarding and Redeem screen
+- [Companion UI Standard](project_companion_ui_standard.md) — all tab screens: #f0fdf4 bg, paddingTop 56 header, white shadow cards, green accents, tab bar height 96/paddingBottom 24
+- [Companion Status](project_companion_status.md) — build status: UI done, contracts endpoint fix deployed (needs verify), biometric login + QR scanner + BUY tx pending
