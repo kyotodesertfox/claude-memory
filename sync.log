@@ -96,3 +96,12 @@ fatal: Could not read from remote repository.
 
 Please make sure you have the correct access rights
 and the repository exists.
+[main 2811fef] Daily sync 2026-05-31
+ 4 files changed, 105 insertions(+)
+ create mode 100644 project_companion_status.md
+ create mode 100644 project_companion_ui_standard.md
+git@github.com: Permission denied (publickey).
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
