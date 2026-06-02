@@ -46,6 +46,16 @@ metadata:
 
 ---
 
+## Private Personal Memory Repo
+
+- **Local path:** `/home/zenko/.claude/personal-context/`
+- **GitHub:** `git@github.com:kyotodesertfox/claude-memory-personal-context.git` (private)
+- **Purpose:** Personal/social context that should not live in the public `claude-memory` repo — Katie dynamic, family, social architecture, behavioral analysis documents
+- **Contents:** `user.md` (personal context), `katie_behavioral_analysis.txt`, `katie_actions_vs_words.txt`, `katie_analysis_document.md`
+- **Git workflow:** Edit or copy files to `/home/zenko/.claude/personal-context/`, commit, push. Identity already configured locally.
+
+---
+
 ## Home Assistant (Dormant)
 
 Previously ran for home automation — presence detection, lights, reminders. Katie specifically wants it running again. Not active, not committed. Revisit when the time is right; don't push it.
