@@ -22,7 +22,28 @@ This DEX (originally $ART) is now a physical beer production marketplace. The fu
 
 **Why burn = unlock:** Neither party can defect without losing something real. Mutual dependency enforces honesty.
 
-**Deflationary:** $BEER supply shrinks with every successful delivery. ETH accumulates in floor (unclaimed). Real-world activity strengthens the token economy.
+**Tokenomics model (locked 2026-06-02):**
+- Token supply only grows when a producer actively mints against their stake. Minting is capped by collateral ratio — supply can never run ahead of the ETH backing it.
+- Per completed lot: producer mints N tokens, Treasury burns N tokens via `onRedeem()` across all redemptions. Net supply change: zero.
+- Buyer tokens are medium of exchange only — come from LP, pass through escrow, swap back to LP at redemption. Net supply effect: zero.
+- Token value appreciates via floor rising, not supply reduction. Each transaction captures fees that add ETH to LP and Treasury. Same supply, more ETH underneath it.
+- Idle supply self-corrects: abandoned lots lock producer's staked ETH as a carrying cost. `burnLotTokens` is the cleanup path.
+- Token is NOT speculative — it is production-backed. 1 $EGG = 1 carton. Value comes from real delivery, not market sentiment.
+- Tokenomics are not featured on the front page — discoverable for those who want the mechanics, not the headline. Wrong audience if leading with AMM math.
+
+**ETH flow (corrected design 2026-06-02):**
+- Buyer swaps ETH → tokens via LP. ETH enters LP.
+- Buyer calls `buy()` — tokens escrowed in Marketplace. NFT transfers to buyer.
+- Physical delivery → buyer calls `redeem()`:
+  - Marketplace approves Router, calls `swapExactTokensForETH` with escrowed buyer tokens
+  - Tokens re-enter LP, WETH exits, Router unwraps
+  - Router collects exit fee (2% LP rewards + 3% Treasury)
+  - Net ETH goes directly to producer's `proceeds` address
+  - Treasury `onRedeem(batchId)` burns producer's tokenPerNFT, marks pro-rata collateral claimable
+  - Relay best-effort attestation
+- Producer's staked ETH in Treasury is NEVER the payment source — it is reputation collateral only, claimable via `claimStake()` after redemptions
+- LP floor always ratchets up: AMM 0.3% fee captured on both swap legs + 2% LP reward ETH added to pair on exit
+- ETH leaving LP on redemption always less than ETH that entered on buyer's purchase (delta = fees captured)
 
 **Key open decisions:** $BEER minting authority controls. Variable pricing is resolved — Marketplace `createListing` accepts any uint256 `price` (stored as `price * 1e18`), so 1/6/12 EGG tiers are a UI-only change.
 
