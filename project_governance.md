@@ -7,6 +7,27 @@ metadata:
   originSessionId: 4d10e6c7-3013-43a7-b1f4-1cad366cf7fd
 ---
 
+## $FARM dual role — governance weight + liquidity seed (2026-06-03)
+
+$FARM is governance weight primarily. Secondary role: liquidity bootstrapper for new product token pools.
+
+**Problem it solves:** Every new product token (TOMATO, PEPPER, etc.) needs its own liquidity pool. Spreading ETH across many shallow pools fragments liquidity, creates high price impact, and kills price discovery. Producers shouldn't need to bring their own deep liquidity to launch.
+
+**Mechanism:**
+- New product tokens pair against FARM instead of WETH directly
+- Treasury holds a $FARM reserve, deploys it to seed new pools when a producer hits a stake/tier threshold
+- Router auto-routes ETH → FARM → TOKEN when no direct ETH pair exists or depth is insufficient
+- Path calculated off-chain (frontend), passed to existing `swapExactTokensForETH` — no contract rewrite needed
+- Buyer sees a single transaction; multi-hop is invisible
+
+**Governance constraint:** $FARM committed as LP seed is locked. Earns fees but excluded from voting weight while deployed — prevents seeding pools purely to accumulate governance power without real commitment.
+
+**Self-funding:** As a product pool gains volume, it deepens organically from transaction fees. $FARM seed liquidity can eventually migrate to bootstrap the next new producer. Pools graduate to independence over time.
+
+**Why $FARM:** Emission already flows to producers (via postStake) and LP providers (via claimRewards). Those same people are the natural pool seeders. Governance weight earned through real participation — same token that seeds pools also votes on platform direction.
+
+---
+
 ## Core principle — NO capital gating
 
 Wealth alone must never grant governance power. History shows capital-gated governance gets captured by whales. Stake matters for Tier 2 (Producer) because skin-in-the-game is required to produce. Tier 4 governance is earned through time and participation — things that cannot be bought.
