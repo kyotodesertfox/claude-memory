@@ -22,28 +22,27 @@ This DEX (originally $ART) is now a physical beer production marketplace. The fu
 
 **Why burn = unlock:** Neither party can defect without losing something real. Mutual dependency enforces honesty.
 
-**Tokenomics model (locked 2026-06-02):**
+**Tokenomics model (updated 2026-06-04):**
 - Token supply only grows when a producer actively mints against their stake. Minting is capped by collateral ratio — supply can never run ahead of the ETH backing it.
-- Per completed lot: producer mints N tokens, Treasury burns N tokens via `onRedeem()` across all redemptions. Net supply change: zero.
-- Buyer tokens are medium of exchange only — come from LP, pass through escrow, swap back to LP at redemption. Net supply effect: zero.
-- Token value appreciates via floor rising, not supply reduction. Each transaction captures fees that add ETH to LP and Treasury. Same supply, more ETH underneath it.
+- Per redemption: buyer's escrowed tokens BURNED (deflationary, ~50% of tokens touched). Producer's tokenPerNFT (held by Treasury from mintLotNFTs) transferred to Marketplace → swapped into LP → ETH to producer. Net supply: decreasing — only the buyer's half burns; producer's half recycles into LP.
+- Token is deflationary at scale: every completed sale removes buyer's tokens permanently. LP absorbs producer's tokens but total circulating supply trends down with redemption volume.
+- Token value appreciates via floor rising AND supply reduction on each sale. Each redemption burns buyer's tokens and captures exit fee ETH into LP and Treasury.
 - Idle supply self-corrects: abandoned lots lock producer's staked ETH as a carrying cost. `burnLotTokens` is the cleanup path.
 - Token is NOT speculative — it is production-backed. 1 $EGG = 1 carton. Value comes from real delivery, not market sentiment.
 - Tokenomics are not featured on the front page — discoverable for those who want the mechanics, not the headline. Wrong audience if leading with AMM math.
 
-**ETH flow (corrected design 2026-06-02):**
+**ETH flow (revised design 2026-06-04):**
 - Buyer swaps ETH → tokens via LP. ETH enters LP.
-- Buyer calls `buy()` — tokens escrowed in Marketplace. NFT transfers to buyer.
+- Buyer calls `buy()` — tokens escrowed in Marketplace (`_escrowedTokens[tokenId]`). NFT transfers to buyer.
 - Physical delivery → buyer calls `redeem()`:
-  - Marketplace approves Router, calls `swapExactTokensForETH` with escrowed buyer tokens
-  - Tokens re-enter LP, WETH exits, Router unwraps
-  - Router collects exit fee (2% LP rewards + 3% Treasury)
-  - Net ETH goes directly to producer's `proceeds` address
-  - Treasury `onRedeem(batchId)` burns producer's tokenPerNFT, marks pro-rata collateral claimable
-  - Relay best-effort attestation
-- Producer's staked ETH in Treasury is NEVER the payment source — it is reputation collateral only, claimable via `claimStake()` after redemptions
-- LP floor always ratchets up: AMM 0.3% fee captured on both swap legs + 2% LP reward ETH added to pair on exit
-- ETH leaving LP on redemption always less than ETH that entered on buyer's purchase (delta = fees captured)
+  1. Marketplace **burns buyer's escrowed tokens** — deflationary, tokens gone permanently
+  2. Marketplace calls `Treasury.onRedeem(batchId)` → Treasury transfers producer's `tokenPerNFT` tokens to Marketplace (NOT burned — these are the tokens Treasury held from `mintLotNFTs`)
+  3. Marketplace swaps producer's tokens → ETH via Router → sent directly to producer's `proceeds` address
+  4. Treasury marks pro-rata collateral claimable
+  5. Relay best-effort attestation
+- Producer's staked ETH in Treasury is NEVER the direct payment source — it is reputation collateral, claimable separately via `claimStake()` after redemptions
+- ~50% burn per sale: buyer's tokens destroyed, producer's tokens recycled through LP to fund ETH payment
+- LP floor always ratchets up: AMM 0.3% fee captured on both swap legs + exit fee split (LP rewards + Treasury)
 
 **Key open decisions:** $BEER minting authority controls. Variable pricing is resolved — Marketplace `createListing` accepts any uint256 `price` (stored as `price * 1e18`), so 1/6/12 EGG tiers are a UI-only change.
 

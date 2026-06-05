@@ -113,9 +113,13 @@ struct Batch {
 - One call per lot — open a new lot for additional NFTs
 
 **4. Normal sale path**
-- Buyer buys NFT on Marketplace
-- Buyer redeems → Marketplace calls `onRedeem(batchId)` → escrowed tokens burned → `usedCollateral` freed proportionally
-- Producer calls `claimStake(batchId)` → ETH released pro-rata (`stakedAmount * redeemedCount / totalNFTs`)
+- Buyer buys NFT on Marketplace — sends `listing.price` tokens; fee → Treasury, remainder escrowed in Marketplace
+- Buyer redeems → Marketplace calls `onRedeem(batchId)`:
+  - Treasury transfers `tokenPerNFT` tokens to Marketplace (NOT burned — released for swap)
+  - Marketplace burns buyer's escrowed tokens (deflationary, ~50% of tokens involved)
+  - Marketplace swaps producer's released tokens → ETH via Router → sent to producer's `proceeds` address
+  - `usedCollateral` freed proportionally
+- Producer calls `claimStake(batchId)` → staked ETH released pro-rata (`stakedAmount * redeemedCount / totalNFTs`)
 
 **FALLBACK A — Unsold NFTs**
 - `setActive(false)` + `withdrawInventory` on Marketplace → NFTs back in producer wallet
@@ -137,7 +141,7 @@ struct Batch {
 - `burnLotTokens(batchId, amount)`
 - `claimStake(batchId)` — pro-rata ETH to producer
 - `slashStake(batchId)` — onlyOwner, emergency only
-- `onRedeem(batchId)` — isTrustedCaller (Marketplace)
+- `onRedeem(batchId)` → `(address token, uint256 amount)` — isTrustedCaller (Marketplace); transfers tokenPerNFT to caller instead of burning
 - `markListed(batchId, listingId)` — isTrustedCaller
 - `availableCollateral(producer)` — view: stkBalance - usedCollateral
 - `setStkHomestead(address)`, `setCollateralRatioBps(uint256)` — onlyOwner
@@ -198,15 +202,18 @@ ERC20 token template. Every fungible token in the ecosystem is a deployed instan
 ## Marketplace.sol (`contracts/marketplace/`)
 
 **Key functions:**
-- `createListing(nftContract, paymentToken, price, batchId, subsidyCount)`
+- `createListing(nftContract, paymentToken, price, batchId, subsidyCount)` — nonReentrant
 - `depositInventory / withdrawInventory / setActive / updatePrice`
-- `buy(listingId)` — fee → Treasury; remainder held in escrow per tokenId
-- `redeem(nftContract, tokenId)` — burns escrowed tokens, calls `Treasury.onRedeem(batchId)`
+- `buy(listingId)` — fee → Treasury; remainder held in `_escrowedTokens[tokenId]` (buyer's tokens)
+- `redeem(nftContract, tokenId)`:
+  1. Burns buyer's `_escrowedTokens[tokenId]` (deflationary)
+  2. Calls `Treasury.onRedeem(batchId)` → returns `(token, amount)` = producer's tokenPerNFT
+  3. Swaps producer's tokens → ETH via Router → producer's `proceeds` address
 - `setActive(listingId, false)` — deactivates listing (NFTs stay in Marketplace contract)
 - `withdrawInventory(listingId, count)` — returns NFTs to caller wallet
 - `chargeSubsidy`, `reclaimSubsidy`, `subsidyBalance`
 
-**Gap:** `uint256[39]`
+**Gap:** `uint256[38]`
 
 ---
 
