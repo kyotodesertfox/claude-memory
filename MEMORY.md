@@ -8,7 +8,9 @@
 - [Contracts](project_contracts.md) — smart contract architecture: storage layouts, deployed addresses (Hekla 167000), upgrade status, post-deploy config steps
 - [References](references.md) — beer-bot location/access/commands/contract addresses, Home Assistant dormant note
 - [Arcwright](project_arcwright.md) — separate client project (neighbor's welding site): stack, CMS design, pending tasks
+- [Portfolio Portal](project_portfolio_portal.md) — personal-portfolio blockchain client/admin portal: Hoodi testnet, ClientLedger, DebtToken ERC-1155, encrypted chat, ScopeBuilder components
 - [Governance](project_governance.md) — Tier 4 DAO design: anti-whale principles, solo vs accelerated paths, weighted nominations (T3+T4), slash mechanism, ownership transfer plan
+- [Relay Key Derivation](project_relay_keygen.md) — sign(`Homestead Key Registration:${address}`) → keccak256(sig) = privKey; one prompt, no storage, address-bound; ECDSA sig is the salt
 - [Companion Messaging](project_companion_messaging.md) — core "why" for the companion app: direct farm sales, NFT as claim ticket, no middleman; this copy belongs in onboarding and Redeem screen
 - [Companion UI Standard](project_companion_ui_standard.md) — all tab screens: #f0fdf4 bg, paddingTop 56 header, white shadow cards, green accents, tab bar height 96/paddingBottom 24
 - [Companion Status](project_companion_status.md) — build status: UI done, contracts endpoint fix deployed (needs verify), biometric login + QR scanner + BUY tx pending

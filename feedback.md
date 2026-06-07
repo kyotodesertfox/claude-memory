@@ -91,6 +91,26 @@ metadata:
 
 ---
 
+## Don't Override User's Direction with Alternatives
+
+**Rule:** When the user states what they want to build, do not suggest or pivot to a different approach. Implement what was asked. Only raise a concern if there is a clear technical impossibility - state it once, then defer to the user.
+
+**Why:** User explicitly said "I need to tell you what to do instead of overriding me with your suggestions." Multiple incidents in the portfolio portal session where suggestions contradicted the user's stated plan (ERC-1155 NFT model, DebtToken design, mint amounts), causing confusion.
+
+**How to apply:** If asked to build X, build X. If you think Y is better, keep it to yourself unless X is technically impossible. The user is the architect.
+
+---
+
+## Keep Contract Copies in Sync
+
+**Rule:** When a contract file exists in two locations (e.g. homestead source of truth AND a copy in personal-portfolio), always identify which is the source of truth and update BOTH. State which file is the source of truth at the start of any contract editing session.
+
+**Why:** User caught HomesteadRelay.sol being updated in personal-portfolio/contracts/ (the copy) while homestead/contracts/relay/ (source of truth) was not touched.
+
+**How to apply:** At start of any session touching copied contracts, name both paths and confirm which is source of truth. Edit source first, then sync copy.
+
+---
+
 ## Contract Fee Reads — No Hardcoded Defaults
 
 **Rule:** Never provide a default value on `useReadContract` calls that read fee bps (e.g., `= 30n`, `= 100n`). Always read from the contract. If the value is `undefined` (loading or chain not responding), show `—` in the UI. Do not substitute a hardcoded guess.

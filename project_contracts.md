@@ -13,13 +13,14 @@ All contracts live at `~/github/homestead/contracts/`. All are UUPS upgradeable 
 
 | Contract | Proxy | Current Impl | Old Impl |
 |---|---|---|---|
-| Treasury | 0x631f9D082019E25a2BfD219BF235cA0b742206EC | 0x97C5DD6315372dba2B0c6E236D43A087885eC0e7 ✓ deployed 2026-05-19 | 0x62F23283649d56b49EA76e522Fa9C52f7ADf57e5 |
-| Marketplace | 0x2321bDF62364ee38Fcf6b631C9742f6BF61B66Aa | 0x8c62c79958c56b8bdd99Aa97aD23E15e40C7A3cE ✓ deployed 2026-05-19 | 0x53439131029767302542893a83313180717DA791 |
+| Treasury | 0x631f9D082019E25a2BfD219BF235cA0b742206EC | 0x857E2293Ea6b5eF87fa77Af119bf5255B83b0F44 ✓ deployed+verified+UTAC 2026-06-06 | 0x97C5DD6315372dba2B0c6E236D43A087885eC0e7 |
+| Marketplace | 0x2321bDF62364ee38Fcf6b631C9742f6BF61B66Aa | 0xcA688a087F3D46554154E5EF7d8572c6Db258Aac ✓ deployed+verified+UTAC 2026-06-06 | 0x8c62c79958c56b8bdd99Aa97aD23E15e40C7A3cE |
 | DEXFactory | 0xC72096f120cBb6a8f9e942864b885e1bb5060Cf2 | 0xC95C39d2E18a9c560C4365E6bEbffb89CB8d0832 | — |
 | TokenDeployer | 0xB367B1e95BB9336731809AB1CF35c3D211dc1065 | — | — |
 | NFTDeployer | 0x2A879059CfA27f707F1756DbfC6f683071099cC9 | — | — |
 | masterTemplate | 0x5a320af586CBDD2Cc732BD76bF2Ce74fD51f2d00 (BEER proxy) | 0x9D6C344d3fF927Df604660d48C9F28c5d7f98C77 ✓ deployed 2026-05-19 | 0x0c5C014397d4f58e0ae90CF2a9FdaaB9738e5402 |
 | nftTemplate | 0x210970F39B3AD4081090100Ed871fE42C54C2101 (BEER NFT) | 0x637f1f6FD0fF64dF0C920C43B4945779EA706fa2 ✓ deployed 2026-05-19 | 0x889BB10409C93de5d49a186d473D8293c1209DF8 |
+| HomesteadRelay | 0x96FC77220d578aF5D4380Dc2D2248Ed31444C491 | 0x88D6378521276Af5aA0109f99Aac364388373edd ✓ deployed 2026-06-06 | — |
 | DEXPair (beacon impl) | — | 0x86e1092329e108267EB57A9a10fB62CDFF3edaeC | — |
 | Router (immutable) | — | 0x07460A6c6b036019e2ff5Ed8F7462c2Aa0f8BC07 | — |
 | WETH | — | 0xA51894664A773981C6C112C43ce576f315d5b1B6 | — |
@@ -285,7 +286,7 @@ One upgrade covers everything Treasury-related. Do not upgrade Treasury again un
 - `setTierThreshold(2, amount)` — tier 2 threshold (Producer)
 - `setTierThreshold(3, amount)` — tier 3 threshold (Trusted)
 
-**Note for Router:** After Treasury renames `lpRewardFeeBps` → `lpShareBps`, update the Router source to call `lpShareBps()` before deploying it.
+**Note for Router:** Treasury has been renamed `lpRewardFeeBps` → `lpShareBps` (2026-06-06). Update Router source to call `lpShareBps()` before deploying it.
 
 ---
 
