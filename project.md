@@ -151,9 +151,13 @@ The existing alcohol regulatory framework (ATF, three-tier distribution) exists 
 
 ### Dollar-agnostic ecosystem
 
-Liquidity and value maintained entirely within the token system (ETH and $BEER). External fiat prices irrelevant.
+Liquidity and value maintained entirely within the token system (ETH and production tokens). External fiat prices irrelevant.
 
-When two payment options are offered (e.g. ETH or $BEER for quantum fees), equivalence is defined by the DEX pair's internal spot price — not any external oracle. The DEX IS the exchange rate. `getReserves()` answers any "fair trade" question.
+**No USDC path. Ever. By design.** USDC, USDT, and all dollar-pegged stablecoins are deliberately excluded from every contract and UI path. This is not an oversight — it is a foundational architectural decision. USDC has a freeze function controlled by Circle. Any protocol that routes through USDC has a kill switch it does not control. Homestead removes that dependency entirely.
+
+ETH in, ETH out, production tokens in between. The entire system denominates in assets that cannot be frozen by a compliance team, seized by a regulator, or depegged by an issuer. This is the same reason VC capital was never taken — the moment a dollar enters, the incentives of whoever controls the dollar enter with it.
+
+When two payment options are offered (e.g. ETH or production token for quantum fees), equivalence is defined by the DEX pair's internal spot price — not any external oracle. The DEX IS the exchange rate. `getReserves()` answers any "fair trade" question.
 
 ### Pool-specific token rewards
 

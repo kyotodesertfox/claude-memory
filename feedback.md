@@ -111,6 +111,23 @@ metadata:
 
 ---
 
+## Contract Changes Must Be Complete Before Deployment
+
+**Rule:** When adding any new function, storage variable, or modifier to a contract, ALL of the following must be done in the same edit pass before the user is told the contract is ready:
+1. Storage variable declared in the contract (if needed)
+2. Function written in the Solidity file
+3. ABI entry added to `contracts.js`
+4. Admin UI wired up (if it requires owner config)
+5. `VERSION` constant bumped in `.sol` and `contracts.js`
+
+Never add an ABI entry or admin UI control for a function that hasn't been written into the `.sol` file yet. Never tell the user to deploy until all five steps are done.
+
+**Why:** User wasted real ETH deploying a relay impl that was missing `setEthFee` — it was added to the ABI and admin UI but never written into the Solidity file. Contract deployments cost real money and cannot be undone.
+
+**How to apply:** Before finishing any contract editing session, read back through the `.sol` file and confirm every function referenced in the ABI and admin UI actually exists in the source.
+
+---
+
 ## Contract Fee Reads — No Hardcoded Defaults
 
 **Rule:** Never provide a default value on `useReadContract` calls that read fee bps (e.g., `= 30n`, `= 100n`). Always read from the contract. If the value is `undefined` (loading or chain not responding), show `—` in the UI. Do not substitute a hardcoded guess.
