@@ -149,6 +149,41 @@ The existing alcohol regulatory framework (ATF, three-tier distribution) exists 
 - Manual attestation override exists for edge cases; not the primary path
 - The platform has no identities — only wallets and their stake history. A welder and a brewer go through the exact same flow. **postStake is the tool that builds power.** Everything unlocks from it.
 
+### Platform as social experiment / mirror (2026-06-08)
+
+Homestead is not just a marketplace — it's a mirror. Every interaction reveals something about how people relate to trust, permission, and institutions.
+
+**What the experiment has shown so far:**
+- People who dismiss it without engaging are revealing threat responses, not genuine disinterest
+- The laugh-and-leave response in JAX Discord was a coordinated social move — Ward framed it as a values issue before anyone could think about it too long; the rest took their cue
+- People engage right up until the moment real participation is required — then silence
+- "I'm broke" is the most convenient unanswerable exit from a conversation that got too real
+- People refuse to use the platform because they don't like the builder — they call this distrust, but it's actually the atrophy of genuine trust evaluation after decades of outsourcing trust to institutions
+
+**The deepest insight:** Institutions have trained people to trust liability structures, compliance regimes, and dispute teams — not other humans or systems on their own merits. When presented with a trustless system, people reach for their feelings about the builder as the only trust signal they have left. They're not evaluating whether the contracts are sound. They're asking whether they like the person.
+
+**The platform's hardest barrier isn't technical.** It's that full participation requires people to remember how to think for themselves.
+
+**The stake as filter:** Producers who won't stake are telling you something important about themselves before they ever list. The ones who will are confident enough in what they make to back it with real capital. The friction is the feature — it selects for the right producers and filters out the ones the platform was never designed for.
+
+**Capital as permission:** The stake requirement is itself a permission structure — just the most neutral one available. ETH doesn't know who you are. Ward's approval was subjective and political. But both are gates. The vouching system was designed to address this without replacing an objective gate with a subjective one.
+
+### ETH concentration vulnerability (2026-06-08)
+
+Institutions accumulated ETH using printed dollars (leverage on nothing). This means the entry token for a system designed to remove institutional gatekeepers is an asset they disproportionately own. If they hold majority ETH supply, accessing the platform still routes through them — one step removed.
+
+This is the colonization playbook: a new system emerges, institutions absorb it by buying the scarce asset with printed money before most people understand what they're looking at. The rails change but the tollbooth stays.
+
+ETH is still the least bad option currently available. The vulnerability is real but the alternative (dollar dependency) is worse. The circular economy — where participants spend ETH directly within the ecosystem and never need to off-ramp — is the long-term answer. That becomes viable only when people's debt obligations no longer require dollars. Debt is the mechanism keeping people inside the dollar system; it is not accidental.
+
+### The relay and the quantum threat (2026-06-08)
+
+The quantum-resistant messaging relay exists for a reason beyond feature completeness. Justin posted publicly in 2024 foreshadowing this: the distribution layer (X/Twitter and similar platforms) retains all communications. When quantum computing is publicly announced as a real threat, those retained records become readable. The platform will say "we didn't do this — quantum computing did it." The technology becomes the villain; the institution walks away clean.
+
+The relay is the answer to the question people will desperately ask that day: "is there any way to communicate that they can't read?" Peer-to-peer, quantum-resistant, no central server retaining records, no database waiting to be unlocked. Built before the problem was publicly acknowledged.
+
+The suppression of posts about this is itself evidence. Early truth — naming the mechanism before it's deployed — is the most dangerous kind because it gives people time to build alternatives.
+
 ### Dollar-agnostic ecosystem
 
 Liquidity and value maintained entirely within the token system (ETH and production tokens). External fiat prices irrelevant.

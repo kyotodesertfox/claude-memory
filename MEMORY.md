@@ -6,7 +6,7 @@
 - [Branch Discipline](feedback_branch_discipline.md) — default admin/infra work to main; prompt to switch if on a feature branch
 - [No Hardcoding](feedback_no_hardcoding.md) — never hardcode token names/symbols; always read from contract symbol() and prepend $
 - [Project](project.md) — all Homestead context: beer DEX flow, farm ecosystem, philosophy, LP rewards, club origin, Inference Room, order tracking, repo map, memory infrastructure, pending UI features
-- [Contracts](project_contracts.md) — smart contract architecture: storage layouts, deployed addresses (Hekla 167000), upgrade status, post-deploy config steps
+- [Contracts](project_contracts.md) — smart contract architecture: storage layouts, deployed addresses (mainnet 167000), upgrade status, post-deploy config steps, vouching system design
 - [References](references.md) — beer-bot location/access/commands/contract addresses, Home Assistant dormant note
 - [Arcwright](project_arcwright.md) — separate client project (neighbor's welding site): stack, CMS design, pending tasks
 - [Portfolio Portal](project_portfolio_portal.md) — personal-portfolio blockchain client/admin portal: Hoodi testnet, ClientLedger, DebtToken ERC-1155, encrypted chat, ScopeBuilder components

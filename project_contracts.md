@@ -311,3 +311,42 @@ Contract complete, chat UI is a shell. Deploy order:
 4. `setMarketplace(marketplaceProxy)` on Relay
 5. `setQuantumFreeRecipient(supportWallet, true)` on Relay
 6. Set `VITE_RELAY` in `.env`
+
+---
+
+## Vouching System — Designed, Not Yet Built (2026-06-08)
+
+**Problem:** Capital requirement for staking is itself a permission structure. Small producers with genuine craft but no ETH cannot enter the platform. But removing stake entirely breaks the accountability filter.
+
+**Solution: Delegated staking via reverse fork pattern.**
+
+Two entry paths that converge at the same execution point:
+
+```
+Path A (self-staked):   postStake() → openLot() → [batchId] → mintLotNFTs()
+Path B (vouched):  vouchOpen() → validates voucher stake → openLot() → [batchId] → mintLotNFTs()
+```
+
+`openLot()` and `mintLotNFTs()` are unchanged. `vouchOpen()` is a gated entry point that validates the vouching conditions and hands off to the existing flow. The batch itself doesn't care how it was created — everything downstream is identical.
+
+**Batch struct addition:**
+```solidity
+address public voucher; // address(0) if self-staked, voucher's address if vouched
+```
+
+- `voucher == address(0)` → self-staked, no badge
+- `voucher != address(0)` → vouched, display badge + address on Marketplace listing
+
+Single field does three things: boolean check, identity, and full on-chain vouching history derivable from address.
+
+**Slash logic:** If `voucher != address(0)`, slash hits voucher's stake — not producer's. The voucher takes financial risk. The producer takes reputational risk. Both have skin in the game.
+
+**Marketplace badge:** Listing reads `batch.voucher` from Treasury. If non-zero, displays a voucher badge with the voucher's address. Badge is clickable — links to all batches that address has ever vouched for + their delivery record. Vouching becomes an on-chain reputation in itself. A trusted voucher who consistently backs reliable producers becomes a meaningful signal.
+
+**The accountability elegance:** You can't vouch for someone you don't trust because your ETH is on the line. A good voucher who backs reliable producers builds trust. A bad voucher loses stake and credibility simultaneously.
+
+**Graduation path:** Producer completes batches successfully → builds own stake history → eventually posts their own stake → stops needing a voucher. The door opened once becomes unnecessary.
+
+**Why Marketplace needs to know:** Not just security — provenance. The platform should visibly show that it grows through vouching relationships, not just capital. Vouching is community trust made on-chain.
+
+**Not yet implemented** — requires Treasury upgrade (add `voucher` to Batch struct, add `vouchOpen()` function). Marketplace frontend change only (read `batch.voucher` and display badge). No Marketplace contract change needed if frontend reads Treasury directly.
