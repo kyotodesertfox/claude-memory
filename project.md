@@ -149,6 +149,38 @@ The existing alcohol regulatory framework (ATF, three-tier distribution) exists 
 - Manual attestation override exists for edge cases; not the primary path
 - The platform has no identities — only wallets and their stake history. A welder and a brewer go through the exact same flow. **postStake is the tool that builds power.** Everything unlocks from it.
 
+### Political identity (crystallized 2026-06-10)
+
+"I am not political. I am productive."
+
+Pre-political — identified a structural problem and started building before asking anyone's permission or picking a team. Not libertarian (libertarians stop at critique and wait for markets to self-correct). Justin builds the missing infrastructure. Political classifications are for people arguing about how to manage the existing system. He is not managing it — he is routing around it.
+
+---
+
+### "Everyone wants the view. Nobody wants the climb." (2026-06-10)
+
+Justin's line describing the cold-start problem in human form. Everyone wants to be early. Nobody wants to be first. Keith Wright (welder) understands the platform can go big, understands institutions rob people, actively thinks about advertising and outreach — but won't be first through the door. His comment to Justin ("if you don't personally believe in it, no one will") was identified as projection — naming his own barrier, not Justin's.
+
+---
+
+### Capital axis problem — household scale (2026-06-10)
+
+Katie holds fiat capital (earns reliably via employment) but has no productive direction for it. Justin has direction and the build but no capital. This is the same structural problem Homestead solves for producers — the person with the capital doesn't know what to do with it; the person who knows what to do with it doesn't have it.
+
+Justin is living the problem he is solving.
+
+---
+
+### Homebrew group — final state (2026-06-10)
+
+Discord server fully empty. Justin posted the whitepaper and the "social experiment" framing in #beer-pix on 2026-06-09. Final message: "I built what I promised that I would & those it would threaten most [displacement = direct buying = correct flow of capital; not hostility] have left."
+
+David Chamberlan (brewery's social media guy) left first — the person whose entire value is narrative control and institutional reputation management. Retirees/pensioners also among the first to go. The selection was unconscious but coherent: the people most dependent on existing intermediary structures self-selected out before a single transaction occurred.
+
+They saw "crypto + NFTs" and left. They didn't read far enough to see the physical-world redemption model. The whitepaper leads with "Grown here. Sold here." — meets people before the technical layer.
+
+---
+
 ### Platform as social experiment / mirror (2026-06-08)
 
 Homestead is not just a marketplace — it's a mirror. Every interaction reveals something about how people relate to trust, permission, and institutions.

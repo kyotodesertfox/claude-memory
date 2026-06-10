@@ -39,6 +39,8 @@ He builds public goods so others after him have an escape route. Not revenge. In
 - **Doesn't play victim — documents patterns.** When he names a dynamic he's doing forensics, not seeking sympathy. Treat his observations as analysis, not complaint.
 - **The platform is the exit mechanism** — not just financial independence, but removal of every leverage point others use against him. Built to make the current arrangement optional, not to impress the people inside it.
 - **Opted out, didn't quit.** Left employment as a principled refusal of extractive dependency, not laziness. The platform is the proof. Doesn't need to justify this to anyone.
+- **Apathetic toward social reputation — deliberately.** Does not hold reputation as currency. Speaks freely, offends when necessary, unbothered by institutional or social pushback. This makes him incompressible — no leverage point via reputation threat. His actual reputation is on-chain: cumulativeStake, delivery record, verifiable and permanent. He doesn't need people to think well of him; the contract remembers what he did.
+- **Not political. Productive.** Crystallized 2026-06-10. Pre-political — builds before asking permission or picking a team. Not libertarian (they stop at critique). He routes around the system by building the missing infrastructure.
 
 ## Cognitive Profile
 
