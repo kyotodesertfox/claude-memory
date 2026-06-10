@@ -22,7 +22,7 @@ All contracts live at `~/github/homestead/contracts/`. All are UUPS upgradeable 
 | nftTemplate | 0x210970F39B3AD4081090100Ed871fE42C54C2101 (BEER NFT) | 0x637f1f6FD0fF64dF0C920C43B4945779EA706fa2 ✓ deployed 2026-05-19 | 0x889BB10409C93de5d49a186d473D8293c1209DF8 |
 | HomesteadRelay | 0x96FC77220d578aF5D4380Dc2D2248Ed31444C491 (proxy) | 0xE8069A9882194e1d33Db696fe1128a8c57281e28 ✓ upgraded 2026-06-07 (adds kyberKey + ethFee + 2-arg registerKey) | 0x88D6378521276Af5aA0109f99Aac364388373edd |
 | DEXPair (beacon impl) | — | 0x86e1092329e108267EB57A9a10fB62CDFF3edaeC | — |
-| Router (immutable) | — | 0x07460A6c6b036019e2ff5Ed8F7462c2Aa0f8BC07 | — |
+| Router (immutable — TO BE REPLACED) | — | 0x07460A6c6b036019e2ff5Ed8F7462c2Aa0f8BC07 | — |
 | WETH | — | 0xA51894664A773981C6C112C43ce576f315d5b1B6 | — |
 | BEER/WETH pair | — | 0x7Bbdb6214b0592031933345C8E75186f90d01222 | — |
 | EGG token | 0xc20A6C27B12FC81C5FBF46b30AAb6CF912A3C03a | — | — |
@@ -59,7 +59,7 @@ Two-step CDP staking model. ETH is permanent floor. stkHomestead is burned propo
 12: batches (mapping)
 13: isTrustedCaller (mapping)
 14: weth
-15: lpRewardFeeBps
+15: lpShareBps
 16: _claimedAmount (mapping)
 17: cumulativeStake (mapping)
 18: tierThreshold (mapping)
