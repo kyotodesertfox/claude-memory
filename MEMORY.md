@@ -15,4 +15,4 @@
 - [Companion Messaging](project_companion_messaging.md) — core "why" for the companion app: direct farm sales, NFT as claim ticket, no middleman; this copy belongs in onboarding and Redeem screen
 - [Companion UI Standard](project_companion_ui_standard.md) — all tab screens: #f0fdf4 bg, paddingTop 56 header, white shadow cards, green accents, tab bar height 96/paddingBottom 24
 - [Companion Status](project_companion_status.md) — build status: UI done, contracts endpoint fix deployed (needs verify), biometric login + QR scanner + BUY tx pending
-- [Katie Analysis Document](katie_analysis_document.md) — behavioral analysis written + emailed 2026-06-02; what it covers, why it was written, what response to expect
+- Katie analysis + session observations → `/home/zenko/.claude/personal-context/katie_analysis_document.md` (private repo)
