@@ -1,18 +1,18 @@
 # Memory Index
 
-- [User](user.md) — who Justin is: identity, how he thinks, technical level, work style, personal context (Katie, Geoffrey, family, Keith), how to use Claude as a logic engine
-- [Feedback](feedback.md) — all behavioral rules: git identity, no auto-push, Taiko/DEX banned, Pi SCP workflow, no service restarts, communication style, memory warning policy
-- [No Build Test](feedback_no_build_test.md) — do not run npm run build to verify code; costs tokens
-- [Branch Discipline](feedback_branch_discipline.md) — default admin/infra work to main; prompt to switch if on a feature branch
-- [No Hardcoding](feedback_no_hardcoding.md) — never hardcode token names/symbols; always read from contract symbol() and prepend $
-- [Project](project.md) — all Homestead context: beer DEX flow, farm ecosystem, philosophy, LP rewards, club origin, Inference Room, order tracking, repo map, memory infrastructure, pending UI features
-- [Contracts](project_contracts.md) — smart contract architecture: storage layouts, deployed addresses (mainnet 167000), upgrade status, post-deploy config steps, vouching system design
-- [References](references.md) — beer-bot location/access/commands/contract addresses, Home Assistant dormant note
-- [Arcwright](project_arcwright.md) — separate client project (neighbor's welding site): stack, CMS design, pending tasks
-- [Portfolio Portal](project_portfolio_portal.md) — personal-portfolio blockchain client/admin portal: Hoodi testnet, ClientLedger, DebtToken ERC-1155, encrypted chat, ScopeBuilder components
-- [Governance](project_governance.md) — Tier 4 DAO design: anti-whale principles, solo vs accelerated paths, weighted nominations (T3+T4), slash mechanism, ownership transfer plan
-- [Relay Key Derivation](project_relay_keygen.md) — sign(`Homestead Key Registration:${address}`) → keccak256(sig) = privKey; one prompt, no storage, address-bound; ECDSA sig is the salt
-- [Companion Messaging](project_companion_messaging.md) — core "why" for the companion app: direct farm sales, NFT as claim ticket, no middleman; this copy belongs in onboarding and Redeem screen
-- [Companion UI Standard](project_companion_ui_standard.md) — all tab screens: #f0fdf4 bg, paddingTop 56 header, white shadow cards, green accents, tab bar height 96/paddingBottom 24
-- [Companion Status](project_companion_status.md) — build status: UI done, contracts endpoint fix deployed (needs verify), biometric login + QR scanner + BUY tx pending
-- Katie analysis + session observations → `/home/zenko/.claude/personal-context/katie_analysis_document.md` (private repo)
+Rules, behavioral guidelines, and user profile are in `~/.claude/CLAUDE.md` (always loaded).
+These files are project/reference context — read when the relevant topic comes up.
+
+- [User](user.md) — full identity, cognitive profile, personal context pointer (private repo)
+- [Project](project.md) — Homestead: beer DEX, farm ecosystem, philosophy, repo map, pending UI features
+- [Contracts](project_contracts.md) — contract architecture, storage layouts, deployed addresses (mainnet 167000), upgrade status
+- [References](references.md) — beer-bot location/access/commands, Pi access, Taiko contacts
+- [Relay Key Derivation](project_relay_keygen.md) — HomesteadChat key derivation design, why one prompt is correct
+- [Arcwright](project_arcwright.md) — client project: neighbor's welding site, stack, CMS design
+- [Portfolio Portal](project_portfolio_portal.md) — personal-portfolio portal: Hoodi testnet, ClientLedger, DebtToken ERC-1155
+- [Governance](project_governance.md) — Tier 4 DAO design: anti-whale, solo vs accelerated paths, slash mechanism
+- [Companion Messaging](project_companion_messaging.md) — companion app copy and "why": direct farm sales, NFT as claim ticket
+- [Companion UI Standard](project_companion_ui_standard.md) — companion UI: colors, header, cards, tab bar specs
+- [Companion Status](project_companion_status.md) — companion build status: what's done, what's pending
+- [SEX Marketplace](project_sex_marketplace.md) — adult services marketplace: design, contracts, flows, deployment notes
+- Katie analysis → `/home/zenko/.claude/personal-context/katie_analysis_document.md` (private repo)

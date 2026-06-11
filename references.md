@@ -56,6 +56,13 @@ metadata:
 
 ---
 
+## Taiko Contacts
+
+- **Joaquin Mendez** — COO of Taiko
+- **Pigi** — Head of Ecosystem at Taiko
+
+---
+
 ## Home Assistant (Dormant)
 
 Previously ran for home automation — presence detection, lights, reminders. Katie specifically wants it running again. Not active, not committed. Revisit when the time is right; don't push it.

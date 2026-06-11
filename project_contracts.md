@@ -279,6 +279,7 @@ One upgrade covers everything Treasury-related. Do not upgrade Treasury again un
 - [ ] Fix `postStake()` revert — cause unknown, needs Remix call to get revert reason before writing fix
 - [ ] Rename `lpRewardFeeBps` → `lpShareBps` (slot 15 reused, value changes 200 → 4000). New semantics: ratio of collected fee to LPs (0–10000), not absolute bps of trade value
 - [ ] Add `attestationOverride` mapping + `setAttestationOverride(address, uint8)` onlyOwner + check override first in `attestationTier()`. Shrink `__gap` by 1. (For trusted providers onboarded via mintToWallet who have no stake)
+- [ ] Add `unslashStake(batchId)` onlyOwner — reverses a slash (flag flip only, ETH never moves). Slash = hard lock for review; unslash = outcome of review process (owner today, DAO later). Before implementing, resolve: (1) reason string on event for audit trail? (2) cooldown before batch ops resume? (3) cap on slash/unslash cycles per batch?
 
 **Post-upgrade config calls (same tx session, not code):**
 - `setLpShareBps(4000)` — 40% to LPs, 60% to Treasury
