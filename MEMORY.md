@@ -15,4 +15,5 @@ These files are project/reference context — read when the relevant topic comes
 - [Companion UI Standard](project_companion_ui_standard.md) — companion UI: colors, header, cards, tab bar specs
 - [Companion Status](project_companion_status.md) — companion build status: what's done, what's pending
 - [SEX Marketplace](project_sex_marketplace.md) — adult services marketplace: design, contracts, flows, deployment notes
+- [Mission](project_homestead_mission.md) — core value proposition: costly gifting = provable conviction; on-chain reputation derived from behavior under real stakes; mission statement draft
 - Katie analysis → `/home/zenko/.claude/personal-context/katie_analysis_document.md` (private repo)
