@@ -16,4 +16,5 @@ These files are project/reference context — read when the relevant topic comes
 - [Companion Status](project_companion_status.md) — companion build status: what's done, what's pending
 - [SEX Marketplace](project_sex_marketplace.md) — adult services marketplace: design, contracts, flows, deployment notes
 - [Mission](project_homestead_mission.md) — core value proposition: costly gifting = provable conviction; on-chain reputation derived from behavior under real stakes; mission statement draft
+- [Unit Scaling](project_unit_scaling.md) - indivisible good (NFT) vs divisible money (token); 1:1 enforced at four ops via % 1e18, not decimals; control model + Release 1 refactor
 - Katie analysis → `/home/zenko/.claude/personal-context/katie_analysis_document.md` (private repo)

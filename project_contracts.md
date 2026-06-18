@@ -279,7 +279,7 @@ One upgrade covers everything Treasury-related. Do not upgrade Treasury again un
 - [ ] Fix `postStake()` revert — cause unknown, needs Remix call to get revert reason before writing fix
 - [ ] Rename `lpRewardFeeBps` → `lpShareBps` (slot 15 reused, value changes 200 → 4000). New semantics: ratio of collected fee to LPs (0–10000), not absolute bps of trade value
 - [ ] Add `attestationOverride` mapping + `setAttestationOverride(address, uint8)` onlyOwner + check override first in `attestationTier()`. Shrink `__gap` by 1. (For trusted providers onboarded via mintToWallet who have no stake)
-- [ ] Add `unslashStake(batchId)` onlyOwner — reverses a slash (flag flip only, ETH never moves). Slash = hard lock for review; unslash = outcome of review process (owner today, DAO later). Before implementing, resolve: (1) reason string on event for audit trail? (2) cooldown before batch ops resume? (3) cap on slash/unslash cycles per batch?
+- [ ] Slash / unslash redesign — DESIGN LOCKED 2026-06-17, see "Slash mechanism" section below. Treasury: add `reason` to `slashStake`, add `unslashStake(batchId, reason)` onlyOwner. Marketplace (coordinated change, same release): add buyer cancel path for slashed batches.
 
 **Post-upgrade config calls (same tx session, not code):**
 - `setLpShareBps(4000)` — 40% to LPs, 60% to Treasury
@@ -288,6 +288,27 @@ One upgrade covers everything Treasury-related. Do not upgrade Treasury again un
 - `setTierThreshold(3, amount)` — tier 3 threshold (Trusted)
 
 **Note for Router:** Treasury has been renamed `lpRewardFeeBps` → `lpShareBps` (2026-06-06). Update Router source to call `lpShareBps()` before deploying it.
+
+---
+
+### Slash mechanism — DESIGN LOCKED (2026-06-17)
+
+**Purpose:** punish producers who fail to deliver or harm the platform. Slash is a semi-permanent LOCK for review/QC, not a seizure — accidents should not be absolute punishment. Resolution path unlocks it. Owner/Treasury wallet reviews today; review board / DAO in the distant future (no code change for that — just transfer ownership to a governance/timelock contract; `onlyOwner` already supports it).
+
+**Current state (what `slashStake` already does):** pure flag flip `batch.slashed = true`, ETH never moves. The flag is checked in 6 places — `mintLotNFTs`, `returnNFTs`, `burnLotTokens`, `claimStake`, `onRedeem`, `validateListingCaller` (plus `claimableStake` returns 0). So the batch freeze ("lock the whole lot until review") is fully built. The missing half is the unlock.
+
+**Decisions locked:**
+1. **Batch-level only — NO producer-level freeze.** A slashed-batch producer can still `openLot` new batches IF they have collateral. Rationale: a slashed batch keeps its `usedCollateral` committed permanently (slash never frees it), so repeated slashes drain a producer's available collateral until `openLot` reverts `InsufficientCollateral`. The locked collateral IS the automatic, proportional producer-level throttle — no separate flag needed. Self-policing through economics, consistent with the rest of the system.
+2. **`unslashStake(batchId, reason)` onlyOwner** — flag flip back, ETH never moves. Add `reason` to `slashStake` too. Both events carry the reason (or evidence CID) as the review audit trail. NO cooldown before ops resume (cleared party shouldn't keep suffering). NO cap on slash/unslash cycles (owner trusted today → DAO later; event log is the accountability). "Never resolves" = default: do nothing, batch stays locked forever.
+3. **Buyer is NEVER encumbered by a slash — only the producer.** A buyer holding an NFT from a slashed batch has two options, available the moment it's slashed and indefinitely after:
+   - **Hold** — wait for `unslashStake`, then redeem and take delivery normally.
+   - **Cancel their side** (new Marketplace fn, gated on `batch.slashed == true`) — reclaim their own `_escrowedTokens[tokenId]`, surrender the NFT back to Marketplace custody (symmetric unwind, no free-NFT double-dip). Buyer exits whole. The batch stays slashed; only the producer remains encumbered.
+   - Buyer does NOT get `unslashStake` power — that stays review-only (owner/DAO). The buyer's leverage is their own exit, not clearing the producer's slash. (Giving buyers unslash would gut the QC purpose.)
+   - **Why not strand the buyer as "pressure":** a frozen buyer can't compel the producer (can't unslash, can't force delivery) — it routes the complaint to the platform, not the producer, converting a producer failure into a platform liability + innocent-party loss. The real accountability hostage is the producer's frozen stake, held by the party who can actually resolve. Buyer's funds were never needed as a second hostage.
+
+**Cancel mechanics:** NFT returns to Marketplace custody (Marketplace pulls via `transferFrom`, buyer-initiated + prior approval, or buyer transfers then calls). Burn not viable — Marketplace isn't the NFT minter. Returned NFT sits in the slashed listing, non-redeemable/non-returnable until unslash, then cleans up via `returnNFTs`. Marketplace reads slash state via `batches(batchId)` getter or a small `isSlashed(batchId)` view (cleaner). Scope cancel to slashed batches only; same primitive generalizes to pre-redemption cancellation later if ever wanted.
+
+**Release:** rides in Release 1 (Treasury: `reason` + `unslashStake`) + coordinated Marketplace upgrade (buyer cancel reading Treasury slash state). Bump `VERSION` in both `.sol` + `EXPECTED_VERSIONS` in `contracts.js`. Future evolution (not now): producer self-kiosk unlock options.
 
 ---
 
