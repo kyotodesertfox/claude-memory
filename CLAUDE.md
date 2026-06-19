@@ -101,17 +101,19 @@ When the user states what to build, build it. Raise a concern only if there is a
 
 ## Memory Reference Files
 
-Read these when the relevant project or context comes up:
+All memory files live at `~/.claude/memory/`. Read these when the relevant project or context comes up:
 
-- `memory/user.md` - full identity, cognitive profile, personal context pointer
-- `memory/project.md` - Homestead: beer DEX, farm ecosystem, philosophy, repo map
-- `memory/project_contracts.md` - contract architecture, deployed addresses, upgrade status
-- `memory/references.md` - beer-bot, Pi access, Discord, Taiko contacts
-- `memory/project_relay_keygen.md` - HomesteadChat key derivation design (one-prompt, why)
-- `memory/project_arcwright.md` - Arcwright client project (neighbor's welding site)
-- `memory/project_portfolio_portal.md` - personal-portfolio portal (Hoodi testnet, ClientLedger)
-- `memory/project_governance.md` - Tier 4 DAO design
-- `memory/project_companion_messaging.md` - companion app copy and "why"
-- `memory/project_companion_ui_standard.md` - companion UI standards (colors, layout)
-- `memory/project_companion_status.md` - companion build status
-- `memory/project_sex_marketplace.md` - adult services marketplace project
+- `~/.claude/memory/user.md` - full identity, cognitive profile, personal context pointer
+- `~/.claude/memory/project.md` - Homestead: beer DEX, farm ecosystem, philosophy, repo map
+- `~/.claude/memory/project_contracts.md` - contract architecture, deployed addresses, upgrade status
+- `~/.claude/memory/references.md` - beer-bot, Pi access, Discord, Taiko contacts
+- `~/.claude/memory/project_relay_keygen.md` - HomesteadChat key derivation design (one-prompt, why)
+- `~/.claude/memory/project_arcwright.md` - Arcwright client project (neighbor's welding site)
+- `~/.claude/memory/project_portfolio_portal.md` - personal-portfolio portal (Hoodi testnet, ClientLedger)
+- `~/.claude/memory/project_governance.md` - Tier 4 DAO design
+- `~/.claude/memory/project_companion_messaging.md` - companion app copy and "why"
+- `~/.claude/memory/project_companion_ui_standard.md` - companion UI standards (colors, layout)
+- `~/.claude/memory/project_companion_status.md` - companion build status
+- `~/.claude/memory/project_sex_marketplace.md` - adult services marketplace project
+- `~/.claude/memory/project_homestead_mission.md` - core value proposition, mission statement
+- `~/.claude/memory/project_unit_scaling.md` - indivisible NFT vs divisible token, 1:1 enforcement

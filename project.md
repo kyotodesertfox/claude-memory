@@ -377,6 +377,9 @@ Development intentionally paused as of 2026-05-24. No new features until real us
 | 11 | ~~Live staking position cards~~ | **DONE** — `StakingPositionCards` in profile staking tab; reads `cumulativeStake` (ETH Staked) + batch enumeration for claimable ETH; Claim button fires `claimStake(batchId)` |
 | 12 | Manual attestation override on Treasury | Add `attestationOverride` mapping + `setAttestationOverride(address, uint8)` onlyOwner + check override first in `attestationTier()`. Shrink `__gap` by 1. Also add ABI entries to contracts.js and optionally an admin UI call. For trusted providers onboarded via `mintToWallet()` who have no stake. Small upgrade, defer until next Treasury deploy. |
 | 13 | Deploy 3 EGG NFT tier contracts | Single Egg (1 EGG), Half Dozen (6 EGG), Dozen (12 EGG) — each a separate NFT contract deployed via nftDeployer with its own artwork and marketplace listing. Pricing is UI-only (pass 1/6/12 as price arg). CreateListingModal collection picker will need to support all three tiers. |
+| 14 | Producer listing flow (createListing) | User-facing feature in exchange frontend — postStake → openLot → mintLotNFTs → createListing. Next session starting point. |
+| 15 | ~~Collections tab admin UI overhaul~~ | **DONE (2026-06-18)** — Deploy Collection panel, style-grouped NFT view with IPFS metadata name fetch, TokenIndexList with live search filter, reusable Modal component, rename/re-pin metadata workflow. |
+| 16 | NFT collections: migrate to UpgradeableBeacon pattern | Decision made — scaffolding, not permanent structure. See `project_nft_beacon.md`. Do before adding more collections. Burn 5 existing BEER NFT tokens, redeploy nftDeployer + BEER NFT as BeaconProxy, rewire roles. |
 
 ---
 
