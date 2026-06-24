@@ -3,6 +3,8 @@
 Rules, behavioral guidelines, and user profile are in `~/.claude/CLAUDE.md` (always loaded).
 These files are project/reference context — read when the relevant topic comes up.
 
+**Before writing any memory:** re-read this file first. Navigate the tree to find the right existing file and update it. Only create a new file if the topic genuinely has no home here.
+
 - [User](user.md) — full identity, cognitive profile, personal context pointer (private repo)
 - [Project](project.md) — Homestead: beer DEX, farm ecosystem, philosophy, repo map, pending UI features
 - [Contracts](project_contracts.md) — contract architecture, storage layouts, deployed addresses (mainnet 167000), upgrade status
