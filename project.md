@@ -235,6 +235,30 @@ When two payment options are offered (e.g. ETH or production token for quantum f
 
 ---
 
+## Front-Page Copy Standard
+
+The exchange front page (`apps/exchange/src/pages/home/Page.jsx`) uses a deliberately different register than the whitepaper. Two audiences, two voices - on purpose. Do not de-jargon the whitepaper.
+
+**Front page** - normie/farmers-market audience. Lead with barter. Everyone understands it and it triggers no crypto reflex. Homestead is "a highly advanced barter system."
+
+**Vocabulary rules (front page only):**
+- "pledge" = the ETH staking/collateral mechanic. Never say "stake ETH" or "collateral" on the front page. The pledge is held, never spent, returned on delivery - a handshake substitute that lets a stranger trust you.
+- ETH is "ETH" only. Never "coin" or "token." When referencing the staking mechanic, use "pledge."
+- token = money (the currency of the circle). NFT = the claim ticket bought with tokens and redeemed for the physical good. Keep this distinction explicit.
+- Use "producer" terms, not "farm" - inclusive of farmer or homesteader. Generic archetypes (farmer / brewer / welder) are fine.
+
+**No dollar anchoring on the front page.** Dollars are the currency Homestead is exiting. A store-price-vs-token-price comparison trains people to keep valuing in dollars and caps producer pricing. Homestead sells quality - better goods price up, not down. Express value in production terms, not USD.
+
+**The loyalty-card band** ("Why the money holds" section, added 2026-07-06): a loyalty card is worth something until the business folds, and cash is the same thing. Homestead tokens are backed by real goods - the worth cannot fold with anyone. Never say "government" - the metaphor carries the load without naming an enemy. Exact headline: *"Loyalty point value holds until a business folds; cash is just loyalty points from a bigger card."* This is a deliberate filter for economically-literate early adopters, not broad appeal.
+
+**State how, not just that.** Back value claims with verifiability - the backing is recorded on a public ledger anyone can check. Never bare assertion.
+
+**Removed 2026-07-06 - do not rebuild:** PriceEvidenceCard, DealCreditBanner, the PRICE_EVIDENCE contract. That contract was never built or deployed. The game also optimized toward cheapest commodity price - the worst anchor for a quality producer.
+
+**stkHomestead language:** Believed soulbound/non-transferable - use "stays with you" (permanence), never "travels with you" or "portable." Verify against contract before asserting in code.
+
+---
+
 ## LP Reward System
 
 LP holders earn their pool's native token as reward. Funded by 2% slice of the DEX exit fee (3% still goes to Treasury floor). Total exit fee (5%) unchanged to user.
