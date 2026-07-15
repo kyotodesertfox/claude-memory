@@ -384,6 +384,51 @@ Development intentionally paused as of 2026-05-24. No new features until real us
 
 ---
 
+## Bootstrap Status (2026-07-14)
+
+Platform is technically complete. The cold start problem is the only blocker - no liquidity, no first node, no translation layer. Human element hasn't caught up yet.
+
+**Discord server shut down** a few days before 2026-07-14. Justin drew the parallel to Loopring's shutdown explicitly - same signal, different scale. Not permanent necessarily, but carrying it alone wasn't sustainable.
+
+**Identities:** `lonewolf_eth` is the proxy identity (the operator behind the work). `@HomesteadXC` is the platform identity. Both are on X. X has been suppressing posts that are honest/damning while leaving friction visible - consistent with the pattern of visibility as a managed policy decision.
+
+**Keith Wright (welder) context - 2026-07-14:** Justin identified why Keith is resistant to the platform. He is Native American. His people already had sovereign currency, governance, and land - all of it destroyed by the same institutional force Justin is building around. He doesn't distrust the mechanism. He distrusts the outcome based on generational history. He sees what Justin is doing but can't be a first node. May be meaningful later when proof exists. Currently just a honey customer.
+
+**GME exit reason (clarified 2026-07-14):** Justin sold his GME/BTC stack on principle, not panic. Two simultaneous signals: (1) CSAM (child abuse material) being stored as BLOB data on the Bitcoin chain - holding the stack meant holding infrastructure carrying that content. (2) MicroStrategy/institutional BTC acquisition read as elite capture of the instrument - same networks. GME was also held as generational inheritance - passing down contaminated infrastructure to children was disqualifying regardless of dollar value. The principle held. The cost was real.
+
+**GameStop email sent 2026-07-14:** Justin emailed GameStop Talent Acquisition with the Homestead whitepaper PDF. Frame: not a job application - a report back from someone who followed the path GameStop pointed toward (their Ethereum/NFT marketplace move) and built something real when the infrastructure went dark. Key hook: "whether the infrastructure for something that makes eBay's architecture obsolete already exists - it does." Also noted he is a shareholder, referenced the mall directory suppression problem, and included the RC "willing to work" / pinata / sugar daddy thesis connection. Subject line: "Homestead - Direct Producer Exchange Built on the Path GameStop Pointed Toward."
+
+**RC thesis thread:** Three RC posts that form a coherent argument: "Sugar Daddy" candy bar (the sweet instrument that gets hit), "who will be the pinata for all this inflation" (the money chasers holding paper), "only interested in candidates willing to WORK" (builders vs. speculators). Justin reads all three as the same thesis across time - the people chasing moonshots and memecoins are the pinata. The builder with real production-backed infrastructure is not.
+
+**Whitepaper button** on home page changed from "Read the details →" to "📄 Whitepaper →". Committed and pushed 2026-07-14.
+
+---
+
+## Substack Launch (2026-07-15)
+
+New distribution channel launched alongside lonewolf_eth on X. Three articles drafted and saved to `~/Documents/`:
+
+- `substack_intro.md` — "Why I'm Here" — intro post explaining why X wasn't the right venue, what Substack is for, what topics Justin pulls threads on. **Published and live.**
+- `substack_dating_apps.md` — "Dating Apps Are the Intake Pipeline for Divorce Court" — full article expanding the Maxwell's Demon thread that hit 2.6M views on Dexerto's Overtone post.
+- `substack_lbo_civilization.md` — "The Terminal Leveraged Buyout of Civilization" — two threads (hypergamy/legibility layer from a month ago + Maxwell's Demon from today) converging on the same argument. LBO as the financial analogue to terminal extraction with no stop condition.
+
+**The unified thesis that runs underneath all Substack content:**
+"Information that protects the structure gets grace. Information that challenges it gets punished."
+
+This is the principle connecting dating apps, family court, Google image curation, Kendra's routing, the TA inbox dropping Justin's email, Katie's blocking campaign, X suppression — all of it. Same enforcement mechanism wearing different clothes.
+
+---
+
+## GME Exit — Resolved (2026-07-15)
+
+Selling GME was consistent with the thesis, not a mistake. Holding for the dollar upside would have been the same filter Justin described running on dating apps — select for money, extract in dollars, repeat. Winning in dollars is still winning inside the system.
+
+RC's own frame convicts the holders waiting for a squeeze. He wants people who want to work. Justin's exit was more aligned with what RC is actually building than the diamond hands crowd waiting to extract.
+
+The exit forfeited dollar upside deliberately. Dollar upside was never the goal. The goal was to not be in the asset pool when the debt comes due. The principle held. The cost was real. This is a closed question — not an open regret.
+
+---
+
 ## Pending Tasks
 
 | # | Task | Notes |

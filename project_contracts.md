@@ -13,7 +13,7 @@ All contracts live at `~/github/homestead/contracts/`. All are UUPS upgradeable 
 
 | Contract | Proxy | Current Impl | Old Impl |
 |---|---|---|---|
-| Treasury | 0x631f9D082019E25a2BfD219BF235cA0b742206EC | 0x1cBc456ddaaB1D097caC85e6c6FfaF315EF3fB8c ✓ deployed 2026-06-07 (surplus + withdrawSurplus live) | 0x857E2293Ea6b5eF87fa77Af119bf5255B83b0F44 |
+| Treasury | 0x631f9D082019E25a2BfD219BF235cA0b742206EC | 0x1cBc456ddaaB1D097caC85e6c6FfaF315EF3fB8c ✓ deployed 2026-06-07 (surplus + withdrawSurplus live) | 0x857E2293Ea6b5eF87fa77Af119bf5255B83b0F44 | owner: 0xe782e5f2DD980179bbc0604b353BfB59Fba0f9DC (transferred 2026-07-09, verified via owner() call) |
 | Marketplace | 0x2321bDF62364ee38Fcf6b631C9742f6BF61B66Aa | 0xcA688a087F3D46554154E5EF7d8572c6Db258Aac ✓ deployed+verified+UTAC 2026-06-06 | 0x8c62c79958c56b8bdd99Aa97aD23E15e40C7A3cE |
 | DEXFactory | 0xC72096f120cBb6a8f9e942864b885e1bb5060Cf2 | 0xC95C39d2E18a9c560C4365E6bEbffb89CB8d0832 | — |
 | TokenDeployer | 0xB367B1e95BB9336731809AB1CF35c3D211dc1065 | — | — |
