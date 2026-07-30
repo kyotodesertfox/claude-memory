@@ -20,3 +20,9 @@ These files are project/reference context — read when the relevant topic comes
 - [Mission](project_homestead_mission.md) — core value proposition: costly gifting = provable conviction; on-chain reputation derived from behavior under real stakes; mission statement draft
 - [Unit Scaling](project_unit_scaling.md) - indivisible good (NFT) vs divisible money (token); 1:1 enforced at four ops via % 1e18, not decimals; control model + Release 1 refactor
 - Katie analysis → `/home/zenko/.claude/personal-context/katie_analysis_document.md` (private repo)
+- [NFT Beacon Architecture](project_nft_beacon.md) — implemented two-track NFTDeployer + UpgradeableBeacon architecture, storage layout, deploy sequencing; addendum folds in tier-system split + deploy-line pattern from an earlier superseded draft
+- [Kendra Tennessee](kendra_tennessee.md) — Florida secession prediction + hate fuck both routed by Kendra outward and got grace; Justin shared one screenshot and got punished. Core rule: information that protects the structure gets grace, information that challenges it gets punished.
+- [Maxwell's Demon Framework](demon_framework.md) — unified thesis: demon/gate layers, Katie July 15 (named herself) + July 25 (listed gate beneficiaries, "I get your game", zkProofs close), GME October thesis, blockchain capture vs ownership
+- [GME Exit](project_gme_exit.md) — sold against thesis on principle; BLOB/CSAM risk + institutional BTC capture disqualified the infrastructure; Katie reframes as incompetence to avoid crediting the logic
+- [Agency Paradox](project_agency_paradox.md) — "do women have agency?" defeats victimhood-as-asset; toggle tell; Epstein files protect the answer not the names; "what is a woman" = definitional protection
+- [Memory Cleanup](project_memory_cleanup.md) — DONE 2026-07-30: scattered files moved out of untracked homestead/loopring-explorer stores into correct homes; nft_beacon merge complete

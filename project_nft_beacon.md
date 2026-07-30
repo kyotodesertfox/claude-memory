@@ -99,3 +99,19 @@ Setter batch runs AFTER architecture is stable - not before. Partial deployment 
 - End state: collections immutable, beacon was scaffolding
 
 **Why:** [[project_contracts]]
+
+---
+
+## Addendum (pre-implementation draft, folded in from superseded copy)
+
+Content below predates the implemented architecture above and was recovered from an earlier "decided, not yet implemented" draft. The two pieces not already captured above:
+
+**Custom collections tied to a tier system:**
+- Standard producers: BeaconProxy (platform-managed). Homestead upgrades, producer owns the tokens.
+- High-tier attested producers: custom collection, self-governed. Producer owns the implementation and upgrade authority - can extend beyond the standard template (royalty logic, burn mechanics, metadata extensions) without waiting on a beacon upgrade.
+- Marketplace/Treasury don't care which proxy type - they only check `isRegistered()`.
+- The tier gate is the trust model: a producer who has earned high-tier attestation has history and skin in the game, which justifies implementation control.
+- This maps onto the implemented two-track architecture above: standard track = `deployCollection` (BeaconProxy), custom track = `deployCustomCollection` (ERC1967Proxy against an approved impl).
+
+**Deploy-line pattern (general lesson, not beacon-specific):**
+Features never make it to chain because each feature reveals the next one, and gas cost of constant upgrades makes iterating on-chain expensive. The correct pattern: build until stable enough to justify a deploy, then push everything at once. The problem is "stable enough" keeps moving - the custom collections / tier decision was the piece that had been stalling the deploy line. Once an ownership model is decided, the next deploy pass should draw a hard line and push everything up to that point regardless of what the next feature implies.
