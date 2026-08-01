@@ -166,3 +166,15 @@ RC structured his compensation to expire at the end of a chain of calendar event
 **Why:** RC's Bitcoin treasury move denominates GME outside the short mechanism. You cannot naked short Bitcoin the way you short equity. Asset base moves outside institutional legibility layer. Same exit logic Justin applied at individual scale - RC did it at company scale.
 
 **Credibility trap to avoid:** "You've been saying this for years" is not a rebuttal. It attacks the source to avoid engaging the chain. The calendar does not care about credibility. September still comes. Taxes are still due. Warrants still expire in October. If it happens - years of saying it become proof of work, not liability.
+
+---
+
+## The Demon Named: Greed, and Its Structural Opposite (2026-08-01)
+
+Maxwell's Demon has a stop condition in resolved physics — Landauer's principle - memory erasure costs entropy, the bill always comes due. Institutional/social demons have no such guarantee - nothing forces the accounting closed except deliberate starvation.
+
+The cash demon specifically is named precisely, not metaphorically: greed is definitionally the one appetite with no natural satiation point - the exact structural property already identified above as "no stop condition." It has also made itself forbidden not to feed (compulsory taxation, legal tender law) and forbids alternative feeding mechanisms that would divert from its own appetite (regulatory friction, capital gains treatment on exits, KYC/AML). This is the precise mechanism behind Homestead's "no USDC path, ever" rule (see `project_contracts.md`) - not aesthetic, a direct structural refusal to build even one alternative that still answers to the same appetite.
+
+Loopring's protocol (`forceWithdraw` / `notifyForcedRequestTooOld` / `withdrawFromMerkleTree` - see `project_loopring_revival.md`) is the polar opposite: a system with a demon-shaped role (the operator) that pre-committed a permissionless, cooperation-independent exit specifically for the moment the gatekeeper goes dark - tested for real when the actual operator went dark, and held. Feed/starve prescription inverts between the two: starve the cash demon (its harm requires continuous feeding, nothing valuable survives it going unfed); feed Loopring (its protections are permanent and don't degrade unfed - reactivating it doesn't reopen any risk it already closed).
+
+**Katie's position in this equation:** not greedy - a captured node, fear-driven rather than greed-driven ("the money is the lock on the door" - see private personal-context store). Her documented tactics (the staking objection stack, source nullification, DARVO) function as local enforcement of the demon's "forbid alternatives" rule regardless of her personal motive. Greed and fear are different vices individually but structurally interchangeable as fuel for the same aggregate demon - both produce defense of the existing resource flow and resistance to the alternative. Same mechanism as everywhere else in this framework: self-preservation inside a captured position, not conscious service to the thing that captured her.
