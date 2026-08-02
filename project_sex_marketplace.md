@@ -7,6 +7,10 @@ metadata:
   originSessionId: 523c0fda-fe57-4f72-a00b-62954e51ac16
 ---
 
+## Status (as of 2026-08-02)
+
+**Parked, not planned.** Started as a joke deploy off Homestead and is unlikely to ship. The local frontend (`~/github/kyotodesertfox/adult-market`, Vite/React, 2 commits, branch `master`) is kept for the data, not because it is queued for work. If it ever does deploy, it deploys *with* Homestead - same chain, same existing contracts, no separate deployment of its own. Do not treat anything below as an active roadmap.
+
 ## What It Is
 
 Permissionless adult services marketplace. Two consenting parties, ETH settles it, no central operator in the transaction. Same infrastructure as Homestead — different product, different frontend, different token.
@@ -28,7 +32,7 @@ Permissionless adult services marketplace. Two consenting parties, ETH settles i
 - SEX/WETH pair — create via DEXFactory after token deploy
 - New Router UUPS proxy (already pending)
 
-**Existing contracts used:**
+**Existing contracts used** (all Taiko mainnet, chainId 167000 - same deployments as Homestead, see [[project-contracts]]):
 - Marketplace (`0x2321bDF62364ee38Fcf6b631C9742f6BF61B66Aa`) — listing, buy, redeem
 - HomesteadRelay (`0x96FC77220d578aF5D4380Dc2D2248Ed31444C491`) — Chat
 - Treasury (`0x631f9D082019E25a2BfD219BF235cA0b742206EC`) — fee policy, attestation tiers

@@ -48,6 +48,7 @@ All sessions launch from `~/github`, so this is the single memory store — ther
 - [User](user.md) — full identity, cognitive profile, personal context pointer (private repo)
 - [Kendra Tennessee](kendra_tennessee.md) — Florida secession prediction + hate fuck both routed by Kendra outward and got grace; Justin shared one screenshot and got punished. Core rule: information that protects the structure gets grace, information that challenges it gets punished.
 - [Maxwell's Demon Framework](demon_framework.md) — unified thesis: demon/gate layers, Katie July 15 (named herself) + July 25 (listed gate beneficiaries, "I get your game", zkProofs close), GME October thesis, blockchain capture vs ownership
+- [Katie - Unsettled Loop](katie_unsettled_loop.md) — named mechanic: observation → discussion → no handshake → deflection; verified via dated screenshot ledger (Oct '22 images/dox-threat exchange, documented Aug 2 '26); cumulative same-actor pattern evidence vs. unrelated-correlation stacking, kept as separate evidentiary categories
 - [GME Exit](project_gme_exit.md) — sold against thesis on principle; BLOB/CSAM risk + institutional BTC capture disqualified the infrastructure; Katie reframes as incompetence to avoid crediting the logic
 - [Agency Paradox](project_agency_paradox.md) — "do women have agency?" defeats victimhood-as-asset; toggle tell; Epstein files protect the answer not the names; "what is a woman" = definitional protection
 - Katie analysis → `/home/zenko/.claude/personal-context/katie_analysis_document.md` (private repo)
@@ -60,8 +61,10 @@ All sessions launch from `~/github`, so this is the single memory store — ther
 - [Memory Review Before Writing](feedback_memory_review.md) — always draft memory content and show Justin for approval before writing; hold this even mid-session when momentum picks up
 - [Terminal Commands](feedback_terminal_commands.md) — never use ! prefix; just plain code blocks Justin can copy and run
 - [Permission Granted](feedback_permission_granted.md) — scoped execution autonomy; reads proceed freely, modifications get shown first, no re-asking permission mid-task
+- [Identity Redaction](feedback_identity_redaction.md) — never write "Justin" into code or technical/project memory, pronouns/role terms instead; exception for personal-context memory (Katie/Kendra/Adam/family); protects pseudonym separation
+- [Nuance Means Threading](feedback_nuance_means_threading.md) — "add nuance" means connective tissue between facts, not more volume; terse and undifferentiated-dump are the same failure; a real analysis (Coinbase/Taiko/Loopring capture) was lost this way
 
 ## References
 
-- [References](references.md) — beer-bot location/access/commands, Pi access, Taiko contacts
+- [References](references.md) — beer-bot location/access/commands, Pi access, Taiko contacts, SSH/GitHub identity mapping (canonical copy at ~/.ssh/IDENTITIES.md - check before identity-sensitive actions)
 - [Memory Cleanup](project_memory_cleanup.md) — DONE 2026-07-30: fully consolidated the untracked homestead/loopring-explorer per-directory stores into this one tracked store, since sessions always launch from ~/github and those stores would otherwise never be read again; nft_beacon merge complete; old stores retired in place (MEMORY.md pointer left, no files deleted)

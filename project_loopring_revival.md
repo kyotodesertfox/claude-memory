@@ -19,15 +19,15 @@ Reviving the Loopring block explorer as a read-only historical viewer under the 
 ## Repo
 
 - GitHub: `lonewolf-loopring/loopring-explorer` (forked from `Loopring/loopring-explorer`)
-- Local: `/home/zenko/github/loopring/loopring-explorer`
+- Local: `/home/zenko/github/lonewolf-loopring/loopring-explorer`
 - SSH identity: `~/.ssh/lonewolf-loopring` (config entry: `Host lonewolf-loopring`)
 - Deployment target: Netlify
 
 ## Secrets
 
-- Graph API key: `~/github/graph.txt` and in `.env.local`
-- lonewolf-loopring GitHub PAT: `~/github/PAT.txt` and in `.env.local`
-- `.env.local` is gitignored
+Single source of truth is `loopring-explorer/.env.local` (gitignored). Keys defined there: `GRAPH_API_KEY`, `GITHUB_PAT` (lonewolf-loopring), `NEXT_PUBLIC_ETHERSCAN_API_KEY`, `PINATA_API`, `PINATA_API_SECRET`, `PINATA_JWT`.
+
+Loose plaintext copies at `~/github/graph.txt` and `~/github/PAT.txt` were deleted 2026-08-02 - both were byte-identical duplicates of values already in `.env.local`, and nothing referenced them by name. Do not recreate them; read from `.env.local`.
 
 ## What's Live
 
@@ -79,8 +79,8 @@ The explorer revival is live and valid. The self-sovereign operator work (ZK pro
 Running own Loopring instance under lonewolf-loopring identity. Goal: submit ZK proofs on-chain, eventually on mainnet.
 
 ### ZK Prover
-- Binary: `/home/zenko/github/loopring/protocols/packages/loopring_v3/build/circuit/dex_circuit`
-- Keys (blockSize=8): `/home/zenko/github/loopring/protocols/packages/loopring_v3/keys/`
+- Binary: `/home/zenko/github/lonewolf-loopring/loopring-explorer/upstream/protocols/packages/loopring_v3/build/circuit/dex_circuit`
+- Keys (blockSize=8): `/home/zenko/github/lonewolf-loopring/loopring-explorer/upstream/protocols/packages/loopring_v3/keys/`
   - `all_8_pk.raw` (~1.1GB proving key)
   - `all_8_vk.json` (1.4KB verification key)
 - Required rewriting `circuit/main.cpp` to replace deleted Loopring ethsnarks `opt` branch with standard `stub_prove_from_pb`

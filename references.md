@@ -13,7 +13,7 @@ metadata:
 
 - **Host:** Raspberry Pi at `192.168.12.3` — `ssh 192.168.12.3` (key: `~/.ssh/internal`)
 - **Repo on Pi:** `~/github/jax-ale-exchange/discord/beer-bot/`
-- **Local clone:** `/home/zenko/github/beer-bot/`
+- **Local clone:** `/home/zenko/github/kyotodesertfox/beer-bot/`
 - **GitHub:** `git@github.com:kyotodesertfox/discord-beer-bot.git`
 - **Entry point:** `src/main.py`
 - **Secrets:** `secrets/.env` (`BEER_BOT_TOKEN`, `ANTHROPIC_API_KEY`, `MEMBER_SALT`, `GUILD_ID`) — gitignored, never commit
@@ -53,6 +53,23 @@ metadata:
 - **Purpose:** Personal/social context that should not live in the public `claude-memory` repo — Katie dynamic, family, social architecture, behavioral analysis documents
 - **Contents:** `user.md` (personal context), `katie_behavioral_analysis.txt`, `katie_actions_vs_words.txt`, `katie_analysis_document.md`
 - **Git workflow:** Edit or copy files to `/home/zenko/.claude/personal-context/`, commit, push. Identity already configured locally.
+
+---
+
+## SSH / GitHub Identities
+
+**Canonical mapping lives at `~/.ssh/IDENTITIES.md`** - check that file (or grep it) before any GitHub-identity-sensitive action, not just per-project memory files.
+
+`~/github/` is foldered by identity, so the parent directory IS the identity scope: `~/github/kyotodesertfox/` (default, `zenko18` key) and `~/github/lonewolf-loopring/` (separate key). Nothing else at that root. See [[project-loopring-revival]].
+
+A remote pointing at plain `github.com` resolves to the `zenko18` key regardless of which account owns the repo - that is the exact cross-identity mistake documented in [[feedback-verify-before-asserting]], found live in the `Marketplace-Web` remote and fixed 2026-08-02.
+
+**Why it is foldered this way (reorg 2026-08-02):** the previous flat layout had `Taiko/` and `loopring/` each mixing both identities *and* third-party upstream clones together, so nothing about a repo's path told you which account it belonged to. That was the structural cause of the repeated cross-identity mistakes, not carelessness in any single instance. Making the parent directory the identity scope means the answer is unavoidable rather than something to remember to look up.
+
+Consequences of that reorg worth knowing:
+- Upstream Loopring org clones (`protocols`, `protocol3-circuits`) now sit at `loopring-explorer/upstream/` - ~2.0G, excluded from git via `.git/info/exclude` so the tracked `.gitignore` stays clean. They belong to *neither* identity; never push them.
+- `deploy-sepolia` holds the operator harness plus `keygen_cmd.sh`, `initialize_args.txt`, `register_circuit.md`, moved in from the old root.
+- Local clones of `Marketplace-Web` and `DEX` were deleted (~2.2G); uncommitted deltas were discarded deliberately after confirming remote HEAD matched local. Both still exist on GitHub - re-clone via the `lonewolf-loopring` alias, not `github.com`.
 
 ---
 
