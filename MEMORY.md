@@ -66,5 +66,6 @@ All sessions launch from `~/github`, so this is the single memory store — ther
 
 ## References
 
-- [References](references.md) — beer-bot location/access/commands, Pi access, Taiko contacts, SSH/GitHub identity mapping (canonical copy at ~/.ssh/IDENTITIES.md - check before identity-sensitive actions)
+- [References](references.md) — beer-bot location/access/commands, Pi access, Taiko contacts
+- [SSH/GitHub Identities](IDENTITIES.md) — canonical identity map: which account/key owns which repo, why ~/github is foldered by identity, the plain-github.com remote gotcha. Check before any identity-sensitive action. `~/.ssh/IDENTITIES.md` symlinks here.
 - [Memory Cleanup](project_memory_cleanup.md) — DONE 2026-07-30: fully consolidated the untracked homestead/loopring-explorer per-directory stores into this one tracked store, since sessions always launch from ~/github and those stores would otherwise never be read again; nft_beacon merge complete; old stores retired in place (MEMORY.md pointer left, no files deleted)
