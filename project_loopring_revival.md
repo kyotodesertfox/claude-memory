@@ -20,6 +20,11 @@ Reviving the Loopring block explorer as a read-only historical viewer under the 
 
 - GitHub: `lonewolf-loopring/loopring-explorer` (forked from `Loopring/loopring-explorer`)
 - Local: `/home/zenko/github/lonewolf-loopring/loopring-explorer`
+- **Also cloned 2026-08-03: `lonewolf-loopring/loopring_sdk`** at
+  `~/github/lonewolf-loopring/loopring_sdk` (fork of `mobiledev-111-118/loopring_sdk`).
+  This is the client SDK and it answered the nftID/CID addressing question that contracts
+  could not - see [[project-loopring-recovery]]. Consult it before inferring any
+  client-side behaviour.
 - SSH identity: `~/.ssh/lonewolf-loopring` (config entry: `Host lonewolf-loopring`)
 - Deployment target: Netlify
 

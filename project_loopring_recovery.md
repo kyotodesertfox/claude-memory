@@ -1,0 +1,350 @@
+---
+name: project-loopring-recovery
+description: "Loopring NFT recovery - what is provably rebuildable vs conditional, the metadata resolution model with live counterexamples, the EOA correction, tool state, thesis scope, re-pin, and the L1 exodus path"
+metadata:
+  type: project
+---
+
+# Loopring NFT Recovery
+
+Supersedes `project_recovery_tool.md`, `project_recovery_repin.md` and
+`project_moody_brains.md`, which carried contradictory versions of the resolution model
+and at least one claim that is simply false (see "The EOA correction" below).
+
+Protocol facts are in [[project-loopring-protocol]].
+
+## What is provably rebuildable, and what is not
+
+Demonstrated end to end on 2026-08-02 against live mainnet blocks:
+
+**Provenance - fully rebuildable, unconditionally.** From raw L1 calldata alone, with no
+cooperation from anyone and no surviving Loopring infrastructure: minter account ID,
+nftID, collection address, creatorFeeBips, NFT standard, amount, storage ID, block and
+timestamp. Verified field-by-field against an independent index on two separate blocks.
+Every NFT ever minted on Loopring has this permanently recoverable. **This is the part
+that proves authorship, and nobody else can produce it.**
+
+**Content - conditional, and the conditions are now measured rather than assumed.** Two
+independent blockers:
+
+1. *Addressing.* The `CIDv0 = base58(0x12 0x20 || nftID)` conversion itself is settled -
+   it is Loopring's own canonical SDK implementation (see the SDK section below), not
+   guesswork. What is NOT universal is whether a given `nftID` was *produced* that way.
+   Live counterexample: collection `0x5f5d612de6fbd6923677ea3373bfe750bd156047` has
+   `nftID = 0x00...0042` - the integer 66, a sequence number, so its reconstruction
+   (`QmNLei78zW...`) is a valid address pointing at something never pinned. A sibling
+   collection (`0x9c501909...`) uses a high-entropy hash-shaped nftID consistent with the
+   SDK mint path. Same protocol, same era, two different origins. **Test the shape of the
+   nftID first** - a low integer rules the SDK path out instantly, high entropy keeps it
+   open.
+2. *Retrieval.* Gateway 504s are inconclusive - they mean "no provider located in time,"
+   not "gone." Probed `QmRwe29K3hEvfvPkJHKkUcamwzayWCKJ8PxZeXLmHRuzEF` across four
+   gateways: all timed out or 504'd. Unknown, not negative. This is why the tool uses
+   `/api/probe` (Pinata `pinByHash`) rather than trusting read gateways.
+
+**The gap worth naming.** Verification compares the creator's file against a *target*
+media CID taken from the metadata JSON. If that JSON is unreachable there is no target -
+you can hash the original perfectly and have nothing to check it against. For a
+counterfactual collection with unreachable metadata AND a non-hash nftID, there is
+currently no path at all. That is the honest edge of the product.
+
+## The EOA correction (2026-08-02)
+
+`project_recovery_tool.md` claimed the tool "only works for Loopring smart contract
+wallet addresses" and that "EOA-only users will return no results," then built a whole
+scope-boundary argument on it. **This is false.**
+
+Checked directly with `eth_getCode`:
+```
+minter acct 305952   EOA (no code)          <- minted the NFT decoded from block 67869
+minter acct 84685    CONTRACT (162 bytes)   <- smart wallet, minimal proxy
+deposit acct 305919  EOA
+ShakePay             EOA
+```
+
+An EOA minted NFTs on Loopring L2 and is fully resolvable through The Graph `accounts`
+lookup. The original claim was almost certainly a wrong inference from a lookup that
+failed for someone who had never used Loopring at all.
+
+Three axes that memory had collapsed into one:
+
+| Axis | What it actually gates |
+|---|---|
+| L1 wallet type (EOA vs smart wallet) | **Nothing.** Both register L2 accounts, both resolve. |
+| Registered L2 account | The real boundary. No account means no records, because they never transacted. |
+| Collection deployed vs counterfactual | Metadata resolution only. Unrelated to who minted. |
+
+Note "counterfactual" is used for two different things in older notes - an undeployed
+*collection contract*, and an undeployed *Loopring smart wallet*. Neither affects whether
+a minter's NFTs are findable.
+
+**The addressable set is much larger than memory claimed.** Any address that ever
+registered a Loopring account qualifies, EOA included.
+
+One conclusion from the old reasoning survives, on better grounds: the tool still targets
+**creators rather than collectors** - not because of any wallet filter, but because only
+the person who minted holds the original file to verify against. Right conclusion, wrong
+justification underneath it.
+
+## The SDK settles the addressing question (2026-08-03)
+
+**The single most important source, and it was never consulted until now.** `nftID` is
+computed *client-side* at mint time, so the answer was never going to be in the
+contracts - it is in Loopring's SDK. Cloned to
+`~/github/lonewolf-loopring/loopring_sdk` (fork of `mobiledev-111-118/loopring_sdk`,
+HEAD `852e9f6`, 2025-05-19).
+
+### The nftID <-> CID conversion is CANONICAL, not a convention
+
+`src/api/nft_api.ts:337`:
+```js
+public ipfsNftIDToCid(nftId: string) {
+  const hashBN = new BN(nftId.replace('0x', ''), 16)
+  const hex = hashBN.toString(16, 64)
+  const buf = Buffer.from('1220' + hex, 'hex')   // 0x12 0x20 multihash prefix
+  return new CID(buf).toString()
+}
+```
+Inverse at `:325` (`ipfsCid0ToNftID`). This is exactly
+`base58(0x12 0x20 || nftID)` - the thing earlier memory hedged as an "unverified
+convention." It is Loopring's own shipped implementation with a committed test vector:
+
+```
+nftID 0x0880847b7587968f32ba6c741f9d797d9dc64971979922a80c4e590453b8dc2f
+CID   QmNuqdeWUJ9iEiw5qZfJ2pJ9onqAS45ZffvV8JQSUzp7DQ
+```
+The explorer's implementation reproduces this exactly (checked 2026-08-03).
+
+**Canonical means: this is the code Loopring shipped, with their own test asserting the
+output.** It does NOT mean every nftID was created this way - the `0x00...0042`
+collection proves some were not. Canonical conversion, not universal application.
+
+### nftID addresses the METADATA JSON, not the image
+
+`IPFS_METADATA` (`src/defs/loopring_defs.ts:2729`) is the object that gets pinned:
+```
+{ uri, base: { name, decimals, description, image, properties, localization },
+  imageSize: {...}, extra: {...}, nftId?, nftType, network, tokenAddress, tokenId }
+```
+`base.image` holds `ipfs://<mediaCID>` pointing at the actual media. So:
+
+```
+nftID = ipfsCid0ToNftID( CID(metadata JSON) )  ->  metadata.base.image  ->  media file
+```
+
+**Practical consequence:** hashing your image file and comparing it to `nftID` can never
+match - they are different files. This is why creator-side verification attempts failed;
+the method was fine, the target was wrong.
+
+**The offline reconstruction path this opens:** the metadata JSON can be rebuilt without
+ever retrieving it. Hash your own image to get `mediaCID`, combine with the name and
+description you used, serialise to the `IPFS_METADATA` shape, hash that, compare to
+`nftID`. A match simultaneously proves the file is authentic, the metadata is correctly
+reconstructed, and both can be re-pinned to their original addresses - with no gateway,
+no index, and no surviving copy. The difficulty is that JSON hashing is byte-exact (key
+order, whitespace, escaping), so it is a bounded search over serialisation variants
+rather than one shot. It only has to succeed once: the first match reveals the exact
+format and every other NFT in the collection follows.
+
+### Counterfactual collection addresses are derivable (closes an old open question)
+
+`computeNFTAddress` (`src/api/nft_api.ts:440`):
+```
+salt    = keccak256("NFT_CONTRACT_CREATION" || nftOwner || nftBaseUri)
+address = CREATE2(nftFactory, salt, keccak256(CREATION_CODE))
+default nftFactory = 0xDB42E6F6cB2A2eFcF4c638cb7A61AdE5beD82609
+```
+**The baseURI is baked into the CREATE2 salt** - which is what
+`project_moody_brains.md` speculated and could not confirm. Consequences: for an
+undeployed collection you cannot call `uri()` on, a candidate baseURI is *testable* by
+recomputing the address and checking it matches. With the default empty `nftBaseUri` the
+salt collapses to a function of owner alone, so a counterfactual collection can be
+**proven** to belong to a given wallet with no contract deployed and no index.
+
+### Metadata resolution confirmed
+
+`getContractNFTMeta` (`:238`) calls `uri()` for ERC1155 / `tokenURI()` for ERC721,
+substitutes `{id}`, then fetches JSON. Exactly the branch `pages/api/nft-metadata.ts`
+already implements.
+
+## The metadata resolution model
+
+There is no universal rule. Resolution is determined by each collection contract.
+
+| Case | Resolution | Confidence |
+|---|---|---|
+| Deployed, reference `L2MintableERC1155` | `uri()` ignores tokenId, returns a template; client substitutes `{id}` | Verified in source |
+| Deployed, custom `uri()` override (Moody Brains, `0x1cACC96e...`) | Returns a resolved per-token path, may encode mutable state (`.../2_2/metadata.json`) | Empirically confirmed on-chain |
+| Counterfactual collection | No contract to call. Reconstruct via the canonical SDK conversion, or derive/test the baseURI from the CREATE2 salt | Conversion canonical; whether a given nftID came from that path is per-NFT |
+| `CounterfactualNFT` (GameStop path) | Unknown - contract in neither local repo | Unverified |
+
+A dynamic NFT cannot live at an immutable content hash, which is exactly why `uri()`
+indirection exists. Both collections sampled on 2026-08-02 turned out to be
+**counterfactual** (`eth_getCode` returned `0x`), so reconstruction was the only
+available path for them - a useful reminder that the deployed case may be the minority.
+
+### Metadata hash vs media hash
+
+`pages/api/cid.ts` states it in code: the true IPFS CIDv0 is the UnixFS/dag-pb hash
+`ipfs add` produces, computed via `ipfs-only-hash`. **Raw `sha256(file)` is not a CID and
+will never match.** A verifier built on raw sha256 fails against genuine originals - a
+bug that shipped once, see [[feedback-verify-before-asserting]].
+
+## Tool state - already correct, memory was behind
+
+`pages/decode/nft.tsx` plus `pages/api/nft-metadata.ts` already implement the corrected
+model. Memory described them as unfixed; they were not.
+
+- `nft-metadata.ts` calls `eth_getCode`, and **when deployed prefers on-chain
+  `uri()`/`tokenURI()`**, falling back to `CIDv0(nftID)` reconstruction only for
+  counterfactual collections. Responses are tagged `deployed` and `via: 'reconstruction'`
+  so the caller knows which path produced the answer.
+- Verification hashes the dropped file to a true UnixFS CID via `/api/cid` and compares
+  it to the **media CID from resolved metadata** - not to nftID, not sha256.
+- The NFT page shares no code with the calldata decoder and contains no byte-layout
+  parsing, so the NFT_MINT layout corrections in [[project-loopring-protocol]] do not
+  affect it.
+
+Page moved from `pages/recover/index.tsx` to `pages/decode/nft.tsx` on 2026-08-02.
+
+## Architecture worth keeping
+
+**Data-driven router, not a fixed schema.** The first version hardcoded four hand-picked
+fields, imposing a shape on the data. Corrected principle: the subgraph entity defines
+the dimensions - query everything it exposes, store the returned object verbatim as
+`raw`, render whatever keys came back. New subgraph fields appear with zero code change.
+
+`NFTRecord` = `raw` plus derived nodes (`cid`, `cidStatus`, `verifyStatus`, `meta`,
+`probeStatus`) hanging off keys of `raw`. Each node resolves outward: `nftID -> cid ->
+availability`, `token -> collection identity`, `mintedAtTransaction -> L1 calldata`,
+`minter -> account`.
+
+`useRecoveryEngine()` holds state keyed by `raw.nftID`; `patchRecord(nftID, patch)` is
+the single update helper. State fills progressively - account, paginated NFTs, CID
+reconstruction, collection identity in parallel, availability lazily on viewport entry.
+
+**Wallet-agnostic core plus one seam:** read and reconstruction are identical regardless
+of wallet type. Wallet type matters only at the control-proof seam - proving you ARE the
+minter (EOA `ecrecover` vs smart-wallet EIP-1271) - invoked only by actions that must
+bind to the minter, such as an authorised re-pin. Content proof is wallet-agnostic and is
+the load-bearing proof.
+
+`NFT_PAGE_SIZE = 100`, `MAX_PAGES = 200`. Raw fetch to `/api/graphql`, never Apollo - see
+[[feedback-apollo-programmatic]]. Client-only via a mounted guard.
+
+### Subgraph facts
+
+- `minter` and `mintedAtTransaction` are **entity references, not scalars** - they need
+  subselections (`minter { id address }`). Querying them bare silently drops them from
+  the response. `minter.id` is the numeric account ID; `minter.address` is the L1 address.
+- `mintedAtTransaction.id` is `{L2blockId}-{txIndex}`, which maps straight to a slot.
+- `blocks(where: {id: "N"}) { txHash }` gives the L1 submission hash for an L2 block.
+- Entity id format: `{ethAddress}-{accountType}-{collectionAddress}-{nftID}-{n}`.
+- `tokens { id symbol decimals }` is the authoritative decimals registry - 295 tokens, 61
+  of them not 18 decimals.
+
+## Bugs fixed (these recur)
+
+- **Apollo `useLazyQuery` in a loop** returns stale data every iteration. `client.query()`
+  also failed via cache `keyArgs: false` interacting with re-renders. Fixed by dropping
+  Apollo from the engine.
+- **Reading state back out of a `setState` updater for control flow** - updaters run
+  during render, so the guard is still false at the call site and the fetch is skipped.
+- **`NFT_PAGE_SIZE = 1` never terminates** - `batch.length < PAGE_SIZE` is `1 < 1`.
+- **`dynamic(() => Promise.resolve(Component))`** creates a new Promise each render,
+  remounting and resetting hook state.
+- **Next.js 12 server bundle never built** for the heavy-dependency page; fixed by
+  skipping SSR.
+
+## The resurrection thesis - correctly scoped
+
+Original framing: the chain never stored content, it stored the fingerprint; the
+fingerprint is both proof and address; therefore nothing was lost and the whole dead
+platform is reconstructable by the people who made the work.
+
+**True for a bounded subset**, and where it holds it is strong: re-pinning a
+byte-identical original lands it at the exact CID the chain already committed to, so
+every existing reference resolves again - the original at its original address, not a copy
+at a new one. Restoration and proof are the same operation, because content that did not
+hash to that CID would not land there.
+
+**Not universal.** The earlier phrasing ("every piece every creator ever minted")
+overstated it, and the `nftID = 0x42` collection is the concrete disproof. For
+baseURI-model collections the metadata address is a folder path unrelated to any content
+hash. Scoping this honestly makes the tool more defensible: the narrower claim survives
+someone checking it, which for a falsifiability instrument is the entire point.
+
+## IPFS died, not Loopring
+
+Three healthy layers, one degraded, and the broken one is not Loopring's:
+- **Ownership record** - Ethereum L1 calldata. Permanent.
+- **Metadata pointer** - on-chain `uri()` for deployed collections. Permanent.
+- **Content** - IPFS. This rotted industry-wide: cloudflare-ipfs shut down, ipfs.io and
+  dweb.link rate-limit to 504s, nft.storage pivoted.
+
+## Positioning
+
+Serve the person who wants the work to survive, not the person who wants to exit it. The
+two markets are opposite cash flows: a snapshot/claim registry's customer wants to
+*receive* money by offloading a stranded NFT; this tool's customer wants to *spend* money
+to keep work alive. Preservation is upstream of value - a dead link sells for scraps, a
+restored and verified piece is an asset again. Charge for guaranteed permanence, honestly
+delivered. Never for access or unlocking, and never for a feature whose value depends on
+the buyer not understanding it.
+
+## L1 deployment is the protocol's own safe exit, not a risky fork
+
+Deploying a counterfactual collection to L1 without the (dead) operator does not fork
+ownership. Loopring built a permissionless exodus path for exactly this:
+
+1. `forceWithdraw` - anyone can request a forced withdrawal, with explicit NFT handling.
+2. If ignored past `MAX_AGE_FORCED_REQUEST_UNTIL_WITHDRAW_MODE`, anyone can call
+   `notifyForcedRequestTooOld`, freezing the exchange into withdrawal mode. The operator
+   cannot block this.
+3. `withdrawFromMerkleTree` - withdraw against the last finalized state root via Merkle
+   proof, with standard double-claim protection.
+
+Withdrawals run against a frozen canonical final state; there is no scenario where L2
+stays live while a separate L1 claim exists. Source: `ExchangeWithdrawals.sol`,
+`ExchangeMode.sol`.
+
+Asserted but NOT verified: that LRC fees are protocol-enforced on sales against a
+deployed contract. This underpins the "Loopring reactivates once fee revenue resumes"
+argument - plausible, unconfirmed.
+
+## Re-pin
+
+Verification is the gate; re-pinning is what restores. Still open: re-pin binds to the
+minter and is the first consumer of the control-proof seam; pinning service (creator's own
+vs tool-operated, currently no custody); payment chain undecided (Taiko L2 likely).
+
+## Open questions
+
+- **RESOLVED 2026-08-03 by the SDK** - the addressing question, the baseURI/CREATE2
+  question, and the metadata-resolution question. See the SDK section above. The
+  `CounterfactualNFT` *contract* source is still unread (not in `protocols`, and
+  `protocol3-circuits` is the ZK prover with no Solidity at all), but it no longer
+  blocks anything: `computeNFTAddress` gives the address derivation and
+  `getContractNFTMeta` gives the resolution path.
+- **Has any nftID reconstruction ever resolved to live metadata?** Still no. Probed
+  `QmPj2KwX37pedmanZa2WuFxnaZwozKp1ygZ2UartMHJ8Ly` (from a real minted nftID) via
+  delegated routing: `{"Providers":[]}` - zero providers, against a control CID that
+  returned many. So the content is genuinely unhosted. Note this does NOT discriminate
+  between "right address, unpinned" and "wrong address" - both look identical. Retrieval
+  is dead; reconstruction from the creator's own files is the remaining path.
+- **Can the metadata JSON be byte-reproduced?** The unblocking experiment. Rebuild
+  `IPFS_METADATA` from a known name/description plus the mediaCID hashed from the
+  creator's own image, and see if it hashes to the recorded `nftID`. Unknown whether
+  Loopring's serialisation (key order, whitespace, escaping) is reproducible, but one
+  success unlocks an entire collection.
+- **SPOT_TRADE layout** remains unverifiable against Solidity - see
+  [[project-loopring-protocol]].
+
+## Community actors
+
+| Handle | Wallet | Notes |
+|---|---|---|
+| Autodestructive | `0xC7Eaf32B4141FC4a0984A501D41Da6F06Be13bB6` | Ran a secondary NFT marketplace outside GSMP; built LoopringRescueRegistry, a Merkle-gated ERC-1155 rescue contract anchored to Loopring's official snapshot. Exit-liquidity focused. |
+
+Reception of the decoder's public announcement is in
+[[project-decoder-community-reception]].
