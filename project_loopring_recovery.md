@@ -121,12 +121,19 @@ collection proves some were not. Canonical conversion, not universal application
 
 ### nftID addresses the METADATA JSON, not the image
 
-`IPFS_METADATA` (`src/defs/loopring_defs.ts:2729`) is the object that gets pinned:
+`IPFS_METADATA` (`src/defs/loopring_defs.ts:2729`) is the SDK's **internal parsed type**,
+NOT the shape of the pinned file - a distinction that cost time:
 ```
 { uri, base: { name, decimals, description, image, properties, localization },
   imageSize: {...}, extra: {...}, nftId?, nftType, network, tokenAddress, tokenId }
 ```
-`base.image` holds `ipfs://<mediaCID>` pointing at the actual media. So:
+The actual pinned JSON is **flat and much smaller** - four fields, confirmed against three
+retrieved samples (see the format section below). The nested `base`/`imageSize`/`extra`
+structure is assembled client-side by combining the pinned file with API data. Do not
+reconstruct against this type; reconstruct against the verified format below.
+
+Either way the chain is the same - the pinned JSON's `image` field holds
+`ipfs://<mediaCID>` pointing at the media. So:
 
 ```
 nftID = ipfsCid0ToNftID( CID(metadata JSON) )  ->  metadata.base.image  ->  media file
@@ -141,10 +148,77 @@ ever retrieving it. Hash your own image to get `mediaCID`, combine with the name
 description you used, serialise to the `IPFS_METADATA` shape, hash that, compare to
 `nftID`. A match simultaneously proves the file is authentic, the metadata is correctly
 reconstructed, and both can be re-pinned to their original addresses - with no gateway,
-no index, and no surviving copy. The difficulty is that JSON hashing is byte-exact (key
-order, whitespace, escaping), so it is a bounded search over serialisation variants
-rather than one shot. It only has to succeed once: the first match reveals the exact
-format and every other NFT in the collection follows.
+no index, and no surviving copy.
+
+JSON hashing is byte-exact, so this once looked like an open-ended search. **It is not
+open-ended any more** - the exact format is now known and verified, and the residual
+ambiguity is 8 candidates. See the next section.
+
+### THE METADATA JSON FORMAT - cracked and byte-verified (2026-08-03)
+
+The highest-value finding of the whole effort. Reconstruction was blocked on not knowing
+the exact serialisation; a single retrieved sample solved it, and three independent
+samples confirmed the structure and mapped the variation.
+
+**Invariant structure - identical across every sample:**
+```
+{\r\n
+"<key>": <json value>          keys ALWAYS sorted alphabetically
+,<SEP>                         between fields
+"<key>": <json value>
+\r\n}<TRAILING>
+```
+- CRLF line endings throughout, never LF
+- `": "` between key and value (colon, single space)
+- No indentation at all - fields start at column 0
+- Standard JSON value encoding (`JSON.stringify` semantics)
+
+**The only variable parts** (different minting tools emitted different whitespace):
+
+| Sample | SEP | TRAILING | size |
+|---|---|---|---|
+| Celestial Love | `\r\n` | `\r\n\r\n\r\n` | 164 B |
+| Cheese Loop | `\r\n` | *(none)* | 158 B |
+| Community Card 3: Nancy | `\r\n\r\n` | *(none)* | 248 B |
+
+So a reconstruction is **8 deterministic candidates** (2 separators x 4 trailing options),
+not an open search. An earlier 55,296-candidate brute force failed purely because it
+assumed LF endings and never tried three trailing CRLFs.
+
+**Fields observed** (all four samples): `description`, `image`, `name`,
+`royalty_percentage`. No `attributes` / `animation_url` / `collection_metadata` seen yet -
+Nancy carries trait-like text inside `description` rather than a structured array, and its
+artwork traits are burned into the image. If a sample with real `attributes` turns up,
+note that alphabetical sorting places it FIRST, ahead of `description`.
+
+`royalty_percentage` was **10 in all four samples across four different creators** - treat
+it as a platform default, not a per-creator value.
+
+`image` takes either form:
+- bare CID: `ipfs://QmZKfpqUFq...`
+- folder path: `ipfs://QmeGV4miFg.../Nancy.gif`
+
+**Proof the whole thesis works:** "Celestial Love" is an L2-only collection, never deployed
+to L1, so no `uri()` exists anywhere - and `CIDv0(nftID)` resolved to live content on
+ipfs.io. That is the first confirmed case that the SDK conversion does not merely match
+Loopring's code but lands on real retrievable data. Cheese Loop and Nancy likewise.
+
+**Working recipe for creator-side reconstruction:**
+1. Hash the original media with true UnixFS/dag-pb (`ipfs-only-hash`, cidVersion 0) - NOT
+   raw sha256. `scripts/cidcheck.js` in loopring-explorer does this.
+2. Build the JSON above with `{description, image: "ipfs://<mediaCID>", name,
+   royalty_percentage: 10}`, keys sorted.
+3. Try the 8 whitespace combinations; hash each; convert to nftID form
+   (`base58 decode, drop the leading 0x12 0x20`).
+4. Compare against the on-chain nftID. A match proves the file is authentic AND gives a
+   byte-identical metadata JSON that can be re-pinned to its original address.
+
+**Known failure mode:** attempted on "Coffee House Pack"
+(nftID `0xbe5597f487838930b1bc003db7d1a1b8385c9f119795e9de464fa589c511948c`) and it did
+NOT match against any file in the creator's source folder. Name, description, structure and
+whitespace candidates were all known - the miss is the *image bytes*. The uploaded export
+(likely resized or re-encoded at upload time) is not on disk. This is a missing-file
+problem, not a broken method.
 
 ### Counterfactual collection addresses are derivable (closes an old open question)
 
@@ -326,17 +400,12 @@ vs tool-operated, currently no custody); payment chain undecided (Taiko L2 likel
   `protocol3-circuits` is the ZK prover with no Solidity at all), but it no longer
   blocks anything: `computeNFTAddress` gives the address derivation and
   `getContractNFTMeta` gives the resolution path.
-- **Has any nftID reconstruction ever resolved to live metadata?** Still no. Probed
-  `QmPj2KwX37pedmanZa2WuFxnaZwozKp1ygZ2UartMHJ8Ly` (from a real minted nftID) via
-  delegated routing: `{"Providers":[]}` - zero providers, against a control CID that
-  returned many. So the content is genuinely unhosted. Note this does NOT discriminate
-  between "right address, unpinned" and "wrong address" - both look identical. Retrieval
-  is dead; reconstruction from the creator's own files is the remaining path.
-- **Can the metadata JSON be byte-reproduced?** The unblocking experiment. Rebuild
-  `IPFS_METADATA` from a known name/description plus the mediaCID hashed from the
-  creator's own image, and see if it hashes to the recorded `nftID`. Unknown whether
-  Loopring's serialisation (key order, whitespace, escaping) is reproducible, but one
-  success unlocks an entire collection.
+- **RESOLVED 2026-08-03: yes.** Three L2-only NFTs (Celestial Love, Cheese Loop,
+  Community Card 3: Nancy) all resolved via `CIDv0(nftID)` on ipfs.io, and all three
+  metadata JSONs were reproduced byte-identically from scratch. The addressing model
+  and the serialisation format are both confirmed against live data. Note earlier
+  probes returning `{"Providers":[]}` were true negatives for those specific NFTs
+  (unpinned), not evidence against the model.
 - **SPOT_TRADE layout** remains unverifiable against Solidity - see
   [[project-loopring-protocol]].
 
