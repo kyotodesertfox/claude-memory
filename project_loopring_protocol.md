@@ -271,6 +271,22 @@ Load-bearing for [[project-loopring-recovery]]:
   any decoder change.
 - 2026-07-03 (approx): operator's last L1 transaction.
 
+## Full-corpus archive (2026-08-03)
+
+Built a full archive of every block the operator ever submitted, so none of it
+depends on any outside index - checked every single one against its own on-chain
+signature as it came in.
+
+Found a real hole partway through: twenty-six blocks in a row, just gone. Checked
+whether they even existed - they do, still sitting on-chain, no gap in the real
+record. Which meant the archive was wrong, not the chain. Walked the actual state
+roots across the missing stretch to be sure, and they don't connect - real state
+moved through there and none of it got captured. Turned out the free node being
+used just wasn't reliable - asked it the same question twice in a row and got two
+different answers. Not the collection logic, the provider. Still open - haven't
+gone back for the missing pieces yet, and want to actually nail down why the node
+did that before trusting it again.
+
 ## Related
 
 - [[project-loopring-recovery]] - what decoded data can and cannot tell you about NFT
