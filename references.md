@@ -83,3 +83,9 @@ Consequences of that reorg worth knowing:
 ## Home Assistant (Dormant)
 
 Previously ran for home automation — presence detection, lights, reminders. Katie specifically wants it running again. Not active, not committed. Revisit when the time is right; don't push it.
+
+---
+
+## NordVPN Access Token
+
+`~/.nordvpn-token.sh` (mode 600, `$NORDVPN_ACCESS_TOKEN` via `.bashrc`) — used to pull a fresh key/server from NordVPN's API when the manual config goes stale. See [[project-nordvpn-wireguard]].

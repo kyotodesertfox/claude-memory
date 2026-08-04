@@ -40,6 +40,10 @@ All sessions launch from `~/github`, so this is the single memory store — ther
 - [Portfolio Portal](project_portfolio_portal.md) — personal-portfolio portal: Hoodi testnet, ClientLedger, DebtToken ERC-1155
 - [Portfolio](project_portfolio.md) — personal portfolio site
 
+## System / Machine
+
+- [NordVPN / WireGuard](project_nordvpn_wireguard.md) — why the official GUI was dropped, the suspend/resume fix, how stale keys get refreshed via API without reinstalling the app
+
 ## Cross-cutting / personal
 
 - [User](user.md) — full identity, cognitive profile, personal context pointer (private repo)
