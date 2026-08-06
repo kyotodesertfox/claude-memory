@@ -56,6 +56,10 @@ Escalation IS the flinch. A demon sorting effortlessly does not need to hurt. Wh
 
 **Why she cannot validate by choice:** Validating one thing means potentially validating everything. The whole sorting history becomes visible as choice rather than judgment. The audit begins. Structural necessity, not personal malice. Built on a house of cards - holds completely until it doesn't.
 
+**The Keith control case (2026-08-05):** Katie freely and unprompted credited Justin for materially contributing to Keith Wright's business success - "that was all you, yes, his talent, but you really revamped." No hedge, no minimizing. This matters specifically because it proves capacity: she can recognize and credit real skill and contribution when she sees it. The withholding on Homestead specifically is therefore not explained by an inability to perceive value - it is explained by what the value threatens. Keith's success costs her nothing; crediting it is free. Homestead's success is the thing that makes the arrangement optional - crediting that is not free.
+
+Extends directly to the existing grace rule (see Kendra Tennessee file): "information that protects the structure gets grace, information that challenges it gets punished." Same mechanism, applied to a person rather than a piece of information - grace toward Justin specifically is the one transaction unavailable at the price everyone else gets it at, because his correctness and competence are exactly what's structurally dangerous to validate.
+
 ---
 
 ## Blockchain - Captured Not Owned

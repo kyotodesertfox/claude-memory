@@ -58,7 +58,7 @@ All sessions launch from `~/github`, so this is the single memory store — ther
 
 - [Decode First](feedback_decode_first.md) — fetch a real tx and read the hex structure before writing any ABI parser; don't guess the ABI
 - [Magical Beans](feedback_magical_beans.md) — Justin's term for fiat money; never Adam's or Katie's phrase
-- [Text Screenshot Reading](feedback_text_screenshots.md) — blue bubbles on RIGHT = Justin, grey on LEFT = other person; I consistently get this backwards
+- [Speaker Attribution](feedback_text_screenshots.md) — I consistently get who-said-what backwards; confirmed in screenshots (blue right=Justin) AND in plain-text transcripts (check tags, don't assume)
 - [Memory Review Before Writing](feedback_memory_review.md) — always draft memory content and show Justin for approval before writing; hold this even mid-session when momentum picks up
 - [Terminal Commands](feedback_terminal_commands.md) — never use ! prefix; just plain code blocks Justin can copy and run
 - [Permission Granted](feedback_permission_granted.md) — scoped execution autonomy; reads proceed freely, modifications get shown first, no re-asking permission mid-task
