@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 523c0fda-fe57-4f72-a00b-62954e51ac16
+  modified: 2026-08-07T01:19:13.015Z
 ---
 
 # Personal Portfolio
@@ -18,9 +19,13 @@ metadata:
 "Your IT & Web Guy / Not a vendor" - local Jacksonville FL independent, targeting small businesses.
 
 ## Pricing
-- Site Build: $2,000 cash / 1 ETH crypto (flat)
-- Managed Presence: $400/mo cash / 0.2 ETH/mo crypto
-- IT Support: $85/hr cash / 0.03 ETH/hr crypto
+- Site Build: 1 ETH crypto (flat) / Trade
+- Managed Presence: 0.2 ETH/mo crypto / Trade
+- IT Support: 0.03 ETH/hr crypto / Trade
+
+**Cash removed entirely (2026-08-06).** Compensation model resolved: he doesn't want cash, and tried to write one pricing page that worked for both a "need real income" model and an "opt out of cash on principle" model - it couldn't do both. Landed on Crypto + Trade/Barter as the only two modes. Trade mode drops the price number in favor of "Let's Talk Terms" (scope list still shown) plus a bridge blurb pointing to Homestead as proof this kind of exchange already works - not a gimmick, extending his own barter-infrastructure thesis to freelance work instead of just building it for others.
+
+**No-phone, async-triage decision (2026-08-06):** He's private, dislikes phone calls/the "social layer" of client work, wants a triage system instead of live conversation. Realized the ClientLedger intake flow (submit inquiry -> scope builder -> line-item dual sign-off) already **is** that triage system - async, wallet-identified, no call required. Phone CTA removed from the hero as a result; `OrderModal`'s "Let Me Build For You" flow is the only intake path now.
 
 ## Contracts (not yet deployed)
 - `ClientLedger.sol` - UUPS upgradeable. Inquiry deposits (0.1 ETH), project lifecycle, line items (dual sign-off for scope + completion), referral credits, accounting (deposited/allocated/released/available)

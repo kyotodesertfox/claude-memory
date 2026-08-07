@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 88ac09c4-e414-40d1-8e6e-fc82834a16ff
-  modified: 2026-08-07T00:40:16.027Z
+  modified: 2026-08-07T01:21:32.089Z
 ---
 
 ## The mechanic
@@ -35,6 +35,12 @@ Full dated ledger reconstructed from two screenshots (Katie thread, RCS). Sequen
 **Ambiguity flagged, not resolved by the transcript alone**: step 17→18 could mean either (a) the concession was itself another version of the deflection — agreement offered to end the subject, not because anything settled — or (b) the concession was accepted as insufficient and the loop was reopened from this side. The screenshots don't disambiguate which; noted rather than assumed.
 
 Katie never engages the two tweet images on their own terms anywhere in the thread — no question about who, what, or why they were sent. Treated as a data point on how she responds to unprompted stakes-raising material generally, not as confirmation of the images' underlying content.
+
+## What the dox threat would actually mean (clarified 2026-08-06)
+
+Corrected read on the Oct '22 dox threat's function. The original framing treated it as *creating* a point of contact — revealing an otherwise-hidden identity. That's wrong: Justin currently lives at Katie's address, so she already knows exactly where he is. There's no discovery step to weaponize. In practical terms, a dox here would mean contacting an enforcement agency to report a known location, not exposing an unknown one — activating an already-existing point of contact, not manufacturing a new one.
+
+**Standing fact, not a behavioral pattern:** Justin has no contract/secured debt — only an unpaid administrative balance owed to the State (not currently an active warrant, per his own account). Combined with cohabitation, this means the only missing variable for that debt to ever matter is someone choosing to report the address, not anyone needing to find it. This is a real structural vulnerability worth having on record. Whether Katie would ever act on it, and why, remains unconfirmed — same evidentiary standard as everything else in this file. The living situation and debt status are facts as reported; any motive attributed to her around them is a separate, unconfirmed claim.
 
 ## Verified instance: BTC/Saylor leverage → Adam foreclosure hypothetical (2026-08-06)
 
