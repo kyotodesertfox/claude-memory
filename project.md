@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 4d10e6c7-3013-43a7-b1f4-1cad366cf7fd
+  modified: 2026-08-07T01:51:11.452Z
 ---
 
 ## Core: Beer DEX Economic Flow
@@ -489,9 +490,12 @@ Direct `mintToWallet`/`mintToPool` is an **admin-only** feature (gated by `isMin
 
 ## Repo Map
 
+**`~/github` is now foldered by identity** (verified 2026-08-06): top level is `kyotodesertfox/`, `lonewolf-loopring/`, `qr-tab/`. Paths below are relative to the identity folder. See [[IDENTITIES]].
+
 | Path | Status |
 |------|--------|
-| `~/github/homestead/` | Main project — contracts, apps, everything |
+| `~/github/kyotodesertfox/homestead/` | Main project — contracts, apps, everything |
+| `~/github/kyotodesertfox/homestead-mini/` | Local barter landing site — see [[project_homestead_mini]] |
 | `~/github/jax-ale-exchange/` | JAX website + discord bot (beer-bot on Pi) |
 | `~/github/arcwright/` | Client project — neighbor's welding site, never delete |
 | `~/github/farm/eggs/` | Superseded by homestead/apps/egg — GitHub deleted |

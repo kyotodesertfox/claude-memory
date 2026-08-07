@@ -10,7 +10,7 @@ All sessions launch from `~/github`, so this is the single memory store — ther
 ## Homestead
 
 - [Project](project.md) — Homestead: beer DEX, farm ecosystem, philosophy, repo map, pending UI features
-- [Contracts](project_contracts.md) — contract architecture, storage layouts, deployed addresses (mainnet 167000), upgrade status
+- [Contracts](project_contracts.md) — contract architecture, storage layouts, deployed addresses (mainnet 167000), upgrade status; **live wiring probed 2026-08-06: ownership split (only Treasury transferred), Relay not registered to Marketplace = silent attestation gap, several deployed impls behind source**; admin Wiring Map tab
 - [NFT Beacon Architecture](project_nft_beacon.md) — implemented two-track NFTDeployer + UpgradeableBeacon architecture, storage layout, deploy sequencing; addendum folds in tier-system split + deploy-line pattern from an earlier superseded draft
 - [Relay Key Derivation](project_relay_keygen.md) — HomesteadChat key derivation design, why one prompt is correct
 - [Governance](project_governance.md) — Tier 4 DAO design: anti-whale, solo vs accelerated paths, slash mechanism

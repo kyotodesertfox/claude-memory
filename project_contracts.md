@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: bb2f3712-7c8e-4d4d-81ef-635507cd95dd
+  modified: 2026-08-07T04:56:28.922Z
 ---
 
 All contracts live at `~/github/homestead/contracts/`. All are UUPS upgradeable (OZ). **Never reorder or delete storage variables** — add new ones above `__gap` and reduce gap size accordingly.
@@ -29,6 +30,69 @@ All contracts live at `~/github/homestead/contracts/`. All are UUPS upgradeable 
 | EGG NFT ("Homestead Eggs", $EGGNFT) | 0xB90bC6186bA7d480584E06F92ecb15DAf653DE5C | 0x637f1f6FD0fF64dF0C920C43B4945779EA706fa2 | — | setMinter(Treasury ✓), setRedemptionOperator(Marketplace ✓) |
 | EGG/WETH pair | — | 0xF6ed80b5e3b66279822494eC3eeC6AEe00932662 | — | WETH is token0 (WETH addr < EGG addr) |
 | stkHomestead | 0x247178A36db9817d3FDb37eb7D7F54C7144e5432 ✓ deployed 2026-05-19 | — | — | name: "Homestead Stake", symbol: "stkHomestead" |
+
+---
+
+## Live wiring state — probed against Taiko mainnet 2026-08-06
+
+Read directly from the deployed contracts while building the admin Map tab. This is measured state, not design intent.
+
+**Ownership is split, and the admin console's gate hides it.** Only Treasury was ever transferred. Everything else still sits on the deploy wallet:
+
+| Contract | owner() |
+|---|---|
+| Treasury | `0xe782e5f2DD980179bbc0604b353BfB59Fba0f9DC` |
+| Marketplace, DEXFactory, TokenDeployer, NFTDeployer, Relay, stkHomestead, $QUANTUM | `0x202ECf228020b79bd1BFCE7457C15A9831BCe4D3` |
+| Router | no `owner()` — immutable pre-UUPS deploy |
+
+`AdminPage` gates on `Treasury.owner()`, so the wallet that can open the console cannot actually call setters on any of the other contracts. Pending task #2 ("transfer ownership of all deployed contracts") is the fix; until then every non-Treasury setter in the console will revert for the Treasury owner wallet.
+
+**Deployed implementations are behind the repo source.** These getters exist in `contracts/` but revert on chain, which means the impl behind the proxy predates them:
+- `DEXFactory.pairTreasury` — Release 2 not deployed
+- `NFTDeployer.beacon` — still the old `contracts/nftDeployer_old/` deploy, pre-beacon
+- `DEXPair.rewardsTreasury` — Release 2 not deployed
+- `Router.owner` — the immutable Router at `0x0746…BC07`
+
+**Genuine faults (function exists, value wrong/unset):**
+- `Relay.registeredContract[Marketplace]` = **false** → `recordRedemption` reverts "caller not registered", and `Marketplace.redeem` swallows it in `try/catch {}`. Every redemption settles economically but records no attestation. Silent, permanent provenance gap. Fix is one call: `Relay.registerContract(marketplace)`.
+- `Treasury.isTrustedCaller[EGG/WETH pair]` = false (BEER pair is true) → LP reward claims revert for the EGG pool only.
+- `Marketplace.router` / `relay` / `farmToken` all zero — expected, Releases 2 and 3 are unshipped.
+
+**Everything else checked clean:** all six Treasury pointers, `isTrustedCaller[Marketplace]`, Marketplace `feeCollector`/`tokenDeployer`/`nftDeployer`, all three Router pointers, `Factory.tokenDeployer`, `Factory.beacon`, `TokenDeployer.templateAddress`, `Relay.treasury`/`marketplace`/`feeToken`, both pairs' `factory`, `stkHomestead.isMinter[Treasury]`.
+
+### Structural gap found while mapping
+
+`DEXPair.setRewardsTreasury` is gated `msg.sender == factory`, and `DEXFactory` only calls it inside `createPair`. There is no `setPairRewardsTreasury(pair, addr)` admin function. **An existing pair whose `rewardsTreasury` is wrong or unset cannot be repaired without a Factory upgrade.** Worth adding to the Release 2 Factory change while it is already being touched, since both live pairs currently lack the field entirely.
+
+---
+
+## Admin Wiring Map (branch `feature/health-map`, 2026-08-06)
+
+New `Map` tab, first in the admin console. Additive — the other six tabs are untouched.
+
+- `apps/exchange/src/pages/admin/wiring.js` — the point of the whole thing. One declarative `EDGES` array holds every pointer and role grant, each row carrying its expected value, severity, what breaks in plain language, and the setter that repairs it. The graph, the fault list and the fix buttons all derive from that array, so adding a contract later is one row, not three edits.
+- `apps/exchange/src/pages/admin/MapTab.jsx` — `@xyflow/react` canvas plus fault list with one-click fix.
+- `apps/exchange/src/pages/admin/ui.jsx` — `Label`/`Input`/`Btn`/`TxStatus`/`CopyAddr`/`Hint`/`useWrite`/`useCodeHashes` moved verbatim out of `Page.jsx` so both tabs share one copy.
+
+**Four statuses, not two.** A reverting read is `absent` ("behind source"), never a fault — telling someone to call a setter that does not exist on the deployed impl is worse than saying nothing. An edge whose address path is unset is `skipped` and is never counted as healthy. Both get their own panel.
+
+Scope is core infra only (the fixed `ADDRESSES` set). Per-token and per-collection role grants stay in the Collections and Tokens tabs.
+
+---
+
+## Contract verification on TaikoScan (2026-08-06)
+
+HomesteadRelay's current implementation (`0xE8069A9882194e1d33Db696fe1128a8c57281e28`) is now verified on TaikoScan. It wasn't before — the proxy itself was verified (standard ERC1967Proxy, auto-detected), but "Write as Proxy" had nothing to render because the implementation behind it had no ABI. Ownership hasn't been transferred yet (confirmed 2026-08-06 - still sitting on the deploy wallet per the table above), so this only unlocked the *ability* to call `transferOwnership` through the explorer UI, not the transfer itself.
+
+**Given only Marketplace's row explicitly says "verified" in the address table above, assume the rest are not, until checked.** That's worth doing before anyone needs write access to one of them under time pressure.
+
+**Recipe for verifying a mismatched/unverified implementation** (needed because the current repo source had three commits of unrelated changes on top of what was actually deployed):
+1. Don't assume current `contracts/` HEAD matches what's deployed. Check the "Old Impl"/description column above for a hint (e.g. "adds kyberKey + ethFee + 2-arg registerKey"), then `git log --follow -- <file>` to find the matching commit by date/description.
+2. Pull that exact version (`git show <commit>:path/to/File.sol > File.sol`), rebuild (`forge build`), and diff the resulting `deployedBytecode` byte-for-byte against `cast code <address> --rpc-url https://rpc.mainnet.taiko.xyz`.
+3. An exact length match with only two kinds of leftover diffs confirms it's the right source: (a) the contract's own address embedded 1-2 times (UUPS's `address(this)` immutable — a real verifier resolves this correctly since it compiles against the actual target address) and (b) the trailing ~32-53 byte CBOR metadata hash (environment-dependent, doesn't block verification). Any other diff means it's still the wrong version.
+4. Generate the standard-json-input from that exact historical version: `forge verify-contract --show-standard-json-input <impl_address> <path>:<Contract> --chain 167000 > input.json` (this is a local dry-run, no submission, no wallet needed).
+5. Submit on TaikoScan under the implementation address's "Verify and Publish" → Solidity (Standard-Json-Input), matching compiler version/optimizer/evmVersion from `foundry.toml` + the contract's own `_metadata.json`.
+6. Restore the repo's actual current file afterward (`git checkout -- <file>` or copy back from a pre-swap backup) — the swap in step 1-2 is local-only and must not be left in place.
 
 ---
 
