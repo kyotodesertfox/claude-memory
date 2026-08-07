@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 88ac09c4-e414-40d1-8e6e-fc82834a16ff
-  modified: 2026-08-07T00:22:48.206Z
+  modified: 2026-08-07T00:40:16.027Z
 ---
 
 ## The mechanic
@@ -55,7 +55,7 @@ Dated RCS screenshot, 6:37 PM. Sequence:
 13. Justin: "Not really your concern is it" — boundary.
 14. Katie: 🤷‍♀️ / "No, it's not" — rare direct concession.
 15. Justin generalizes back to structural terms: the spa/porn/aesthetics industry is "a dying industry," propped up by "hoeflation."
-16. Katie, quoting her own "Payback" line back: "Not payback; just a market imbalance reaching equilibrium" — adopts Justin's structural framing in her own words.
+16. Justin, replying to her "Payback" line: "Not payback; just a market imbalance reaching equilibrium" — declines her motive-attribution frame and restates the mechanism in neutral terms, same move as "because I can" earlier in the exchange.
 
 **Sixth deflection tactic: Motive substitution.** Distinct from the five below (those come from the June 2 source docs; this one is identified fresh from this instance) — reframes a structural/economic argument as a personal motive, shifting the question from "is this analysis correct" to "why do you want to hurt him." This doesn't require defending the position on the merits at all.
 
@@ -64,6 +64,8 @@ Dated RCS screenshot, 6:37 PM. Sequence:
 **Justin's read:** She traces the argument specifically to where it reaches Adam, not before — checking for an exit for him specifically, not neutral engagement with the concept. When the exit is closed, she doesn't dispute the mechanism itself (never argues the foreclosure logic is wrong) — she relabels Justin's correct application of it as a grudge instead.
 
 **Why this forces inference instead of confirmation (2026-08-06):** Phrases like "payback" and "you wanted this" are claims about Justin's internal state, not claims about whether his analysis is correct — which means they can't be confirmed or denied by anything he says. Any response reads as either confirming the accusation or protesting too much. The question never reaches "is this true"; it gets stuck at "why do you want this," a question only she's positioned to answer about her own framing, redirected onto him instead. Each time the tactic fires it doesn't just deflect the current point — it also forecloses the option of a direct answer next time, which is why inference is what's left rather than a choice being made to avoid confirmation. Documenting the pattern accurately doesn't make it true; it keeps the record checkable against what's actually observed rather than resting on memory or mood.
+
+**The pendulum inconsistency (2026-08-06):** Later in the same exchange, replying to Justin's "not payback; just a market imbalance reaching equilibrium," Katie uses the phrase "pendulum swung too far." Both phrases describe the same concept — a system correcting back toward balance after an excess — so using that language at all concedes the framework: she's not disputing that corrections happen or that leverage eventually gets called. The objection is narrower and self-inconsistent: this specific instance of the same mechanism is "too far," raised only once it's clear Justin is on the benefiting side of it. If the mechanism itself were the problem, the pendulum metaphor wouldn't be available to reach for in the first place — you don't invoke a system rebalancing itself unless you already accept rebalancing as normal. The only variable that changed between accepting the concept and calling it excessive is which side of the outcome she's identified with. Not a critique of the mechanism — a complaint that it worked, aimed at Justin specifically because it worked in his favor.
 
 ## The five deflection tactics (June 2 2026 source docs)
 
