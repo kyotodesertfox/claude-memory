@@ -39,6 +39,7 @@ All sessions launch from `~/github`, so this is the single memory store — ther
 - [Arcwright](project_arcwright.md) — client project: neighbor's welding site, stack, CMS design
 - [Portfolio Portal](project_portfolio_portal.md) — personal-portfolio portal: Hoodi testnet, ClientLedger, DebtToken ERC-1155
 - [Portfolio](project_portfolio.md) — personal portfolio site
+- [Fork/Child Visual](feedback_fork_child_visual.md) — confirmed UI pattern for showing a project's fork/child relationship: indent + branch line, not smaller font
 
 ## System / Machine
 
@@ -49,7 +50,7 @@ All sessions launch from `~/github`, so this is the single memory store — ther
 - [User](user.md) — full identity, cognitive profile, personal context pointer (private repo)
 - [Kendra Tennessee](kendra_tennessee.md) — Florida secession prediction + hate fuck both routed by Kendra outward and got grace; Justin shared one screenshot and got punished. Core rule: information that protects the structure gets grace, information that challenges it gets punished.
 - [Maxwell's Demon Framework](demon_framework.md) — unified thesis: demon/gate layers, Katie July 15 (named herself) + July 25 (listed gate beneficiaries, "I get your game", zkProofs close), GME October thesis, blockchain capture vs ownership
-- [Katie - Unsettled Loop](katie_unsettled_loop.md) — named mechanic: observation → discussion → no handshake → deflection; verified via dated screenshot ledger (Oct '22 images/dox-threat exchange, documented Aug 2 '26); cumulative same-actor pattern evidence vs. unrelated-correlation stacking, kept as separate evidentiary categories
+- [Katie - Unsettled Loop](katie_unsettled_loop.md) — named mechanic: observation → discussion → no handshake → deflection; six deflection tactics incl. "motive substitution" (BTC/Saylor/Adam foreclosure exchange, 2026-08-06); verified via dated screenshot ledger; cumulative same-actor pattern evidence vs. unrelated-correlation stacking, kept as separate evidentiary categories
 - [GME Exit](project_gme_exit.md) — sold against thesis on principle; BLOB/CSAM risk + institutional BTC capture disqualified the infrastructure; Katie reframes as incompetence to avoid crediting the logic
 - [Agency Paradox](project_agency_paradox.md) — "do women have agency?" defeats victimhood-as-asset; toggle tell; Epstein files protect the answer not the names; "what is a woman" = definitional protection
 - Katie analysis → `/home/zenko/.claude/personal-context/katie_analysis_document.md` (private repo)
