@@ -47,8 +47,15 @@ proven by  a DEPOSIT transaction (carries owner + accountID inline)
 67,896 - roughly 15% of the history. Anything minted outside that window is not
 listed above.
 
-`creatorFeeBips` here IS the `royalty_percentage` input for reconstruction, per
-mint. Do not guess it - 10 on most, 0 on three.
+`creatorFeeBips` here IS the `royalty_percentage` input, per mint. Do not guess it.
+
+**Confirmed 2026-08-09 from NFT_DATA calldata: all 13 of his that carry NFT_DATA read
+`creatorFeeBips = 10`, including Quest POI.** So royalty 10 was already correct in the
+hash attempts and is ELIMINATED as the cause of those misses. The 0 values in the mint
+table below are byte-65 reads on mints with no NFT_DATA counterpart.
+
+`royaltyPercentage` in the SDK and `creatorFeeBips` in the circuit are the same field -
+`sign_tools.ts` signs Poseidon over exactly the six inputs `NftDataGadget` hashes.
 
 Note "Pizza Pie on a Stone" displays **85** in the wallet. That is the balance
 held now, not the mint amount. Two candidates have `amount = 100`

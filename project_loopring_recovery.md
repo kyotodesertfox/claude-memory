@@ -53,9 +53,11 @@ re-parsing the blocks out of the archive and anchoring on L1 transaction hash.
 Every NFT ever minted on Loopring has this permanently recoverable. **This is the part
 that proves authorship, and nobody else can produce it.**
 
-Correction to the list above: **collection address is NOT in the mint.** NFT_MINT is 68
-bytes and carries no collection field. It resolves only for NFTs that reached L1, from the
-logs the collection contract emitted on withdrawal. See the CREATE2 section below.
+Correction to the list above: **the collection address is not in the MINT**, which is 68
+bytes and has no room for it. **But it IS in calldata** - NFT_DATA (type 9) transactions
+carry it, 18,244 distinct nftIDs worth. See [[project-loopring-protocol]] for the layout.
+Memory previously claimed NFT_DATA does not exist on mainnet; that was false and it cost a
+whole detour through CREATE2 and L1 logs on 2026-08-09.
 
 **Content - conditional, and the conditions are now measured rather than assumed.** Two
 independent blockers:

@@ -26,8 +26,12 @@ where `NftMintTransaction.process` calls `NftDataTransaction.readDualNftData(...
 NFT_DATA (type 9) transactions** placed after the mint. The stated reason is real: the
 full NFT payload needs 76 bytes and only 68 are available per transaction.
 
-**That revision never ran on mainnet.** Deployed blocks are `blockVersion 17`, contain
-**zero type-9 transactions**, and carry `nftID` inline in the mint at offset 33.
+**CORRECTED 2026-08-09 - THIS WAS WRONG.** Deployed blocks carry `nftID` inline in the
+mint at offset 33, which is real. But the claim that they contain **zero type-9
+transactions is false**. The archive holds **82,314 NFT_DATA transactions**, covering
+18,244 distinct nftIDs, every one carrying both minter and collection. Both mechanisms ran
+on mainnet at once. The error came from never counting transaction types across the
+corpus; it was assumed from a handful of blocks that happened to contain no type-9.
 
 This was discovered the hard way on 2026-08-02: the decoder was "corrected" to the
 source layout and would have replaced working nftIDs with nulls had it not been tested
@@ -228,9 +232,41 @@ The `creatorFeeBips` width was a real bug in the original decoder: `readUint(65,
 returned **2560** where the true value was **10**. Confirmed by re-parsing the block from
 the archive, and the protocol `Nft` struct declares it `uint8`, which agrees.
 
-Not yet disambiguated: byte 1 is `nftType` in the deployed layout and `mintType` in the
-source layout. Every live sample so far has nftType 0 (ERC1155), so a value of 0 is
-consistent with both. An ERC721 (`nftType = 1`) sample would settle it.
+**RESOLVED 2026-08-09: byte 1 is `mintType`, NOT `nftType`.** Counted across all 2,494
+mints in the archive: **1,976 carry 0 and 518 carry 2.** Two is not a valid NftType
+(0=ERC1155, 1=ERC721) but is exactly the deposit branch in the source
+(`if (mint.mintType == 2)`, requiring `creatorFeeBips == 0` and minter == token contract).
+
+**This is a live bug in `scripts/derive-from-calldata.js`** - it writes byte 1 into the
+`nft_type` column, so 518 rows in `nft_mints` claim a standard that does not exist. The
+real `nftType` is only available from NFT_DATA, byte 41.
+
+### NFT_DATA (9) - VERIFIED LIVE, matches source exactly
+
+**82,314 of these exist in the archive.** Emitted in PAIRS on the same nftID, differing
+only in `scheme` and the trailing address.
+
+| Offset | Size | Field |
+|---|---|---|
+| 0 | 1 | type |
+| 1 | 1 | **scheme**: 0 = WITH_MINTER_ADDRESS, 1 = WITH_TOKEN_ADDRESS |
+| 2 | 4 | accountID (the `to` or `from` account) |
+| 6 | 2 | tokenID (NFT slot) |
+| 8 | 32 | nftID |
+| 40 | 1 | creatorFeeBips |
+| 41 | 1 | **nftType** (the real one) |
+| 42 | 20 | minter (scheme 0) **or collection address (scheme 1)** |
+
+**This is how a collection resolves from calldata.** 18,244 distinct nftIDs, all with both
+halves present. It supersedes the L1-log route (679 nftIDs) as the primary source - the
+logs remain valid corroboration.
+
+Coverage is not universal: NFT_DATA accompanies L1-touching events, so an NFT that only
+ever lived on L2 has none. For those the collection is genuinely unavailable.
+
+`creatorFeeBips` values seen live: **0, 5 and 10.** It is a plain percentage, never
+multiplied. Nothing in any contract or circuit does arithmetic with it - royalty was
+enforced entirely off-chain.
 
 ## Float encodings
 
