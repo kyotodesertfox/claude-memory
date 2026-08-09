@@ -417,8 +417,43 @@ no Contract metadata forever on L1"; the newer path gives each collection its ow
 contract. That is a plausible explanation for the low-integer and address-shaped nftID
 families sitting alongside CID-shaped ones.
 
-**Still unswept:** `amm/`, `thirdparty/` (vendored OpenZeppelin), `test/`, the hebao
-packages, and the circuits beyond `NftMintCircuit`.
+### The smart wallet (hebao_v2) - swept 2026-08-09
+
+`upstream/protocols/packages/hebao_v2/` is the wallet deployed in the NFT era. 80 .sol.
+Structure: `base/SmartWallet.sol` plus `base/libwallet/` - Guardian, Recover, Inheritance,
+Lock, Quota, Whitelist, MetaTx, ERC1271, Upgrade, Approval.
+
+**Proving control of a Loopring smart wallet is just the owner's signature.**
+`ERC1271Lib.isValidSignature` is `signHash.verifySignature(wallet.owner, signature)`,
+returning 0 if the wallet is locked. [[project-loopring-recovery]] frames EOA `ecrecover`
+and smart-wallet EIP-1271 as two paths needing separate handling. **It is the same
+ecrecover, reached through the wallet's `owner` field.** The only extra state is the lock
+flag.
+
+`WalletFactory.computeWalletAddress(owner, salt)` is public, using the same
+`"WALLET_CREATION"` derivation, so a wallet address is derivable without the wallet
+existing. `CREATE_WALLET_TYPEHASH` covers
+`(owner, guardians, quota, inheritor, feeRecipient, feeToken, maxFeeAmount, salt)`.
+
+`hebao_v3` is full ERC-4337 account abstraction and is unexplored.
+
+### The NFT circuits - what they constrain
+
+`NftMintCircuit` inputs include **`tokenAddress` explicitly**. The collection IS known to
+the ZK witness at mint time and simply never reaches the 68-byte data availability. That is
+the same conclusion as the Poseidon identity hash, reached from the input list instead.
+
+Enforced: `requireMinterNotToken` (non-deposits), `require_tokenAccountOwner_eq_tokenAddress`,
+`requireToSelf`, `requireNonZeroAmount`, `requireValidUntil`, `requireValidFee`,
+`requireFeeTokenNotNFT`. Deposits skip the signature requirement via `isNotDeposit` /
+`needsSignature`, which is the same mintType split byte 1 carries.
+
+`NftDataCircuit` enforces `minterZeroAddress` - each NFT_DATA tx carries ONE address slot
+and zeroes the other, with the scheme byte saying which. That independently confirms the
+decoded layout.
+
+**Still unswept:** `amm/`, `thirdparty/` (vendored OpenZeppelin and similar - other
+people's libraries copied in, nothing Loopring-specific), `test/`, and hebao_v1/v3.
 
 ## Finding submissions
 
