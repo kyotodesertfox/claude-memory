@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: bb2f3712-7c8e-4d4d-81ef-635507cd95dd
-  modified: 2026-08-07T04:56:28.922Z
+  modified: 2026-08-07T17:30:19.775Z
 ---
 
 All contracts live at `~/github/homestead/contracts/`. All are UUPS upgradeable (OZ). **Never reorder or delete storage variables** — add new ones above `__gap` and reduce gap size accordingly.
@@ -47,6 +47,8 @@ Read directly from the deployed contracts while building the admin Map tab. This
 
 `AdminPage` gates on `Treasury.owner()`, so the wallet that can open the console cannot actually call setters on any of the other contracts. Pending task #2 ("transfer ownership of all deployed contracts") is the fix; until then every non-Treasury setter in the console will revert for the Treasury owner wallet.
 
+**This is sequencing, not an oversight** (confirmed 2026-08-06). Treasury was transferred first deliberately — it's the most authoritative contract. Recovery model if the deploy wallet (`0x202ECf22...`) is ever lost: the affected contracts would be treated as untrusted, redeployed, and reassigned under the correct ownership account to maintain continuity. Still worth finishing soon though — the split matters beyond hygiene: publicly sole builder (`lonewolf_eth` / `HomesteadXC`) with real inbound from legitimate ecosystem contacts (Inference Room, see `project.md`) means a public admin console next to a visible ownership split is reconnaissance value for a spearphishing attempt, not just an audit finding. Surfaced while discussing whether to publish a screenshot of the Map tab — the screenshot itself was not published.
+
 **Deployed implementations are behind the repo source.** These getters exist in `contracts/` but revert on chain, which means the impl behind the proxy predates them:
 - `DEXFactory.pairTreasury` — Release 2 not deployed
 - `NFTDeployer.beacon` — still the old `contracts/nftDeployer_old/` deploy, pre-beacon
@@ -66,7 +68,7 @@ Read directly from the deployed contracts while building the admin Map tab. This
 
 ---
 
-## Admin Wiring Map (branch `feature/health-map`, 2026-08-06)
+## Admin Wiring Map (merged to main 2026-08-06, commit `9ac0976` — branch `feature/health-map` still on remote, not deleted)
 
 New `Map` tab, first in the admin console. Additive — the other six tabs are untouched.
 
