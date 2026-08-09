@@ -335,6 +335,47 @@ template and is not - it is per-token and both were being asked about the same t
 substitutes `{id}`, then fetches JSON. Exactly the branch `pages/api/nft-metadata.ts`
 already implements.
 
+## Hashing is PROVEN CORRECT - stop suspecting it (2026-08-09)
+
+Verified against kubo 0.43.0, the reference implementation, run locally. Not our code
+checking our code:
+
+```
+file  -> CIDv0     kubo agrees 5/5, single-chunk AND multi-chunk
+JSON  -> CIDv0     kubo agrees 4/4, including CRLF and trailing-whitespace documents
+nftID -> CIDv0     the deployed collection's uri() agrees 3/3
+```
+
+**This closes the "multi-chunk was never confirmed" open question** carried in
+[[project-loopring-own-mints]]. `ipfs-only-hash` with `cidVersion: 0` matches kubo's
+defaults exactly at every size.
+
+For the metadata document the parameter space is CLOSED, not merely sampled: a small JSON
+is one block so the chunker is irrelevant; CIDv1 with dag-pb yields the same 32-byte
+digest as CIDv0, and nftID is only the digest; the sole setting that changes it is raw
+leaves, where the digest becomes plain `sha256(bytes)`, and that was tested. **There is no
+remaining hashing variant. A miss is never the hasher.**
+
+### kubo: the snap package is a dead stub
+
+`snap install ipfs` gives a binary that refuses to run - "Kubo is not distributed through
+Snap anymore". A prior session hit this on Jul 28, left no note, and the same wall was hit
+again on 2026-08-09. **Download the tarball from `dist.ipfs.tech` and run it in place;**
+no root, no package manager. It cost time twice.
+
+### Retrieval: the first honest negative result
+
+Ran a real DHT provider walk from a local kubo node against all 24 of his nftIDs
+(23 archive-derived plus Coffee House Pack from his wallet). **Zero providers on all 24.**
+
+Every previous "gone" call in this project came from a public read gateway timing out,
+which is inconclusive. A local node doing its own provider walk is the correct instrument
+and this is the first time it was used. Still not proof of deletion: a node holding the
+data but never announcing to the DHT, or one offline at the time, looks identical. Strong
+evidence, not certainty.
+
+Fetch-only. Nothing of his was added, announced or served.
+
 ## The metadata resolution model
 
 There is no universal rule. Resolution is determined by each collection contract.

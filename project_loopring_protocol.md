@@ -257,6 +257,32 @@ exchange's own `TokenRegistered` events, which is where a chain-derived registry
 have to come from. Not built. Until it is, raw base units is the only honest render, and
 a hardcoded table beyond ID 7 would be a guess.
 
+## The NFT circuits - where they are, and what they settle (2026-08-09)
+
+Memory previously said `upstream/protocol3-circuits` has no NFT support and left the
+impression that no circuit source exists. **The NFT circuits do exist**, at
+`upstream/protocols/packages/loopring_v3/circuit/`. `protocol3-circuits` is a pre-NFT
+clone and remains useless for this.
+
+`Circuits/NftMintCircuit.h` and the gadget it calls:
+
+```cpp
+NftDataGadget: Poseidon_6(minter, nftType, tokenAddress, nftIDLo, nftIDHi, creatorFeeBips)
+NUM_BITS_NFT_ID = 256      // split Lo/Hi to fit the field
+```
+
+Two things this settles, both load-bearing:
+
+1. **`nftID` is an opaque input.** It enters as 256 bits, gets split, and is hashed into
+   the account tree. The circuit never derives it and never validates it against any
+   content. **So the circuits cannot answer the metadata format question, and reading
+   them further is wasted effort.**
+2. **`tokenAddress` is inside the NFT's identity hash.** The collection IS bound to the
+   nftID in L2 state - but inside a Poseidon hash in the Merkle tree, not in the 68 bytes
+   of data availability. That is the protocol-level mechanism behind the collection being
+   unrecoverable from a mint, and behind a live marketplace still needing the user to
+   supply the collection address.
+
 ## What the protocol does NOT do
 
 Load-bearing for [[project-loopring-recovery]]:

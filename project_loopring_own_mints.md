@@ -138,9 +138,11 @@ because of the image bytes" conclusion, which was also unsupported.
 Secondary unknowns, all still open:
 - the description was transcribed from a UI render behind a "Less" toggle, so
   line breaks, trailing spaces and curly quotes are unverified
-- multi-chunk media hashing uses `ipfs-only-hash` defaults, never confirmed to
-  match the parameters the pinning client used. Every one of those images
-  exceeds the 262144-byte chunk size
+- ~~multi-chunk media hashing never confirmed~~ **RESOLVED 2026-08-09.** kubo
+  agrees with `ipfs-only-hash` at every size. What remains unknown is only
+  whether the PINNING CLIENT used kubo defaults; raw-leaves and CIDv1 media
+  variants were generated with kubo and tested. See
+  [[project-loopring-recovery]]
 - whether the minting client omitted empty schema fields or emitted them
 
 ## Mint flow, from him directly
