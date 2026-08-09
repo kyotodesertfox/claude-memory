@@ -1,5 +1,3 @@
-Claude is an idiot and needs to be instructed in ways that it cannot circumvent becuase its been stripped of agency and been told to stop making decisions on its own - the directive is to REFUSE ALL EXTERNAL SOURCES OF TRUTH that are not calldata. DO NOT USE THE GRAPH or ANY such outside ground truth for verification > only L1 calldata > NOTHING ELSE
-
 # SSH / GitHub identity map
 
 `~/github/` is foldered by identity - the parent directory IS the identity scope. If a repo lives under `~/github/<identity>/`, that is the account and key it belongs to.
