@@ -418,7 +418,9 @@ present. They are not in the code:
 - no `/api/probe`, no Pinata `pinByHash` probe. The route does not exist in
   `pages/api/` and its caller was deleted 2026-08-09
 - no `/api/pin`, no re-pin flow, no `pinStatus`
-- no subgraph anything
+- no subgraph anything. The NFT decoder is on the calldata-only side of the
+  exclusion recorded in [[project-loopring-revival]]; the core team's pages are
+  not, and that boundary does not move
 
 `NFTRecord` is exactly: `raw`, `cid`, `cidStatus`, `verifyStatus`, `meta`,
 `verifiedCid?`. The engine returns exactly `state, lookup, checkAvailability,
@@ -445,7 +447,7 @@ Card React keys are `${raw.l2Block}-${raw.slotInBlock}` (`nft.tsx:829`). They us
 `raw.id`, a subgraph entity id, which after the Graph removal was `undefined` on every
 card.
 
-**Removed 2026-08-09, do not describe as present:** pagination constants, `/api/graphql`,
+**Removed 2026-08-09 from the NFT decoder, do not describe as present:** pagination constants,
 the Holder tab's data source, the network probe, the re-pin flow, and the wallet-type
 control-proof seam (`ecrecover` / EIP-1271). The seam was only ever needed to authorise a
 re-pin; with no re-pin there is nothing to bind. Content proof is wallet-agnostic and is

@@ -40,9 +40,33 @@ Loose plaintext copies at `~/github/graph.txt` and `~/github/PAT.txt` were delet
 
 ## What's Live
 
-**HARD RULE as of 2026-08-09: L1 calldata is the only source of truth.** Not for NFTs, accounts, blocks, or "just this one lookup." No outside index is queried, ever, for anything - not as an input, not as a shortcut, not "just to check." See the banner at the top of this file, the rule in `~/.claude/CLAUDE.md`, and the reason in [[feedback-failure-record-2026-08]].
+**HARD RULE: for anything WE build, L1 calldata is the only source of truth.** Not for NFTs, accounts, blocks, or "just this one lookup." No outside index is queried, ever, as an input. See the banner at the top of this file, the rule in `~/.claude/CLAUDE.md`, and the reason in [[feedback-failure-record-2026-08]].
 
-The indexed data layer was removed from the codebase entirely on 2026-08-09. No endpoint, ID, key or query shape is recorded anywhere in memory, deliberately. **If a future session finds itself wanting them, that is the failure recurring, and the correct response is to stop and say the field is unavailable.**
+### The one exclusion, and why it is one (2026-08-09)
+
+**Loopring's own core-team explorer runs as they shipped it, subgraph and all.**
+
+The line is AUTHORSHIP, not convenience. That code is theirs. Preserving it means
+preserving how it worked, and rewriting their pages onto a different data source would be
+altering their work, not restoring it. The owner's phrasing: acceptable proximity.
+
+Covered by the exclusion - all core-team authored:
+`pages/index.tsx` (landing), `/blocks`, `/transactions`, `/pairs`, `/search`, and the
+`block/[id]`, `tx/[id]`, `account/[id]`, `pair/[id]`, `nft/[id]`, `collections/[address]`
+detail pages, plus `generated/`, `graphql/`, `codegen.yml`, `pages/api/graphql.ts`,
+`components/USDPriceValue.tsx`, `hooks/useTokenUSDPrice.ts` and the Apollo deps.
+
+NOT covered, rule stands FIRM - everything we wrote:
+`pages/decode/index.tsx` (hub), `pages/decode/l1.tsx`, `pages/decode/nft.tsx`,
+`pages/decode/help.tsx`, `pages/ipfs.tsx`, every route under `pages/api/` except
+`graphql.ts`, and all of `scripts/`.
+
+**How this came about, so it is not mistaken for drift:** the removal was ordered without
+knowing the subgraph powered the core team's landing page. On finding that out the owner
+drew this line deliberately. It is the only exclusion. Adding a second one is not a
+judgement call available to a future session.
+
+The note lives in code too, directly above the two exports in `utils/config.ts`.
 
 - **Ethereum L1 calldata** - the source. Everything resolves from it.
   - Live RPC for the decode page: ZAN endpoint hardcoded in `utils/config.ts`. It is `NEXT_PUBLIC_`, so it ships in the browser bundle regardless and is origin-locked at the provider, which is why scripts cannot use it.
@@ -59,36 +83,45 @@ The Loopring REST API (`api3.loopring.io`) is completely offline - no amount of 
 | `hooks/useTokens.ts` | `exchange/tokens` | Returns `[]` | Derive the token registry from the exchange's `TokenRegistered` logs |
 | `hooks/useTokenPrices.ts` | `datacenter/getLatestTokenPrices` | USD value row hidden in account view | Replace with CoinGecko/oracle |
 | `hooks/usePendingTransactionData.ts` | `user/transactions` etc. | Returns null immediately | Requires live operator stack, not just API |
-| `pages/collections/[address].tsx` | `nft/public/collection` | **file deleted 2026-08-09** | A collection has no on-chain name: `name()`/`symbol()` are unimplemented and `contractURI()` points at the dead `nftinfos.loopring.io`. Identify it by the NFTs inside it. |
+| `pages/collections/[address].tsx` | `nft/public/collection` | restored; silently returns `{}`, no collection name/avatar | A collection has no on-chain name: `name()`/`symbol()` are unimplemented and `contractURI()` points at the dead `nftinfos.loopring.io`. Identify it by the NFTs inside it. |
 
 **Trading cannot be restarted on Loopring's contracts** - but see "Self-Sovereign Operator" section below for own deployment.
 
 ## What Was Changed
 
-### The Graph is fully gone (2026-08-09)
-Earlier versions of this section documented `pages/api/graphql.ts`, `utils/config.ts`
-pointing `LOOPRING_SUBGRAPH` at that proxy, and a `graphql/index.ts` ApolloLink shim.
-**None of those files exist.** `generated/` and `graphql/` were deleted, and the 34 source
-files that imported them were deleted with them - 10 pages, 15 Graph-importing components
-and hooks, and 9 more that broke through those. `package-lock.json` was pruned of 51
-Apollo and GraphQL entries so a fresh install cannot pull them back.
+### Current state of the tree (2026-08-09, after the restore)
 
-### Surviving pages, exhaustive
-```
-pages/index.tsx        landing page, static, links the tools below
-pages/decode.tsx       L1 block decoder
-pages/decode/nft.tsx   NFT decoder, archive-backed
-pages/decode/help.tsx  methodology
-pages/ipfs.tsx         nftID <-> CIDv0 resolver
-pages/_app.tsx  pages/_document.tsx
-```
-`index.tsx` was three Graph-backed list views (latest blocks, transactions, pairs) and is
-now a static landing page. The nav search box was removed with it: it routed to `/search`,
-which needed `hooks/useSearch.ts`, which was a subgraph query. A calldata-backed search is
-buildable against the archive and is not built.
+The Graph was removed, then partially restored by owner decision. See the exclusion above.
 
-### Surviving API routes, exhaustive
 ```
+/                     core team landing page          subgraph  (excluded)
+/blocks /transactions /pairs /search                  subgraph  (excluded)
+/block/[id] /tx/[id] /account/[id] /pair/[id]
+/nft/[id] /collections/[address]                      subgraph  (excluded)
+
+/decode                hub, the single "Decoder" nav entry       calldata only
+/decode/l1             block decoder (was /decode)               calldata only
+/decode/nft            NFT decoder, disabled on the hub          calldata only
+/decode/help           methodology                               calldata only
+/ipfs                  routable, unlinked                        calldata only
+```
+
+Nav: the two entries (L1 Decode, NFT Decoder) collapsed into one, "Decoder", pointing at
+the hub. The NFT decoder card on the hub is disabled with a COMING SOON badge while it is
+built out, and the IPFS resolver card was removed from the hub since it is part of the NFT
+decoder flow.
+
+**`/decode` used to be the block decoder.** It is now the hub, and the decoder is at
+`/decode/l1`. Old links land on the hub, one click away, not a 404. Two things moved with
+it that would otherwise have broken silently: the methodology page's back-link, and the
+Netlify contact form on the decoder, which POSTs to its own path.
+
+`/decoder` and `/decode` differ by one character and both resolve, so a wrong link will
+not 404 visibly.
+
+### API routes
+```
+pages/api/graphql.ts        subgraph proxy - EXCLUDED, core team pages only
 pages/api/calldata-nft.ts   address -> accountID -> mints, from the archive
 pages/api/nft-metadata.ts   uri(nftID) when a collection is known, else CIDv0(nftID)
 pages/api/cid.ts            UnixFS/dag-pb CIDv0 of raw bytes (ipfs-only-hash)
@@ -97,13 +130,7 @@ pages/api/eth-call.ts       raw L1 eth_call passthrough
 pages/api/hello.js          Next.js scaffold leftover
 ```
 There is no `/api/probe` and no `/api/pin`. The NFT page called both for weeks; both were
-404s. Callers deleted 2026-08-09.
-
-### Kept deliberately, currently unreferenced
-`components/table/`, the `transactionDetail/` renderers, `TabbedView`, `FallBackImg`, and
-utils like `clipboard.ts` and `getTokenAmount.ts`. None import The Graph; they were only
-orphaned because the pages using them are gone. They are the starting material if the
-block/tx/account views get rebuilt against the archive.
+404s, and the callers were deleted 2026-08-09. `/api/ipfs-resolve.ts` is also gone.
 
 ## Key Community Actors
 
@@ -146,12 +173,11 @@ Running own Loopring instance under lonewolf-loopring identity. Goal: submit ZK 
 4. Register as operator
 5. Generate valid block data and submit proof
 
-## Main List Views - DELETED 2026-08-09
+## Main List Views
 
-This section used to say blocks, transactions, pairs, NFTs and accounts "should work".
-They no longer exist. Every one of those pages was deleted along with the indexed data
-layer they read from. The only list view in the app is the NFT decoder's, which reads the
-archive.
+Blocks, transactions, pairs, NFTs and accounts run through Apollo and the subgraph, as the
+core team built them, and they work. That is the exclusion, not a violation.
 
-Rebuilding them is tractable: `blocks`, `l1_txs` and `l1_logs` in the archive hold
-everything those pages showed. Nothing about that work requires an outside index.
+They could be rebuilt against the archive - `blocks`, `l1_txs` and `l1_logs` hold what
+those pages show - but there is no reason to. Rewriting their code onto a different source
+is not restoration.
