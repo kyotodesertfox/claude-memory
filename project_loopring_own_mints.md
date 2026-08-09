@@ -71,11 +71,15 @@ chain fact, read by `eth_call`.
 | `0x8eb4228702fc4cdf202b9dc17cd50b05dce096fe` | **3D Metaverse Assets** | **Owner, first-hand.** NOT chain-derived. |
 | `0x7a5208036ceb854bcc1463943b4287f0449ef769` | **UNVERIFIED** | Recorded for future identification. Do not guess it. |
 
-**A collection has no name on-chain.** `name()` and `symbol()` are unimplemented on both,
-and `contractURI()` returns `https://nftinfos.loopring.io/<address>`, which is dead. The
-display name lived in Loopring's own service and is not recoverable from the chain. So a
-collection name can only come from the owner or from the content of the NFTs inside it -
-never from a derivation.
+**A collection has no name on-chain, BY DESIGN.** `name()` and `symbol()` are
+unimplemented on both, and `contractURI()` returns `https://nftinfos.loopring.io/<address>`,
+which is dead. Confirmed from the SDK's own `collectionNFT.md`: a collection's `name`,
+`description`, `avatar`, `banner` and `tileUri` were **stored on Loopring's service and
+user-editable there** - "Loopring own collection on L2, allow user to view/edit their
+Collection information." Never on-chain, not necessarily on IPFS.
+
+So a collection name can only come from the owner or from the NFTs inside it. It is not a
+gap in the derivation and no amount of chain work recovers it.
 
 Both are EIP-1167 proxies delegating to implementation
 `0xaf4c6c97c620425b9d05c6a12f886d14a04eff06`, which is NOT the implementation baked into

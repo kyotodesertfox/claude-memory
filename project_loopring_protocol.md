@@ -379,8 +379,46 @@ fees remain unverifiable since SPOT_TRADE has no Solidity.
 `forceWithdraw`, `notifyForcedRequestTooOld`, `withdrawFromMerkleTree`,
 `isInWithdrawalMode` (which is simply `withdrawalModeStartTime > 0`).
 
-**Still unswept:** `aux/` beyond the NFT contracts, `amm/`, `thirdparty/` (vendored
-OpenZeppelin), `test/`, and the circuits beyond `NftMintCircuit`.
+### aux/ and the smart wallet - swept 2026-08-09
+
+**`hebao_v1`, `hebao_v2` and `hebao_v3` exist in `upstream/protocols/packages/`.** These
+are the Loopring Smart Wallet contracts and memory had no record of them. `hebao_v3`
+contains full ERC-4337 account-abstraction code. Unexplored.
+
+**The counterfactual SMART WALLET derivation is in the contracts**, in
+`thirdparty/loopring-wallet/WalletDeploymentLib.sol`:
+```
+salt    = keccak256("WALLET_CREATION" || owner || salt)
+code    = WalletProxy creationCode ++ abi.encode(walletImplementation)
+address = CREATE2(deployer, salt, code)
+```
+`aux/agents/LoopringWalletAgent.sol` is how a wallet that does not exist yet still
+authorizes L2 transactions: `MAX_TIME_VALID_AFTER_CREATION = 7 days` plus
+`_canInitialOwnerAuthorizeTransactions`.
+
+**The word "counterfactual" appears nowhere in the loopring_v3 contracts** except a
+comment in the vendored `Create2.sol`. It is SDK-side vocabulary:
+`CounterFactualInfo` (wallets) and `NFTCounterFactualInfo` (`{nftOwner, nftFactory,
+nftBaseUri}`) in `account_defs.ts`. There is no `CounterfactualNFT` contract anywhere in
+either repo.
+
+**`"NFT_CONTRACT_CREATION"` appears ONLY in the SDK, never in any contract.** The only
+CREATE2 constant string in the whole contract tree is `"WALLET_CREATION"`. This is
+independent confirmation that the NFT factory's source is not in this repo.
+
+**The SDK's published `computeNFTAddress` vector is unusable.** `metaNFT.md` gives owner
+`0xE20cF871...`, factory `0x40F2C1770E11c5bbA3A26aEeF89616D209705C5D`, expecting
+`0xee354d81778a4c5a08fd9dbeb5cfd01a840a746d`. That factory is in neither factory table and
+none of the four known creation codes reproduce it. Do not treat a mismatch there as a bug
+in the derivation - the implementation is validated by the mainnet hit instead.
+
+**Two mint eras, from `mintNFT.md`:** the simple path mints into a shared contract "with
+no Contract metadata forever on L1"; the newer path gives each collection its own
+contract. That is a plausible explanation for the low-integer and address-shaped nftID
+families sitting alongside CID-shaped ones.
+
+**Still unswept:** `amm/`, `thirdparty/` (vendored OpenZeppelin), `test/`, the hebao
+packages, and the circuits beyond `NftMintCircuit`.
 
 ## Finding submissions
 
