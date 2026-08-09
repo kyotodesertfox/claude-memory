@@ -12,7 +12,9 @@ Only these two identity folders exist at the top level - there is no third bucke
 
 ## kyotodesertfox (`~/github/kyotodesertfox/`)
 
-homestead, homestead-mini, personal-portfolio, arcwright, adult-market, beer-bot (remote repo name: `discord-beer-bot`)
+homestead, homestead-mini, personal-portfolio, arcwright, adult-market, beer-bot (remote repo name: `discord-beer-bot`), qr-tab, popup-zapper
+
+Chrome extensions (`qr-tab`, `popup-zapper`) both live here, public repos, moved in from the `~/github` root on 2026-08-09.
 
 ## lonewolf-loopring (`~/github/lonewolf-loopring/`)
 
