@@ -102,7 +102,10 @@ had no traits.
 - `derive-from-calldata.js` - builds `nft_mints` and `account_owner` from block
   data. No network.
 - `merge-archive.js` - merges a prior archive, re-verifying every block.
-- `prove-nft.js` / `sweep.js` - the reconstruction sweep. No network.
+- `prove-nft.js` / `sweep.js` - **DELETED 2026-08-09.** They were the
+  reconstruction sweep. Removed as artifacts of a direction that was never
+  asked for, and worthless regardless: never validated against a known-good
+  sample, so every miss was uninterpretable.
 
 See [[project-loopring-recovery]] for the metadata blueprint and
 [[feedback-failure-record-2026-08]] for what went wrong in the session that

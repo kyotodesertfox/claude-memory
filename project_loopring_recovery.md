@@ -202,9 +202,9 @@ as empty strings, and the whitespace variants.
   `pages/nft/[id].tsx`. It did not. That file only rendered
   `royalty_percentage` into a table from fetched metadata, and it was deleted
   entirely on 2026-08-09 with the rest of the Graph-dependent pages. The
-  candidate-JSON builder that does exist is `scripts/prove-nft.js` plus
-  `scripts/sweep.js`, both untracked and both unvalidated - see
-  [[project-loopring-own-mints]].
+  two scripts that did it, `prove-nft.js` and `sweep.js`, were deleted
+  2026-08-09 as artifacts of a direction that was never asked for. **No code in
+  the repo builds a candidate JSON.** See [[project-loopring-own-mints]].
 - **The three known-good samples were never saved.** Only their properties went
   into memory - sizes, separator and trailing variants. The bytes are gone, so
   there is no fixture to validate a builder against.
