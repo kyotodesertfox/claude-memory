@@ -28,11 +28,12 @@ All sessions launch from `~/github`, so this is the single memory store — ther
 
 - [Loopring Protocol / Decode Reference](project_loopring_protocol.md) — decode reference for L1 block calldata, cross-checked against protocol source AND live mainnet blocks. **Key fact: the published repo source does NOT match what was deployed for NFT mints — deployed blocks carry nftID inline and contain zero NFT_DATA transactions. When source and live data conflict, live data wins.** Per-type layouts labelled by how each was verified, plus the creatorFeeBips 1-byte fix, the Float24 transfer fix, why zero addresses are correct, and the token-decimals accuracy trap.
 - [Loopring Recovery](project_loopring_recovery.md) — **THE METADATA JSON FORMAT IS CRACKED AND BYTE-VERIFIED** (2026-08-03): flat 4-field JSON, keys alphabetically sorted, CRLF endings, no indent; only the field separator (1-2 CRLF) and trailing whitespace (0-3 CRLF) vary, so reconstruction is 8 deterministic candidates, not a search. Three L2-only NFTs reproduced exactly, proving CIDv0(nftID) resolves to live content for never-deployed collections. Also: nftID addresses the METADATA, not the image (why hashing an image never matches); the SDK conversion is Loopring-canonical with a committed test vector; CREATE2 salt bakes in the baseURI; and the "smart wallets only" claim was false (EOAs resolve fine). Provenance is unconditionally rebuildable from calldata alone; content needs the creator's exact original bytes.
-- [Loopring Revival](project_loopring_revival.md) — read-only explorer revival under lonewolf-loopring identity; what's live (Graph), what's dead (REST API stubs), per-file restore paths, self-sovereign operator (Sepolia) status
-- [Decoder Community Reception](project_decoder_community_reception.md) — full arc: decoder announced, hostility/deflection pattern documented, apology extracted, one genuine good-faith resolution (contrast case), final asymmetric-accountability observation
-- [Apollo Programmatic Queries](feedback_apollo_programmatic.md) — never use Apollo hooks (useLazyQuery/client.query) in sequential/programmatic loops, causes stale-data and cache-policy bugs; use raw fetch to /api/graphql instead
+- [Loopring Revival](project_loopring_revival.md) — read-only explorer revival under lonewolf-loopring identity; calldata-only as of 2026-08-09 (Graph removed entirely), what is dead (REST API stubs), per-file restore paths, self-sovereign operator (Sepolia) status
+- [Decoder Community Reception](project_decoder_community_reception.md) — full arc: decoder announced, hostility/deflection pattern documented, apology extracted, one genuine good-faith resolution (contrast case), final asymmetric-accountability observation; plus why "reverse engineering" is a mislabel to refuse rather than justify
+- [Apollo Programmatic Queries](feedback_apollo_programmatic.md) — never use Apollo hooks (useLazyQuery/client.query) in sequential/programmatic loops, causes stale-data and cache-policy bugs; the proxy route is deleted; use the archive-backed API instead - see feedback_failure_record_2026_08.md
 - [Precision Over Helpfulness](feedback_precision_over_helpfulness.md) — don't validate/extend unfounded theories just to seem agreeable, especially re: other people's motives/intent; say "I don't know" mid-conversation when warranted; refined: "what does evidence show" (answerable) vs "what is the truth about hidden intent" (usually not)
-- [Verify Before Asserting](feedback_verify_before_asserting.md) — stop collapsing ambiguous signals into confident conclusions; check directly instead of inferring; root cause of the verify bug, premature "gone" calls, and the GitHub identity mistake
+- [Failure Record 2026-08](feedback_failure_record_2026_08.md) — dated evidence of ~14 repeats of the same failure in one session, including building the Loopring recovery tool on The Graph, which negates the project's only requirement. Read before assuming any prior "verified" claim was verified against the chain.
+- [Verify Before Asserting](feedback_verify_before_asserting.md) — stop collapsing ambiguous signals into confident conclusions; check directly instead of inferring; root cause of the verify bug, premature "gone" calls, and the GitHub identity mistake. **Grep memory BEFORE responding to any claim about his work, not after being told to** — recurred 4x in conversation Aug 8 '26
 
 ## Other client/personal projects
 
@@ -58,6 +59,7 @@ All sessions launch from `~/github`, so this is the single memory store — ther
 ## Working feedback (general)
 
 - [Decode First](feedback_decode_first.md) — fetch a real tx and read the hex structure before writing any ABI parser; don't guess the ABI
+- [Docs vs Bytecode](feedback_docs_vs_bytecode.md) — "judge us by our actions (zkProofs), not our words (documentation)"; verification that needs no trust in the source vs a claim that does; and where the instrument mis-fires
 - [Magical Beans](feedback_magical_beans.md) — Justin's term for fiat money; never Adam's or Katie's phrase
 - [Speaker Attribution](feedback_text_screenshots.md) — I consistently get who-said-what backwards; confirmed in screenshots (blue right=Justin) AND in plain-text transcripts (check tags, don't assume)
 - [Memory Review Before Writing](feedback_memory_review.md) — always draft memory content and show Justin for approval before writing; hold this even mid-session when momentum picks up
@@ -68,6 +70,6 @@ All sessions launch from `~/github`, so this is the single memory store — ther
 
 ## References
 
-- [References](references.md) — beer-bot location/access/commands, Pi access, Taiko contacts
+- [References](references.md) — beer-bot location/access/commands, Pi access, Taiko contacts, **people: Ryan Kagy (@RSKAGY) and Autodestructive/@LoopExchange — read before reacting to either name**
 - [SSH/GitHub Identities](IDENTITIES.md) — canonical identity map: which account/key owns which repo, why ~/github is foldered by identity, the plain-github.com remote gotcha. Check before any identity-sensitive action. `~/.ssh/IDENTITIES.md` symlinks here.
 - [Memory Cleanup](project_memory_cleanup.md) — DONE 2026-07-30: fully consolidated the untracked homestead/loopring-explorer per-directory stores into this one tracked store, since sessions always launch from ~/github and those stores would otherwise never be read again; nft_beacon merge complete; old stores retired in place (MEMORY.md pointer left, no files deleted)

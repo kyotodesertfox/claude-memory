@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 3e67c461-c495-4661-b9be-24099316febd
-  modified: 2026-07-28T23:49:43.768Z
+  modified: 2026-08-09T05:36:52.548Z
 ---
 
 ## Overview
@@ -36,11 +36,14 @@ Loose plaintext copies at `~/github/graph.txt` and `~/github/PAT.txt` were delet
 
 ## What's Live
 
-- **The Graph subgraph** - Loopring zkRollup on Ethereum mainnet
-  - Subgraph ID: `8Z15oyPLRCYzVdNbjKSU2iD8BE6Sj8PZRV4KddDuvuk2`
-  - Auth: `Authorization: Bearer {API_KEY}` header (NOT `X-API-KEY`)
-  - API key is 32-character hex
-- **Ethereum L1 calldata** via Infura/ZAN endpoint (block parser reads raw L2 tx data)
+**HARD RULE as of 2026-08-09: L1 calldata is the only source of truth. The Graph is not used to resolve anything, ever.** Not for NFTs, accounts, blocks, or "just this one lookup." A third-party index may only be compared against a result already derived from calldata, after the fact. See the rule in `~/.claude/CLAUDE.md` and the reason in [[feedback-failure-record-2026-08]].
+
+The subgraph was removed from the codebase entirely on 2026-08-09 - Apollo and all GraphQL packages uninstalled, `graphql/`, `generated/`, `codegen.yml` and the proxy route deleted. Its ID and API key are deliberately not recorded here. If a future session finds itself wanting them, that is the failure recurring.
+
+- **Ethereum L1 calldata** - the source. Everything resolves from it.
+  - Live RPC for the decode page: ZAN endpoint hardcoded in `utils/config.ts`. It is `NEXT_PUBLIC_`, so it ships in the browser bundle regardless and is origin-locked at the provider, which is why scripts cannot use it.
+  - Bulk collection: `scripts/archive.js`, public endpoints, self-verifying. `eth.drpc.org` serves archive `eth_getLogs` at 10k ranges - it failed once transiently and a whole false thesis got built on that single unretried request.
+- **The local archive** - `~/github/lonewolf-loopring/loopring-archive/loopring-archive.db`. Once built, the RPC access layer stops being a dependency at all.
 
 ## What's Dead
 

@@ -1,8 +1,11 @@
 ---
 name: project-loopring-protocol
 description: "Verified decode reference for Loopring v3 L1 block calldata - layouts cross-checked against protocol source AND live mainnet blocks, with the NFT divergence between them documented"
-metadata:
+metadata: 
+  node_type: memory
   type: project
+  originSessionId: 2520caa1-3a2c-4959-8a24-bd8d5985eb1c
+  modified: 2026-08-09T05:35:39.619Z
 ---
 
 # Loopring v3 L1 Calldata - Verified Decode Reference
@@ -41,7 +44,18 @@ the more rigorous move while being the wrong one.
 
 ### Verification receipts (2026-08-02)
 
-Ground truth taken from The Graph, independently of the decoder:
+**CORRECTED 2026-08-09.** These receipts were originally taken from The Graph, which negates the point of verifying anything - see [[feedback-failure-record-2026-08]]. They have since been **re-verified chain-only**, by parsing the archive and anchoring on L1 transaction hash rather than on anyone's block numbering. Every value below matched exactly on the fresh parse, so the LAYOUT is confirmed from the chain itself.
+
+**The block numbers below are The Graph's and are wrong.** On-chain `blockIdx`, taken from the indexed topic of the BlockSubmitted event, is **25 higher**:
+
+```
+The Graph "L2 block 67869"  ->  chain blockIdx 67894  (tx 0x008e577c...)
+The Graph "L2 block 67164"  ->  chain blockIdx 67189  (tx 0xb7581ec2...)
+```
+
+Anchor on the transaction hash, never on a block number from an index.
+
+Original receipts, values confirmed:
 
 ```
 L2 block 67869 slot 1   minterAccountID 305952        matches indexed minter.id
@@ -271,7 +285,26 @@ Load-bearing for [[project-loopring-recovery]]:
   any decoder change.
 - 2026-07-03 (approx): operator's last L1 transaction.
 
-## Full-corpus archive (2026-08-03)
+## Full-corpus archive (2026-08-03) - THE COMPLETENESS CLAIM WAS FALSE
+
+**CORRECTED 2026-08-09.** The archive described below was **not** the full corpus.
+It held blockIdx **57,917 to 67,896** - 9,954 blocks. The real history starts at
+blockIdx **1**. Roughly **85% was never collected**, and the "26-block hole"
+documented below was a rounding error next to it. The old run started from a late
+L1 block instead of searching for the deploy block.
+
+Why it went undetected: per-block `sha256(data) == publicDataHash` verification
+proves each block you HAVE is genuine. It cannot detect a block you never
+enumerated, because there is nothing there to check. Completeness and correctness
+are separate claims and only one was ever tested.
+
+**The fix, now in `scripts/archive.js`:** `BlockSubmitted` emits `blockIdx` as an
+indexed topic and they are strictly sequential, so the enumerated set must be
+contiguous. Any gap means `eth_getLogs` returned an incomplete answer for a range
+and marked it done anyway. The collector now records every blockIdx, re-queries
+ranges that fail the invariant, and refuses to fetch on an incomplete enumeration.
+
+Original (over-stated) text follows:
 
 Built a full archive of every block the operator ever submitted, so none of it
 depends on any outside index - checked every single one against its own on-chain

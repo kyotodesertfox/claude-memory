@@ -1,8 +1,11 @@
 ---
 name: project-decoder-community-reception
-description: "Decoder announced in Loopring Discord; documented non-substantive hostility pattern from one user in response"
-metadata:
+description: Decoder announced in Loopring Discord; documented non-substantive hostility pattern from one user in response
+metadata: 
+  node_type: memory
   type: project
+  originSessionId: 2520caa1-3a2c-4959-8a24-bd8d5985eb1c
+  modified: 2026-08-08T23:27:40.698Z
 ---
 
 Announced the finished decoder in the Loopring Discord ("verifies & parses L1 calldata, that is all it was designed to do" - a precisely scoped, modest claim). One user's (HRBTARDED) response was an escalating non-substantive pattern, documented in screenshots: opened with "reputation can't be recovered" framing (GameStop/Loopring both "rugged" their community) -> when that didn't hold against a counter-principle, escalated to an inflammatory comparison (child abusers/murderers) rather than engaging -> when that didn't land, shifted to mocking message form ("did you just respond to yourself") -> repeated the identical deflection even after the mechanism was named directly, never engaging new content.
@@ -13,7 +16,9 @@ Announced the finished decoder in the Loopring Discord ("verifies & parses L1 ca
 
 The HRBTARDED thread continued: he blocked the account rather than answer, then (apparently after unblocking to check) posted a mocking meme ("bro is really just talking here alone," screenshotting the full analytical thread) - which was itself flagged as more effort spent than genuinely ignoring something would require. HRBTARDED eventually posted a grudging apology ("TLDR: sorry dipsht"), accepted cleanly ("apology accepted") without further escalation.
 
-**Framework that emerged and held up under testing:** "standing vs. substance" - the recurring objection across every critic was about authority/permission ("unofficial," "unauthorized," "unregulated," "reverse engineering" - independently used by multiple people including Autodestructive) rather than any specific factual/technical claim. "A community organizes around shared substance and engages merit on merits; a tribe organizes around in-group boundary and status and defends the boundary instead of the substance." Nobody, across the entire multi-hour thread, ever produced a counter-argument to the decoder's actual claims.
+**Framework that emerged and held up under testing:** "standing vs. substance" - the recurring objection across every critic was about authority/permission ("unofficial," "unauthorized," "unregulated," "reverse engineering") rather than any specific factual/technical claim.
+
+**Attribution correction (2026-08-08):** this passage previously named Autodestructive as one of the people who used "reverse engineering." **He did not.** He was present for the conversation, but the term did not come from him. The original entry was recorded without asking who actually said it - the same speaker-attribution failure documented in [[feedback-text-screenshots]]. Do not attribute any specific objection to a named person in this file without a direct quote tied to them. "A community organizes around shared substance and engages merit on merits; a tribe organizes around in-group boundary and status and defends the boundary instead of the substance." Nobody, across the entire multi-hour thread, ever produced a counter-argument to the decoder's actual claims.
 
 **Contrast case (important - not everyone matched the pattern):** PhilMcGroin engaged in genuine good faith - questioned the premise bluntly, admitted not reading everything, asked a real direct question ("what are you trying to accomplish, why"), got a precise answer ("no one cares" is a claim about a narrow present-tense audience, separate from whether the data/outcomes are real), and genuinely accepted it ("yup, gotcha"). This is the proof case that the tribe/community distinction isn't cynicism - some individuals here can and do engage on merits; the ones who didn't chose not to.
 
@@ -30,3 +35,19 @@ On top of the mischaracterization, HRBTARDED posted a "Hello Mossad Agent" meme 
 Justin called this directly: "You're a lying sack & you cower when cornered. You have zero credibility, sir."
 
 **Confirms:** same "standing vs. substance" framework - zero counter-argument to the actual (correct) math, now compounded by misrepresenting what Justin said before attacking it.
+
+## The "reverse engineering" objection is a mislabel (2026-08-07)
+
+Used as a standing objection, grouped with "unofficial" and "unauthorized." Refuse the label rather than justify the activity.
+
+Reverse engineering means deriving a design from an artifact when the design was never disclosed. Nothing here was concealed. The chain broadcasts every block publicly, by construction, so that anyone can verify state without permission. No protection measure was circumvented, no license or EULA applied, and the contracts are open source. The correct name for the work is **verification** - auditing published behavior against a published claim and reporting which one executes.
+
+The label inverts who is operating without authority. Reading the public ledger is the intended use of the system. Deferring to documentation over live state is the position resting on an unverified claim.
+
+It also carries a premise the chain contradicts: that an authoritative source exists and was bypassed. The deployed contracts diverge from the repo on NFT mints, so the repo is not authoritative for the thing being decoded. There was no authority to route around.
+
+**What the word choice does establish:** the speaker understands that working from the artifact is a different activity than reading a spec. It does **not** establish they knew about this specific divergence. That is an intent claim with no evidence behind it, and the narrower version is sufficient.
+
+**Sorting value:** repo-people versus chain-people is the cleanest test for who is worth engaging, because there is a definitive tiebreaker and it costs nothing to run.
+
+See [[feedback-docs-vs-bytecode]] for the generalized principle.

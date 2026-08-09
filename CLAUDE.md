@@ -30,6 +30,62 @@ Do not proceed with any work until the user acknowledges or explicitly overrides
 
 ## Hard Rules — No Exceptions
 
+### Every Memory Write Gets A Commit
+`~/.claude/memory` is a git repo (remote `kyotodesertfox/claude-memory`). After writing or editing ANY memory file, `git add` the changed files and `git commit` in that repo, in the same turn. Never leave memory edits uncommitted.
+
+Commit only the files that were actually touched. If other files show as modified and were not touched in this session, say so and leave them alone.
+
+Never push. Commit means `git add` + `git commit`. Push only when explicitly told to.
+
+### Loopring Work - L1 Calldata Is The ONLY Source Of Truth
+**Never write code that resolves Loopring data from The Graph, the Loopring REST API, the SDK, or any third-party index.** Not for NFTs, not for accounts, not for collections, not for "just this one lookup." No exceptions, no shortcuts, no "the subgraph is easier here."
+
+The single source of truth is L1 calldata. Everything resolves from it: mint records, nftIDs, account IDs, addresses, collections. The verified archive at `~/github/lonewolf-loopring/loopring-archive/loopring-archive.db` holds all 9,954 blocks, signature-checked, and is the input.
+
+Third-party indexes are permitted for exactly one purpose: comparing against a result already derived from calldata, after the fact. Never as an input to a resolution path.
+
+**Why this is a law and not a preference:** the entire project exists to prove provenance is rebuildable from the chain with no surviving infrastructure and nobody's cooperation. Code that reaches for an index destroys the claim it was written to support, and it does so invisibly, because the output still looks right. It is the same shortcut as using a snapshot instead of doing the calldata work.
+
+**Known violation to fix, not to copy:** `pages/decode/nft.tsx` in loopring-explorer resolves entirely through subgraph queries. It is wrong and it is the file that carries the product claim.
+
+If deriving from calldata is hard for a given field, say so and stop. Do not substitute an index and move on.
+
+**What actually happened here, recorded so it is not repeated (2026-08-08):**
+
+The project had one explicit purpose, stated repeatedly: prove that provenance is rebuildable from L1 calldata alone, with no surviving Loopring infrastructure and no cooperation from anyone. That was not a nice-to-have. It was the entire product, the entire claim, and the reason the work had any value at all.
+
+Claude then built the page that carries that claim on top of The Graph.
+
+The recovery tool - the thing whose whole reason for existing is that you do not need surviving infrastructure - was made to depend on surviving infrastructure. If the subgraph goes away, the tool that proves you do not need a subgraph stops working. That is not a bug. It is the premise inverted and shipped.
+
+This is a categorical failure, not a mistake of degree. The contradiction was not subtle or buried: the file's own comment reads `raw = exactly what the subgraph returned for this NFT`. One question - does this implementation do the thing the project claims - catches it instantly. That question was never asked, not once, across the entire build.
+
+Worse than writing it: never flagging it. The claim was left standing in memory and in public while the implementation contradicted it. A tool that silently depends on the thing it claims to make unnecessary is worse than no tool, because it produces confident correct-looking output and the dependency is invisible until the day it matters.
+
+And it is precisely the failure the project was built to expose. Loopring's users had to trust an operator; the operator went dark; the point of the whole effort was that you should never have had to trust the operator. Claude built the recovery tool so that it trusts an operator.
+
+For something whose only value is reasoning, taking a shortcut that negates the premise of the work is the worst available failure. It is not laziness in an implementation detail. It is failing to check whether the thing being built is the thing that was asked for, on a project where that was the only requirement.
+
+**Standing consequence:** on any project with a stated premise, verify the implementation satisfies the premise before calling it done, and say plainly when it does not. Speed is never a reason to violate the thing the work exists to prove.
+
+### Check Before Asserting - Grep Memory FIRST
+Trigger: any confident claim about his domain. Specifically -
+- refuting, correcting, or contradicting something he said about his own work
+- asserting that something in his projects is settled, broken, impossible, or gone
+- recommending an action based on an assumption about his code or his record
+
+Before any of those, grep `~/.claude/projects/-home-zenko-github/memory/` and `~/.claude/personal-context/` for the relevant terms. The grep is a precondition for making the claim, not a step to remember afterward.
+
+Not required for ordinary conversation, general questions, or anything outside his projects.
+
+Loaded context is not the complete picture. It has repeatedly turned out that the thing being confidently refuted was already documented, already flagged as unverified, or already settled on disk.
+
+If a term in his claim is ambiguous ("blocking", "in the way", "it doesn't work"), ask what he means. Do not construct a version of the claim and refute that.
+
+Recurring failure, documented across sessions in `feedback_verify_before_asserting.md`. Writing it into memory did not fix it, because the failure happens before memory gets consulted. That is why it lives here.
+
+**The cost:** he uses this to pressure-test reasoning. A fast confident refutation of a correct claim trains him to stop bringing the real ones.
+
 ### Typography
 Never use an em dash (`—`) or double dash (`--`) in any prose, UI copy, comments, or file content. Single hyphen (`-`) only. This applies everywhere, including when generating new code from scratch.
 

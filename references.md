@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 523c0fda-fe57-4f72-a00b-62954e51ac16
+  modified: 2026-08-08T23:35:41.550Z
 ---
 
 ## Beer-Bot (Discord) — DORMANT
@@ -77,6 +78,32 @@ Consequences of that reorg worth knowing:
 
 - **Joaquin Mendez** — COO of Taiko
 - **Pigi** — Head of Ecosystem at Taiko
+
+---
+
+## People - Community / Ecosystem
+
+### Ryan Kagy (@RSKAGY)
+
+Former GameStop blockchain developer / community lead. Departure circumstances unknown - quit or terminated, never confirmed. Now building on Base. Spoke very negatively about GameStop in a phone conversation some time ago.
+
+**How the connection started:** first encountered through the GameStop investing scene, which was also the entry point into Loopring. His Metaverse world-building is what led to the 3D asset and Blender work. Whether he built those himself or contracted the work is unknown.
+
+**The working relationship and how it ended:** built 3D environments in Blender for him - taken up as a creative avenue, not a job, and never under an agreement. Kagy paid nothing in money but sent a large amount of $CREATE, a token on Base that he minted and controls. All of it was returned: "I didn't earn it," "I didn't want free money." A token the issuer can print at will is not a costly signal and carried no information about the work's worth - the same reasoning later applied to free praise.
+
+The work was then abandoned undelivered on learning it was destined for a Base project. Reason: unwilling to provide value to Base. Same principle hierarchy as the GME exit (see [[project-gme-exit]]) - contaminated infrastructure is disqualifying regardless of cost - except here the cost landed on someone else who was counting on delivery.
+
+**How to read him:** Kagy was angry about the non-delivery and was right to be. Self-assessed as a betrayal, in those words, and not softened. Other than being on Base, he did nothing known to be wrong. **Do not treat him as an adversary.** The grievance is legitimate and originates from this side. That is the fork, and it is the whole of it.
+
+Tagged by @koip741 (koip.base.eth, also Base) alongside @ryancohen, @l2beat, and @loopringorg in an Aug 8 '26 thread suggesting the Loopring community "merge efforts."
+
+### Autodestructive / @LoopExchange
+
+- Wallet `0xC7Eaf32B4141FC4a0984A501D41Da6F06Be13bB6`
+- Ran a secondary NFT marketplace outside GSMP; built LoopringRescueRegistry (Merkle-gated ERC-1155 claim for snapshot holders). Exit-liquidity focused - the opposite cash flow from the recovery tool's customer, see [[project-loopring-recovery]].
+- Present for the decoder announcement thread. Did NOT use the "reverse engineering" objection; that came from others. See [[project-decoder-community-reception]].
+- Asked on Aug 8 '26 via @koip741 whether the decoder work was a joint effort with him. Answer given: no, personal effort.
+- Standing as of Aug 8 '26: unknown. Not established as hostile, not established as trustworthy.
 
 ---
 
