@@ -332,6 +332,56 @@ Load-bearing for [[project-loopring-recovery]]:
 - **No CREATE2 NFT deployment in the protocol.** `Create2` appears only in the library,
   `LoopringAmmFactory` (AMM pools) and `WalletDeploymentLib` (smart wallets).
 
+## Contract sweep, 2026-08-09 - what was checked and what it settled
+
+Done at the owner's instruction after each incidental look at the contracts turned up
+something memory lacked. Scope: the 9 transaction libraries, the NFT interfaces and
+contracts, ExchangeData, and the withdrawal-mode path.
+
+**Layouts re-verified against source, all matching this file exactly:** DEPOSIT,
+WITHDRAWAL, TRANSFER, ACCOUNT_UPDATE, AMM_UPDATE, SIGNATURE_VERIFICATION. Offset for
+offset. The "source only, no live sample" labels on AMM_UPDATE and SIGNATURE_VERIFICATION
+remain accurate.
+
+**SPOT_TRADE confirmed absent.** There is no `SpotTradeTransaction.sol`. Still
+unverifiable.
+
+**Event topic0 values confirmed by keccak, not by observation:**
+```
+MintFromL2(address,uint256,uint256,address)                    -> 0xf9783074...
+TransferSingle(address,address,address,uint256,uint256)        -> 0xc3d58168...
+```
+`ExchangeNFT.mintFromL2` calls `IL2MintableNFT(token).mintFromL2(to, nftID, amount,
+minter, data)`, and `L2MintableERC1155` emits `MintFromL2(owner, id, amount, minter)`
+with no indexed args, which is why all four words sit in the log data.
+
+**`Nft.minter` is overloaded.** For an L1-to-L2 deposit it holds the NFT's contract
+address, not a minter. So in NFT_DATA scheme 0, `minter == token` marks a deposited NFT
+rather than an L2-minted one. `TransactionType.NFT_MINT` is commented "L2 NFT mint or
+L1-to-L2 NFT deposit", which is the same distinction byte 1 carries.
+
+**The reference collection contract is NOT what was deployed.**
+`aux/nft/L2MintableERC1155.sol` never overrides `uri()` - it passes one template to the
+ERC1155 constructor, so every token returns the same URI. His deployed collection returns
+per-token `ipfs://CIDv0(nftID)`, so it runs a different implementation
+(`0xaf4c6c97c620425b9d05c6a12f886d14a04eff06`, read from the EIP-1167 proxy bytecode).
+**That implementation's source is not in this repo**, which is also why CREATE2 with the
+repo's creation code reproduces nothing.
+
+**Royalties are NOT protocol-enforced - settled.** `creatorFeeBips` appears only in the
+struct, the EIP-712 type hash, the Poseidon identity hash, and hardcoded to 0 on
+withdrawals. **No contract and no circuit performs any arithmetic with it.** Enforcement
+was entirely marketplace-side. This weakens the "Loopring reactivates once fee revenue
+resumes" argument in [[project-loopring-recovery]] as far as royalties go; LRC trading
+fees remain unverifiable since SPOT_TRADE has no Solidity.
+
+**The L1 exodus path is real - all four functions exist as memory describes:**
+`forceWithdraw`, `notifyForcedRequestTooOld`, `withdrawFromMerkleTree`,
+`isInWithdrawalMode` (which is simply `withdrawalModeStartTime > 0`).
+
+**Still unswept:** `aux/` beyond the NFT contracts, `amm/`, `thirdparty/` (vendored
+OpenZeppelin), `test/`, and the circuits beyond `NftMintCircuit`.
+
 ## Finding submissions
 
 - **Dune:** `loopring_ethereum.loopringioexchangeowner_call_submitblockswithcallbacks`

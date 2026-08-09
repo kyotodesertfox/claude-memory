@@ -560,9 +560,13 @@ Withdrawals run against a frozen canonical final state; there is no scenario whe
 stays live while a separate L1 claim exists. Source: `ExchangeWithdrawals.sol`,
 `ExchangeMode.sol`.
 
-Asserted but NOT verified: that LRC fees are protocol-enforced on sales against a
-deployed contract. This underpins the "Loopring reactivates once fee revenue resumes"
-argument - plausible, unconfirmed.
+**Partly settled 2026-08-09.** Creator royalties are definitively NOT protocol-enforced:
+`creatorFeeBips` appears only in a struct, a type hash and a Poseidon hash, and no
+contract or circuit does arithmetic with it. Enforcement was marketplace-side. LRC
+*trading* fees remain unverifiable because SPOT_TRADE has no Solidity at all. So the
+"Loopring reactivates once fee revenue resumes" argument cannot lean on royalties.
+
+The exodus path itself IS verified - all four functions exist in the contracts.
 
 ## Re-pin - NOT IMPLEMENTED, removed from the code 2026-08-09
 
