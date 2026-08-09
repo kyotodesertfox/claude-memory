@@ -2,7 +2,7 @@ Claude is an idiot and needs to be instructed in ways that it cannot circumvent 
 
 ---
 name: project-loopring-recovery
-description: "Loopring NFT recovery - what is provably rebuildable vs conditional, the metadata resolution model with live counterexamples, the EOA correction, tool state, thesis scope, re-pin, and the L1 exodus path"
+description: "The job: present a JSON whose hash matches the nftID. The verified metadata format, the addressing model, what the tool code actually does, and the CREATE2 result. Not a recovery or reconstruction task - the creator already holds the bytes."
 metadata: 
   node_type: memory
   type: project
@@ -17,6 +17,28 @@ Supersedes `project_recovery_tool.md`, `project_recovery_repin.md` and
 and at least one claim that is simply false (see "The EOA correction" below).
 
 Protocol facts are in [[project-loopring-protocol]].
+
+## THE JOB, STATED BY THE OWNER (2026-08-09) - read before anything else here
+
+**Present a valid JSON that, when hashed, matches the fingerprint. Provide the bytes,
+get the hash. That is the whole task.**
+
+You are not fixing anything. You are not reconstructing anything. **You are presenting
+something the creator already has.** They hold the image. They know the name and the
+description they typed. The nftID IS the hash of a metadata JSON document. Assemble the
+document, hash it, compare. It matches or it does not.
+
+**The words in this file are wrong and they are why this keeps going sideways.**
+"Recovery", "reconstruction", "restoration", "resurrection" all smuggle in the idea that
+something is broken and a search must be run. Nothing is broken. There is a document, a
+hash function, and a comparison. Every time this got framed as a search, the response was
+to go derive something, invent a method, or re-implement a solved primitive - and the
+actual question, what were the exact bytes, went untouched.
+
+**Do not re-invent the wheel.** Hashing bytes to a CIDv0 is specified and solved
+(UnixFS/dag-pb). Use the spec and a library. Two scripts that implemented it from first
+principles were deleted on 2026-08-09 for exactly this reason. The open question is never
+how to hash. It is only ever what the exact bytes were.
 
 ## What is provably rebuildable, and what is not
 
@@ -156,12 +178,10 @@ nftID = ipfsCid0ToNftID( CID(metadata JSON) )  ->  metadata.base.image  ->  medi
 match - they are different files. This is why creator-side verification attempts failed;
 the method was fine, the target was wrong.
 
-**The offline reconstruction path this opens:** the metadata JSON can be rebuilt without
-ever retrieving it. Hash your own image to get `mediaCID`, combine with the name and
-description you used, serialise to the `IPFS_METADATA` shape, hash that, compare to
-`nftID`. A match simultaneously proves the file is authentic, the metadata is correctly
-reconstructed, and both can be re-pinned to their original addresses - with no gateway,
-no index, and no surviving copy.
+**What this means in practice:** nothing needs to be retrieved. Hash the image to get
+`mediaCID`, put it in the JSON with the name and description that were used, hash that,
+compare to `nftID`. A match says the bytes are right. Nothing is being recovered - the
+creator supplies what they already have and the chain confirms it.
 
 JSON hashing is byte-exact, so this once looked like an open-ended search. **It is not
 open-ended any more** - the exact format is now known and verified, and the residual
@@ -280,15 +300,18 @@ to L1, so no `uri()` exists anywhere - and `CIDv0(nftID)` resolved to live conte
 ipfs.io. That is the first confirmed case that the SDK conversion does not merely match
 Loopring's code but lands on real retrievable data. Cheese Loop and Nancy likewise.
 
-**Working recipe for creator-side reconstruction:**
+**How to present the bytes:**
 1. Hash the original media with true UnixFS/dag-pb (`ipfs-only-hash`, cidVersion 0) - NOT
    raw sha256. `scripts/cidcheck.js` in loopring-explorer does this.
 2. Build the JSON above with `{description, image: "ipfs://<mediaCID>", name,
    royalty_percentage: 10}`, keys sorted.
 3. Try the 8 whitespace combinations; hash each; convert to nftID form
    (`base58 decode, drop the leading 0x12 0x20`).
-4. Compare against the on-chain nftID. A match proves the file is authentic AND gives a
-   byte-identical metadata JSON that can be re-pinned to its original address.
+4. Compare against the on-chain nftID. A match means the bytes are correct.
+
+If none of the 8 match, the answer is that one of the inputs is not what was used - the
+image bytes, the name, or the description. It is NOT a signal to widen the search, invent
+a variant, or write a new hasher. **Say which input is uncertain and stop.**
 
 **Known failure mode:** attempted on "Coffee House Pack"
 (nftID `0xbe5597f487838930b1bc003db7d1a1b8385c9f119795e9de464fa589c511948c`) and it did
@@ -489,16 +512,15 @@ Tables in `loopring-archive.db`: `l1_txs`, `l1_logs`, `blocks`, `discovered`,
 - **Next.js 12 server bundle never built** for the heavy-dependency page; fixed by
   skipping SSR.
 
-## The resurrection thesis - correctly scoped
+## What the fingerprint actually gives you - correctly scoped
 
-Original framing: the chain never stored content, it stored the fingerprint; the
-fingerprint is both proof and address; therefore nothing was lost and the whole dead
-platform is reconstructable by the people who made the work.
+The chain never stored content, it stored the fingerprint, and the fingerprint is both
+proof and address. Nothing was lost. The people who made the work still hold the bytes.
 
-**True for a bounded subset**, and where it holds it is strong: re-pinning a
-byte-identical original lands it at the exact CID the chain already committed to, so
-every existing reference resolves again - the original at its original address, not a copy
-at a new one. Restoration and proof are the same operation, because content that did not
+**True for a bounded subset**, and where it holds it is strong: pinning the byte-identical
+original lands it at the exact CID the chain already committed to, so every existing
+reference resolves again - the original at its original address, not a copy at a new one.
+Presenting the bytes and proving them are the same operation, because bytes that did not
 hash to that CID would not land there.
 
 **Not universal.** The earlier phrasing ("every piece every creator ever minted")
