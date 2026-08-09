@@ -54,6 +54,56 @@ Note "Pizza Pie on a Stone" displays **85** in the wallet. That is the balance
 held now, not the mint amount. Two candidates have `amount = 100`
 (58754/21 and 58788/43) but neither is confirmed to be Pizza.
 
+## His collections
+
+Both `owner()` to `0xc22724df2f8d30db4ed2f3bff317897bfc2c494b` on L1. That part is a
+chain fact, read by `eth_call`.
+
+| Address | Name | Source of the name |
+|---|---|---|
+| `0x8eb4228702fc4cdf202b9dc17cd50b05dce096fe` | **3D Metaverse Assets** | **Owner, first-hand.** NOT chain-derived. |
+| `0x7a5208036ceb854bcc1463943b4287f0449ef769` | **UNVERIFIED** | Recorded for future identification. Do not guess it. |
+
+**A collection has no name on-chain.** `name()` and `symbol()` are unimplemented on both,
+and `contractURI()` returns `https://nftinfos.loopring.io/<address>`, which is dead. The
+display name lived in Loopring's own service and is not recoverable from the chain. So a
+collection name can only come from the owner or from the content of the NFTs inside it -
+never from a derivation.
+
+Both are EIP-1167 proxies delegating to implementation
+`0xaf4c6c97c620425b9d05c6a12f886d14a04eff06`, which is NOT the implementation baked into
+`loopring_sdk`'s mainnet `CREATION_CODE`. See [[project-loopring-recovery]] for why that
+kills the CREATE2 route.
+
+### Which of his nftIDs sit in which
+
+From `MintFromL2` L1 logs, which name the minter inline. 13 identified so far.
+
+**3D Metaverse Assets** (`0x8eb42287...`) - 9:
+```
+0x1d85359ff36d815dd5c1d78723d5b88b16f064bf425fde730dd42b37d30a4e64
+0x2075e56f13da8a4c9945c2931d29ed18f571bfc6ac8d07fc7a2bf78339f86a1f
+0x40349ea298d6a0d26052b06cb521381c1af6919e4faa3f4065eb7ada3b992d68
+0x51099b42197966f9ce7be80e5c55a42aaa93d0caa2fb014dd8e85a9ceb15d951
+0x79da903e8eaff0cbf9c39b75a7ed27c78fcf27200986dcd4b2e301a2745e6868
+0x8b14a4a5c4c23f44d5fb8543bc78045fdf5df2c303fc770917ebcaa9c77be276
+0xb3d016c4eff6eca0d0cdb23a04b69088b016f350070f443c5bfc14e8646684d3
+0xc25e2d01af6f9c791ddfabb182e3c4a26221f0777c406714477fedb89e3d2eb5
+0xc2a15f6ca2bcf1a424d1e4494ad9303539ae7a3e3e188a26e91385bc581b84ee
+```
+
+**UNVERIFIED collection** (`0x7a520803...`) - 4:
+```
+0x1594154fedec166b317e368addeecf3440947e87606fe934015e245e9a769860
+0x7c2445a50d80ded5ef303a88dd64fb904afd8ea36b40452993acb9e5a42ea930
+0xac5466c1086fc4463a6905489b9357af122482665fd0b4351b93658b3eaa3d1e
+0xcbefd63f297e5c664efd5bf5c76d526c6d5f1dd458aec2a76e6adf3d08281094
+```
+
+Identifying `0x7a520803...` means resolving one of those four nftIDs to its metadata and
+reading the `name` field, or the owner recognising the work. **Do not infer it from the
+other collection.**
+
 ## Archive state (2026-08-09)
 
 - `~/github/lonewolf-loopring/loopring-archive/loopring-archive.db`
