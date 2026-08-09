@@ -401,6 +401,34 @@ available path for them - a useful reminder that the deployed case may be the mi
 will never match.** A verifier built on raw sha256 fails against genuine originals - a
 bug that shipped once, see [[feedback-verify-before-asserting]].
 
+## CODE IS BEHIND MEMORY - open work as of 2026-08-09
+
+Normally memory lags the code. Here it is the reverse: the contract sweep found things the
+code does not yet reflect. **Do not treat the files below as correct.**
+
+1. **`scripts/derive-from-calldata.js` writes byte 1 of NFT_MINT into the `nft_type`
+   column. Byte 1 is `mintType`.** 518 of 2,494 rows in `nft_mints` therefore claim
+   nftType 2, which is not a valid standard. Fix: rename the column to `mint_type`, and
+   source the real `nftType` from NFT_DATA byte 41.
+
+2. **`scripts/derive-collections.js` resolves collections from ERC-1155 TransferSingle L1
+   logs only - 679 nftIDs.** NFT_DATA transactions in calldata carry the same binding for
+   **18,244** nftIDs, plus minter, creatorFeeBips and the real nftType. The script's header
+   comment argues at length that logs are the only route. That argument is now wrong. The
+   log route stays valid as corroboration.
+
+3. **`pages/api/calldata-nft.ts`** `unavailableNotes()` tells callers the collection is
+   "known only for NFTs that moved to L1". Untrue once NFT_DATA is parsed.
+
+4. **`pages/decode/nft.tsx`** carries the same claim in its `mintRowToRaw` comment.
+
+5. **`utils/config.ts`** and the CREATE2 discussion throughout are unaffected - CREATE2 is
+   still the wrong tool. The difference is that the question it was being asked no longer
+   needs it.
+
+None of this was changed in code, because the instruction was to sweep and record, not to
+rebuild.
+
 ## Tool state - MIRRORS THE CODE as of 2026-08-09
 
 This section is a transcription of the files, not a description of intent. If it
