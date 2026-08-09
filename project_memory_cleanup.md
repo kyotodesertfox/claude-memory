@@ -58,3 +58,5 @@ Update `MEMORY.md` in every store touched (this one, homestead's, loopring-explo
 - Don't touch `-home-zenko-github-Taiko-DEX` - that directory hash is stale (the actual project directory was renamed to `~/github/Taiko`, and that store is just a symlink to this same core store anyway, so there's nothing separate to clean up there).
 - Don't delete any file outright - move/rename only, per Justin's explicit instruction.
 - Don't re-run the full diagnosis (which files use "Justin" by name, commit history questions, etc.) - that's already resolved; this file is the actionable residue.
+
+**Identity note:** the Loopring memory files living in the kyotodesertfox repo, and the shared deploy wallet, are a DELIBERATE overlap. Do not clean it up - see the section in `IDENTITIES.md`.

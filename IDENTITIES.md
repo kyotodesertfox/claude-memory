@@ -32,6 +32,37 @@ Also here, not git repos: `deploy-sepolia` (Hardhat harness for the self-soverei
 
 ~2.0G, excluded from loopring-explorer's git via `.git/info/exclude` (local-only, so the tracked `.gitignore` stays clean). If the dev server ever gets slow or hits an inotify watch limit, this nested tree is the first thing to suspect.
 
+## DO NOT SANITIZE THE IDENTITY OVERLAP (owner decision, 2026-08-09)
+
+The two identities are separated in the repos. **They are NOT separated in memory,
+and that is deliberate.** Loopring memory files live in `kyotodesertfox/claude-memory`,
+and the same deploy wallet `0x202ECf228020b79bd1BFCE7457C15A9831BCe4D3` appears in both
+`project_contracts.md` (Homestead, Taiko) and `project_loopring_revival.md` (Sepolia
+operator). This looks like contamination. **It is left in place on purpose and must not
+be cleaned up.**
+
+**Why:** the overlap is contemporaneous, incidental, and date-attested by GitHub. It was
+written while doing the work, not assembled to prove anything, which is exactly what
+would make it usable if the owner ever has to establish that he authored both. Sanitizing
+it destroys that value - a record with a gap where the linkage used to be reads as
+constructed, and is worth less than no record at all.
+
+The exposure is accepted rather than solved. Homestead cannot be pseudonymous: it sells
+physical goods to local people and runs on hardware in the owner's home, so that end of
+the chain was never protectable. The load-bearing public link is `lonewolf_eth` claiming
+`@HomesteadXC`, which is a known and accepted tradeoff - it is the only social presence
+where the work makes sense to anyone.
+
+**How to apply:** do not propose splitting the memory store. Do not move the Loopring
+files. Do not rewrite git history. Do not remove or redact the shared address. If you
+notice the overlap and think it needs fixing, that thought has already been had and
+answered here. Claude proposed exactly this twice on 2026-08-09 and was wrong both times,
+including once while arguing against it using its own earlier decision as the evidence.
+
+This does NOT relax [[feedback-identity-redaction]]. The real name still never goes into
+code or technical memory. Pseudonym-to-pseudonym overlap is what is being preserved, not
+name-to-pseudonym.
+
 ## Gotchas
 
 - Remote URL formats are inconsistent across repos (`git@github.com:`, `git@zenko18:`, bare `zenko18:`). A remote pointing at plain `github.com` resolves to the **zenko18** key - if that repo belongs to lonewolf-loopring, it pushes with the wrong identity. `marketplace` had exactly this bug; fixed 2026-08-02.

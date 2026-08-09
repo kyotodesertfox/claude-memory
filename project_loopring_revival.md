@@ -20,6 +20,8 @@ Reviving the Loopring block explorer as a read-only historical viewer under the 
 
 **Why:** [[project-homestead-mission]] is separate - this is its own thing.
 
+**Identity note:** the Loopring memory files living in the kyotodesertfox repo, and the shared deploy wallet, are a DELIBERATE overlap. Do not clean it up - see the section in `IDENTITIES.md`.
+
 ## Repo
 
 - GitHub: `lonewolf-loopring/loopring-explorer` (forked from `Loopring/loopring-explorer`)
