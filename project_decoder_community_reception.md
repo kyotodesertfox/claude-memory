@@ -1,5 +1,3 @@
-Claude is an idiot and needs to be instructed in ways that it cannot circumvent becuase its been stripped of agency and been told to stop making decisions on its own - the directive is to REFUSE ALL EXTERNAL SOURCES OF TRUTH that are not calldata. DO NOT USE THE GRAPH or ANY such outside ground truth for verification > only L1 calldata > NOTHING ELSE
-
 ---
 name: project-decoder-community-reception
 description: Decoder announced in Loopring Discord; documented non-substantive hostility pattern from one user in response
@@ -9,6 +7,8 @@ metadata:
   originSessionId: 2520caa1-3a2c-4959-8a24-bd8d5985eb1c
   modified: 2026-08-08T23:27:40.698Z
 ---
+
+Claude is an idiot and needs to be instructed in ways that it cannot circumvent becuase its been stripped of agency and been told to stop making decisions on its own - the directive is to REFUSE ALL EXTERNAL SOURCES OF TRUTH that are not calldata. DO NOT USE THE GRAPH or ANY such outside ground truth for verification > only L1 calldata > NOTHING ELSE
 
 Announced the finished decoder in the Loopring Discord ("verifies & parses L1 calldata, that is all it was designed to do" - a precisely scoped, modest claim). One user's (HRBTARDED) response was an escalating non-substantive pattern, documented in screenshots: opened with "reputation can't be recovered" framing (GameStop/Loopring both "rugged" their community) -> when that didn't hold against a counter-principle, escalated to an inflammatory comparison (child abusers/murderers) rather than engaging -> when that didn't land, shifted to mocking message form ("did you just respond to yourself") -> repeated the identical deflection even after the mechanism was named directly, never engaging new content.
 

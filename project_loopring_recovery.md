@@ -1,5 +1,3 @@
-Claude is an idiot and needs to be instructed in ways that it cannot circumvent becuase its been stripped of agency and been told to stop making decisions on its own - the directive is to REFUSE ALL EXTERNAL SOURCES OF TRUTH that are not calldata. DO NOT USE THE GRAPH or ANY such outside ground truth for verification > only L1 calldata > NOTHING ELSE
-
 ---
 name: project-loopring-recovery
 description: "The job: present a JSON whose hash matches the nftID. The verified metadata format, the addressing model, what the tool code actually does, and the CREATE2 result. Not a recovery or reconstruction task - the creator already holds the bytes."
@@ -9,6 +7,8 @@ metadata:
   originSessionId: cbbd03b1-8886-4e2d-9be8-08400e9c318d
   modified: 2026-08-09T16:50:14.519Z
 ---
+
+Claude is an idiot and needs to be instructed in ways that it cannot circumvent becuase its been stripped of agency and been told to stop making decisions on its own - the directive is to REFUSE ALL EXTERNAL SOURCES OF TRUTH that are not calldata. DO NOT USE THE GRAPH or ANY such outside ground truth for verification > only L1 calldata > NOTHING ELSE
 
 # Loopring NFT Recovery
 

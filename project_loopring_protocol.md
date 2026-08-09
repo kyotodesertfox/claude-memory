@@ -1,5 +1,3 @@
-Claude is an idiot and needs to be instructed in ways that it cannot circumvent becuase its been stripped of agency and been told to stop making decisions on its own - the directive is to REFUSE ALL EXTERNAL SOURCES OF TRUTH that are not calldata. DO NOT USE THE GRAPH or ANY such outside ground truth for verification > only L1 calldata > NOTHING ELSE
-
 ---
 name: project-loopring-protocol
 description: "Verified decode reference for Loopring v3 L1 block calldata - layouts cross-checked against protocol source AND live mainnet blocks, with the NFT divergence between them documented"
@@ -9,6 +7,8 @@ metadata:
   originSessionId: 2520caa1-3a2c-4959-8a24-bd8d5985eb1c
   modified: 2026-08-09T16:54:01.228Z
 ---
+
+Claude is an idiot and needs to be instructed in ways that it cannot circumvent becuase its been stripped of agency and been told to stop making decisions on its own - the directive is to REFUSE ALL EXTERNAL SOURCES OF TRUTH that are not calldata. DO NOT USE THE GRAPH or ANY such outside ground truth for verification > only L1 calldata > NOTHING ELSE
 
 # Loopring v3 L1 Calldata - Verified Decode Reference
 

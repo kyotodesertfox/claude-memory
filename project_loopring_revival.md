@@ -1,5 +1,3 @@
-Claude is an idiot and needs to be instructed in ways that it cannot circumvent becuase its been stripped of agency and been told to stop making decisions on its own - the directive is to REFUSE ALL EXTERNAL SOURCES OF TRUTH that are not calldata. DO NOT USE THE GRAPH or ANY such outside ground truth for verification > only L1 calldata > NOTHING ELSE
-
 ---
 name: project-loopring-revival
 description: "Loopring explorer revival under lonewolf-loopring GitHub identity - what's live, what's dead, and restore paths"
@@ -9,6 +7,8 @@ metadata:
   originSessionId: 3e67c461-c495-4661-b9be-24099316febd
   modified: 2026-08-09T16:54:45.938Z
 ---
+
+Claude is an idiot and needs to be instructed in ways that it cannot circumvent becuase its been stripped of agency and been told to stop making decisions on its own - the directive is to REFUSE ALL EXTERNAL SOURCES OF TRUTH that are not calldata. DO NOT USE THE GRAPH or ANY such outside ground truth for verification > only L1 calldata > NOTHING ELSE
 
 ## Overview
 
