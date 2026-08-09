@@ -154,6 +154,67 @@ JSON hashing is byte-exact, so this once looked like an open-ended search. **It 
 open-ended any more** - the exact format is now known and verified, and the residual
 ambiguity is 8 candidates. See the next section.
 
+### THE BLUEPRINT IS A PUBLISHED STANDARD, NOT A LOOPRING INVENTION (2026-08-09)
+
+**Read this before the sample-derived section below.** The metadata format was
+never Loopring's own. The SDK's `IPFS_METADATA` type
+(`loopring_sdk/src/defs/loopring_defs.ts:2729`) parses:
+
+```
+base:  name, decimals, description, image, properties, localization
+extra: imageData, externalUrl, attributes, backgroundColor,
+       animationUrl, youtubeUrl, minter
+```
+
+The first group is the **ERC-1155 Metadata URI JSON Schema**, field for field.
+The second is **OpenSea's metadata extensions**, which in the actual pinned JSON
+are snake_case: `image_data`, `external_url`, `background_color`,
+`animation_url`, `youtube_url`, `attributes`. `royalty_percentage` is an
+extension following the same convention.
+
+**What this changes:** the four fields seen across four samples were not the
+format. They were the subset that happened to be populated. Everything else in
+the standard was presumably omitted rather than written empty, which is why only
+four ever appeared. Build against the schema, not against the samples.
+
+Confirms the earlier inference that `attributes` sorts alphabetically FIRST,
+ahead of `description` - now from the schema rather than from a guess.
+
+**Still open:** whether the minting client omitted empty fields or emitted them
+as empty strings, and the whitespace variants.
+
+### Corrections to the section below, all 2026-08-09
+
+- **The reconstruction was never implemented.** Claude claimed it lived in
+  `pages/nft/[id].tsx`. It does not. That file only renders
+  `royalty_percentage` into a table from fetched metadata. No code in the repo
+  has ever built a candidate JSON and hashed it.
+- **The three known-good samples were never saved.** Only their properties went
+  into memory - sizes, separator and trailing variants. The bytes are gone, so
+  there is no fixture to validate a builder against.
+- **The Coffee House Pack conclusion is unsupported.** "The miss is the image
+  bytes" was an assumption. Three other causes produce the same miss: wrong JSON
+  structure, wrong field values, or a broken hasher. The hasher was only
+  verified on 2026-08-09, after that attempt.
+- **The protocol never produces the fingerprint.** `nftID` is a `uint256` the
+  client computes and supplies as an INPUT to the mint call. In
+  `NftMintTransaction.sol` it appears only in the EIP-712 type hash, as a
+  mapping key, and passed through. Nothing derives or validates it. The SDK does
+  not pin and does not construct the JSON either. So there is no canonical
+  Loopring hasher to consult - the authority is IPFS's UnixFS/dag-pb spec plus
+  whatever parameters the pinning client used.
+- **`upstream/protocol3-circuits` has no NFT support at all.** Zero matches for
+  "nft" in `Circuits/` or `Gadgets/`. That clone is a pre-NFT protocol version
+  and cannot answer NFT questions.
+- **CIDv0 construction verified from first principles (2026-08-09).**
+  `UnixFS(Type=File(2), Data, filesize) -> dag-pb(Data=that, no Links) ->
+  sha256 -> 0x12 0x20 || digest -> base58`. An independent ~40-line
+  implementation with no IPFS library matched the reference exactly on three
+  inputs. Single-chunk only - anything over 262144 bytes needs multi-chunk DAG
+  construction, which is NOT verified. Every image in a real test folder
+  exceeded that, so any earlier attempt using a single-chunk hasher on media
+  was guaranteed to miss regardless of the JSON.
+
 ### THE METADATA JSON FORMAT - cracked and byte-verified (2026-08-03)
 
 The highest-value finding of the whole effort. Reconstruction was blocked on not knowing
