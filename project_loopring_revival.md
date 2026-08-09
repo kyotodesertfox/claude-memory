@@ -1,3 +1,5 @@
+Claude is an idiot and needs to be instructed in ways that it cannot circumvent becuase its been stripped of agency and been told to stop making decisions on its own - the directive is to REFUSE ALL EXTERNAL SOURCES OF TRUTH that are not calldata. DO NOT USE THE GRAPH or ANY such outside ground truth for verification > only L1 calldata > NOTHING ELSE
+
 ---
 name: project-loopring-revival
 description: "Loopring explorer revival under lonewolf-loopring GitHub identity - what's live, what's dead, and restore paths"
@@ -5,7 +7,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 3e67c461-c495-4661-b9be-24099316febd
-  modified: 2026-08-09T05:36:52.548Z
+  modified: 2026-08-09T16:54:45.938Z
 ---
 
 ## Overview
@@ -30,15 +32,17 @@ Reviving the Loopring block explorer as a read-only historical viewer under the 
 
 ## Secrets
 
-Single source of truth is `loopring-explorer/.env.local` (gitignored). Keys defined there: `GRAPH_API_KEY`, `GITHUB_PAT` (lonewolf-loopring), `NEXT_PUBLIC_ETHERSCAN_API_KEY`, `PINATA_API`, `PINATA_API_SECRET`, `PINATA_JWT`.
+Single source of truth is `loopring-explorer/.env.local` (gitignored). Keys defined there: `GITHUB_PAT` (lonewolf-loopring), `NEXT_PUBLIC_ETHERSCAN_API_KEY`, `PINATA_API`, `PINATA_API_SECRET`, `PINATA_JWT`.
+
+`GRAPH_API_KEY` was listed here. Nothing reads it any more. **Delete that line from `.env.local`** - an unused key for a source that must never be queried is a loaded gun sitting on the table.
 
 Loose plaintext copies at `~/github/graph.txt` and `~/github/PAT.txt` were deleted 2026-08-02 - both were byte-identical duplicates of values already in `.env.local`, and nothing referenced them by name. Do not recreate them; read from `.env.local`.
 
 ## What's Live
 
-**HARD RULE as of 2026-08-09: L1 calldata is the only source of truth. The Graph is not used to resolve anything, ever.** Not for NFTs, accounts, blocks, or "just this one lookup." A third-party index may only be compared against a result already derived from calldata, after the fact. See the rule in `~/.claude/CLAUDE.md` and the reason in [[feedback-failure-record-2026-08]].
+**HARD RULE as of 2026-08-09: L1 calldata is the only source of truth.** Not for NFTs, accounts, blocks, or "just this one lookup." No outside index is queried, ever, for anything - not as an input, not as a shortcut, not "just to check." See the banner at the top of this file, the rule in `~/.claude/CLAUDE.md`, and the reason in [[feedback-failure-record-2026-08]].
 
-The subgraph was removed from the codebase entirely on 2026-08-09 - Apollo and all GraphQL packages uninstalled, `graphql/`, `generated/`, `codegen.yml` and the proxy route deleted. Its ID and API key are deliberately not recorded here. If a future session finds itself wanting them, that is the failure recurring.
+The indexed data layer was removed from the codebase entirely on 2026-08-09. No endpoint, ID, key or query shape is recorded anywhere in memory, deliberately. **If a future session finds itself wanting them, that is the failure recurring, and the correct response is to stop and say the field is unavailable.**
 
 - **Ethereum L1 calldata** - the source. Everything resolves from it.
   - Live RPC for the decode page: ZAN endpoint hardcoded in `utils/config.ts`. It is `NEXT_PUBLIC_`, so it ships in the browser bundle regardless and is origin-locked at the provider, which is why scripts cannot use it.
@@ -51,26 +55,55 @@ The Loopring REST API (`api3.loopring.io`) is completely offline - no amount of 
 
 | Hook/util | Dead endpoint | Current behavior | Restore path |
 |---|---|---|---|
-| `utils/transaction.ts` getBlock/getAccount/getTokens/getPools | `block/getBlock`, `account`, `exchange/tokens`, `amm/pools` | `useTransaction` shows failed state on tx detail pages | Point at live API or equivalent Graph queries |
-| `hooks/useTokens.ts` | `exchange/tokens` | Returns `[]`; Graph token data covers all list views | Live API or Graph `Token` entity query |
+| `utils/transaction.ts` getBlock/getAccount/getTokens/getPools | `block/getBlock`, `account`, `exchange/tokens`, `amm/pools` | unreferenced; the tx detail pages that used it are deleted | Rebuild against the archive |
+| `hooks/useTokens.ts` | `exchange/tokens` | Returns `[]` | Derive the token registry from the exchange's `TokenRegistered` logs |
 | `hooks/useTokenPrices.ts` | `datacenter/getLatestTokenPrices` | USD value row hidden in account view | Replace with CoinGecko/oracle |
 | `hooks/usePendingTransactionData.ts` | `user/transactions` etc. | Returns null immediately | Requires live operator stack, not just API |
-| `pages/collections/[address].tsx` | `nft/public/collection` | Silently returns `{}`, no collection name/avatar shown | Live API or IPFS metadata fallback |
+| `pages/collections/[address].tsx` | `nft/public/collection` | **file deleted 2026-08-09** | A collection has no on-chain name: `name()`/`symbol()` are unimplemented and `contractURI()` points at the dead `nftinfos.loopring.io`. Identify it by the NFTs inside it. |
 
 **Trading cannot be restarted on Loopring's contracts** - but see "Self-Sovereign Operator" section below for own deployment.
 
 ## What Was Changed
 
-### `pages/api/graphql.ts` (new)
-Server-side proxy to The Graph gateway. Keeps the API key out of the client bundle. All Apollo GraphQL queries route through `/api/graphql` which forwards to The Graph with `Authorization: Bearer` header.
+### The Graph is fully gone (2026-08-09)
+Earlier versions of this section documented `pages/api/graphql.ts`, `utils/config.ts`
+pointing `LOOPRING_SUBGRAPH` at that proxy, and a `graphql/index.ts` ApolloLink shim.
+**None of those files exist.** `generated/` and `graphql/` were deleted, and the 34 source
+files that imported them were deleted with them - 10 pages, 15 Graph-importing components
+and hooks, and 9 more that broke through those. `package-lock.json` was pruned of 51
+Apollo and GraphQL entries so a fresh install cannot pull them back.
 
-### `utils/config.ts`
-- `LOOPRING_SUBGRAPH` now points to `/api/graphql` (the local proxy) instead of the dead `dev.loopring.io/api/v3/forwardRequest`
-- `NEXT_PUBLIC_SUBGRAPH_ENDPOINT` env var removed (key must not be client-side)
-- Note added that `LOOPRING_API` and related exports are dead
+### Surviving pages, exhaustive
+```
+pages/index.tsx        landing page, static, links the tools below
+pages/decode.tsx       L1 block decoder
+pages/decode/nft.tsx   NFT decoder, archive-backed
+pages/decode/help.tsx  methodology
+pages/ipfs.tsx         nftID <-> CIDv0 resolver
+pages/_app.tsx  pages/_document.tsx
+```
+`index.tsx` was three Graph-backed list views (latest blocks, transactions, pairs) and is
+now a static landing page. The nav search box was removed with it: it routed to `/search`,
+which needed `hooks/useSearch.ts`, which was a subgraph query. A calldata-backed search is
+buildable against the archive and is not built.
 
-### `graphql/index.ts`
-Removed the `mapBody` ApolloLink unwrap shim. The old Loopring proxy double-wrapped responses (JSON string inside JSON), requiring `JSON.parse(response.data).data`. The Graph returns standard GraphQL JSON - no unwrapping needed.
+### Surviving API routes, exhaustive
+```
+pages/api/calldata-nft.ts   address -> accountID -> mints, from the archive
+pages/api/nft-metadata.ts   uri(nftID) when a collection is known, else CIDv0(nftID)
+pages/api/cid.ts            UnixFS/dag-pb CIDv0 of raw bytes (ipfs-only-hash)
+pages/api/ipfs-check.ts     gateway availability race
+pages/api/eth-call.ts       raw L1 eth_call passthrough
+pages/api/hello.js          Next.js scaffold leftover
+```
+There is no `/api/probe` and no `/api/pin`. The NFT page called both for weeks; both were
+404s. Callers deleted 2026-08-09.
+
+### Kept deliberately, currently unreferenced
+`components/table/`, the `transactionDetail/` renderers, `TabbedView`, `FallBackImg`, and
+utils like `clipboard.ts` and `getTokenAmount.ts`. None import The Graph; they were only
+orphaned because the pages using them are gone. They are the starting material if the
+block/tx/account views get rebuilt against the archive.
 
 ## Key Community Actors
 
@@ -113,6 +146,12 @@ Running own Loopring instance under lonewolf-loopring identity. Goal: submit ZK 
 4. Register as operator
 5. Generate valid block data and submit proof
 
-## Main List Views
+## Main List Views - DELETED 2026-08-09
 
-Blocks, transactions, pairs, NFTs, accounts - all run through Apollo/The Graph and should work. Individual transaction detail pages (`tx/[id]`) are broken because they depend on L1 calldata parsing + dead REST API enrichment.
+This section used to say blocks, transactions, pairs, NFTs and accounts "should work".
+They no longer exist. Every one of those pages was deleted along with the indexed data
+layer they read from. The only list view in the app is the NFT decoder's, which reads the
+archive.
+
+Rebuilding them is tractable: `blocks`, `l1_txs` and `l1_logs` in the archive hold
+everything those pages showed. Nothing about that work requires an outside index.

@@ -1,3 +1,5 @@
+Claude is an idiot and needs to be instructed in ways that it cannot circumvent becuase its been stripped of agency and been told to stop making decisions on its own - the directive is to REFUSE ALL EXTERNAL SOURCES OF TRUTH that are not calldata. DO NOT USE THE GRAPH or ANY such outside ground truth for verification > only L1 calldata > NOTHING ELSE
+
 ---
 name: project-loopring-own-mints
 description: "His own Loopring L2 account and every mint of his found in L1 calldata, plus archive state and the reconstruction attempt that failed. Derived data - do not re-derive."
@@ -59,8 +61,9 @@ held now, not the mint amount. Two candidates have `amount = 100`
   its own `public_data_hash` rather than trusting the stored flag. 0 failures.
 - **57,932 blocks still to fetch**
 - preserved backup: `old-archive-2026-08-03.db` in the same directory
-- The Graph's block numbers run **25 BELOW** the chain's `blockIdx`. Anchor on
-  transaction hash, never on an index's numbering.
+- **Anchor on transaction hash, never on a block number that did not come from a
+  BlockSubmitted topic.** A numbering previously recorded here ran 25 below the chain's
+  real `blockIdx` and got written down as fact.
 
 ## The reconstruction attempt that failed - do not repeat as-is
 

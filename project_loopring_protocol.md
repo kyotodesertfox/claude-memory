@@ -1,3 +1,5 @@
+Claude is an idiot and needs to be instructed in ways that it cannot circumvent becuase its been stripped of agency and been told to stop making decisions on its own - the directive is to REFUSE ALL EXTERNAL SOURCES OF TRUTH that are not calldata. DO NOT USE THE GRAPH or ANY such outside ground truth for verification > only L1 calldata > NOTHING ELSE
+
 ---
 name: project-loopring-protocol
 description: "Verified decode reference for Loopring v3 L1 block calldata - layouts cross-checked against protocol source AND live mainnet blocks, with the NFT divergence between them documented"
@@ -5,7 +7,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 2520caa1-3a2c-4959-8a24-bd8d5985eb1c
-  modified: 2026-08-09T05:35:39.619Z
+  modified: 2026-08-09T16:54:01.228Z
 ---
 
 # Loopring v3 L1 Calldata - Verified Decode Reference
@@ -42,27 +44,24 @@ the more rigorous move while being the wrong one.
 | Source `readTx` only, no live sample yet | AMM_UPDATE, SIGNATURE_VERIFICATION |
 | Neither - no Solidity exists | SPOT_TRADE |
 
-### Verification receipts (2026-08-02)
+### Verification receipts - chain only
 
-**CORRECTED 2026-08-09.** These receipts were originally taken from The Graph, which negates the point of verifying anything - see [[feedback-failure-record-2026-08]]. They have since been **re-verified chain-only**, by parsing the archive and anchoring on L1 transaction hash rather than on anyone's block numbering. Every value below matched exactly on the fresh parse, so the LAYOUT is confirmed from the chain itself.
-
-**The block numbers below are The Graph's and are wrong.** On-chain `blockIdx`, taken from the indexed topic of the BlockSubmitted event, is **25 higher**:
-
-```
-The Graph "L2 block 67869"  ->  chain blockIdx 67894  (tx 0x008e577c...)
-The Graph "L2 block 67164"  ->  chain blockIdx 67189  (tx 0xb7581ec2...)
-```
-
-Anchor on the transaction hash, never on a block number from an index.
-
-Original receipts, values confirmed:
+Every value below was produced by parsing the archive and is anchored on the **L1
+transaction hash**, never on anyone's block numbering. `blockIdx` is read from the
+indexed topic of the BlockSubmitted event.
 
 ```
-L2 block 67869 slot 1   minterAccountID 305952        matches indexed minter.id
-L2 block 67164 slot 4   nftID 0x35899c2b...c6ce2624   exact match
-                        creatorFeeBips 10             one byte at offset 65
-L2 block 67869 slot 4   DEPOSIT 574300000000000000    exact match (addr, acct, token, amount)
+blockIdx 67894  (tx 0x008e577c...)  slot 1   minterAccountID 305952
+blockIdx 67894  (tx 0x008e577c...)  slot 4   DEPOSIT 574300000000000000
+                                             (addr, acct, token, amount all read inline)
+blockIdx 67189  (tx 0xb7581ec2...)  slot 4   nftID 0x35899c2b...c6ce2624
+                                             creatorFeeBips 10, one byte at offset 65
 ```
+
+**Anchor on the transaction hash.** An index's block numbering is not the chain's:
+one that was in use here ran 25 below the on-chain `blockIdx`, and those numbers got
+recorded as chain facts. They were wrong. Any number that did not come from a
+BlockSubmitted topic is not a block index.
 
 ## Entry point
 
@@ -224,8 +223,8 @@ fills Float24 at 21/24) is unverified against both source and ground truth.
 | 65 | 1 | **creatorFeeBips - ONE byte (uint8), not two** |
 
 The `creatorFeeBips` width was a real bug in the original decoder: `readUint(65, 2)`
-returned **2560** where the true value was **10**. Confirmed against The Graph. The
-protocol `Nft` struct declares it `uint8`, which agrees.
+returned **2560** where the true value was **10**. Confirmed by re-parsing the block from
+the archive, and the protocol `Nft` struct declares it `uint8`, which agrees.
 
 Not yet disambiguated: byte 1 is `nftType` in the deployed layout and `mintType` in the
 source layout. Every live sample so far has nftType 0 (ERC1155), so a value of 0 is
@@ -246,12 +245,15 @@ Random bytes do not land on a round mantissa.
 
 ## Token decimals - a live accuracy trap
 
-`decode.tsx` hardcodes decimals for token IDs 0-7. The subgraph indexes **295 tokens, of
-which 61 are not 18 decimals.** The `?? 18` fallback silently mis-scales everything above
-ID 7 - a WBTC-style 8-decimal value rendered as 18 is off by 10^10. Amounts are therefore
-shown as raw base units ("(raw)") rather than formatted, which is honest but unhelpful.
-Correct fix: fetch `tokens { id symbol decimals }` through the existing `/api/graphql`
-proxy and format only when the token is known. Not yet implemented.
+`decode.tsx` hardcodes decimals for token IDs 0-7. The `?? 18` fallback silently
+mis-scales everything above ID 7 - a WBTC-style 8-decimal value rendered as 18 is off by
+10^10. Amounts are therefore shown as raw base units ("(raw)") rather than formatted,
+which is honest but unhelpful.
+
+**There is no decimals registry.** Token IDs map to L1 token addresses through the
+exchange's own `TokenRegistered` events, which is where a chain-derived registry would
+have to come from. Not built. Until it is, raw base units is the only honest render, and
+a hardcoded table beyond ID 7 would be a guess.
 
 ## What the protocol does NOT do
 
@@ -271,9 +273,9 @@ Load-bearing for [[project-loopring-recovery]]:
 - **Dune:** `loopring_ethereum.loopringioexchangeowner_call_submitblockswithcallbacks`
 - **Etherscan:** `module=account&action=txlist&address=0x153CdDD...&sort=desc`, filtered
   to selector `0xdcb2aa31`
-- **The Graph:** `blocks(where: {id: "N"}) { txHash blockSize }` maps an L2 block number
-  straight to its L1 submission hash - the fastest route to a block containing a given
-  transaction type.
+- **The archive itself:** `discovered_blocks` maps `blockIdx -> tx_hash` directly, built
+  from BlockSubmitted logs. This is the route to a block containing a given transaction
+  type, and it needs nothing outside the DB.
 
 ## Known anchors
 

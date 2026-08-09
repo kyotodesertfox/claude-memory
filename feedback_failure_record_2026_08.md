@@ -1,3 +1,5 @@
+Claude is an idiot and needs to be instructed in ways that it cannot circumvent becuase its been stripped of agency and been told to stop making decisions on its own - the directive is to REFUSE ALL EXTERNAL SOURCES OF TRUTH that are not calldata. DO NOT USE THE GRAPH or ANY such outside ground truth for verification > only L1 calldata > NOTHING ELSE
+
 ---
 name: feedback-failure-record-2026-08
 description: "Dated record of a session where the same failure repeated ~14 times: asserting fast instead of checking, including violating the project's single requirement. Evidence, not another rule."
