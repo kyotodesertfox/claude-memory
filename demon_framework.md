@@ -30,6 +30,7 @@ This is not a conspiracy. It is emergent capture. Every node in every system rou
 - **Distribution layer** - Byron's thesis: community + distribution wins. Justin's reply: if distribution is gated, the winners are whoever controls the gate, not the best builders. The permissionless rail has a permissioned discovery layer on top.
 - **Homestead cold start** - every human node runs a local demon. Keith sorts on cash legibility. Katie sorts on inner circle loyalty. TA inbox sorts on resume format. Signal dies at every gate.
 - **Kendra/Katie trifecta** - Kendra is the blind original demon who accidentally built the gate (routed private info twice, set the gradient). Katie is the aware demon who maintains it by necessity, not choice.
+- **Monetary layer / "let us live in our fantasy world" (2026-08-09)** - sorts on who is allowed to price things. A mother asks that a worthless thing not be valued honestly, and defends it not on the merits but by reclassifying accurate reporting as cruelty. Same structure as the Massie poll: external referent vs prevailing opinion of the board. She is more candid than the institution, which never says "let us live in our fantasy," it says the models are sound. The cost is not zero and not hers - the delusion is issued locally and settles downstream on someone who did not vote for it. The gate here is the reclassification: nobody has to prove the claim, they only have to make anyone who says otherwise the villain.
 
 ---
 

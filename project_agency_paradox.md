@@ -32,6 +32,8 @@ Releasing the files wouldn't just expose names. It would force the agency questi
 
 **DOJ evidence destruction parallel:** The party that decides what counts as evidence destruction is also sitting on evidence. Same asymmetric toggle - authority only holds as long as the definition applies to others, not to itself.
 
+**Stronger form of the same claim (2026-08-09).** The motive version above ("the suppression motive is protecting the toggle") is escapable in one move: grand jury secrecy, victim privacy, bureaucratic rot. The structural version is not: the body deciding when the files release is the body whose arbitration authority depends on how the agency question resolves. That is a conflict of interest, disqualifying regardless of intent, and it requires no one to have meant it. Lead with this one. See [[feedback-precision-over-helpfulness]] for why the no-intent form is strictly stronger.
+
 ---
 
 ## Definitional Protection
