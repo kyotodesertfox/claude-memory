@@ -226,6 +226,58 @@ whitespace candidates were all known - the miss is the *image bytes*. The upload
 (likely resized or re-encoded at upload time) is not on disk. This is a missing-file
 problem, not a broken method.
 
+### LIVE SAMPLE, byte-exact (retrieved and re-hashed 2026-08-10)
+
+Retrieved from `CIDv0(nftID)` and confirmed by re-hashing the retrieved bytes back to
+the same CID. This is a real Loopring metadata JSON, not a reconstruction.
+
+```
+CID     QmcUJs3qypHMY1tsSBW6JR6JSsQghkXMKk9ectom25Fv6V
+size    157 bytes
+```
+
+Exact bytes, with line endings shown:
+
+```
+{\r\n
+"description": "by AA5K",\r\n
+"image": "ipfs://QmXohsVcDhMZSESG2KqGAcbbSWDQjHsYFnD8v6iPQi6wwu/The Ape.jpg",\r\n
+"name": "The Ape",\r\n
+"royalty_percentage":10\r\n
+}\r\n
+```
+
+Hex of the first 48 bytes, so the framing is unambiguous:
+
+```
+7b 0d 0a 22 64 65 73 63 72 69 70 74 69 6f 6e 22   {.."description"
+3a 20 22 62 79 20 41 41 35 4b 22 2c 0d 0a 22 69   : "by AA5K",.."i
+6d 61 67 65 22 3a 20 22 69 70 66 73 3a 2f 2f 51   mage": "ipfs://Q
+```
+
+**Details that no reconstruction would guess:**
+
+- Opening `{` is followed immediately by CRLF - there is no space or newline convention
+  beyond that.
+- Keys are alphabetical: `description`, `image`, `name`, `royalty_percentage`.
+- The first three keys use `": "` - colon SPACE. `royalty_percentage` uses `":` with
+  **NO space**. That inconsistency is in the real file and is enough on its own to make
+  every candidate miss.
+- `royalty_percentage` is a bare number, not a string, not quoted.
+- Every line ends CRLF, including the last one after the closing brace.
+- No trailing newline beyond that single CRLF.
+- `image` here is a **folder path**: `ipfs://<dirCID>/The Ape.jpg`. The directory block
+  was fetched and parsed - one entry, `The Ape.jpg` -> `QmeVizmeTzywpVq9emDRGjmjB7kK4HubBTqcyhbKo9TFte`,
+  tsize 491063. Mints made by single-file upload instead carry a bare CID with no path,
+  so this field's shape varies by how the creator uploaded.
+
+**Provenance of this sample:** 12 random digest-shaped nftIDs were taken from
+NFT_DATA-derived rows in the archive and converted to CIDv0. 8 of 12 resolved on
+dweb.link; the other 4 returned 301 (gateway noise, not absence). All 8 are saved and
+all 8 re-hash to their own CIDs. This also refutes "nobody's metadata resolves" - a 67%
+survival rate across 8 independent creators, measured 2026-08-10.
+
+
 ### Counterfactual collection addresses are derivable (closes an old open question)
 
 `computeNFTAddress` (`src/api/nft_api.ts:440`):

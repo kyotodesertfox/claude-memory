@@ -198,7 +198,56 @@ once.
 | `base58(0x12 0x20 \|\| nftID)` matches Loopring | **PROVEN.** The deployed collection's `uri()` returned exactly that for 3 nftIDs |
 | **Our pipeline matches LOOPRING'S CLIENT** | **DISPUTED - see the unresolved conflict below** |
 
-### UNRESOLVED CONFLICT, flagged 2026-08-10 - do not silently pick a side
+### RESOLVED BY EXPERIMENT 2026-08-10 - was flagged as a conflict, then settled
+
+**Settled by running it, not by choosing a side.** 12 random digest-shaped nftIDs from
+NFT_DATA-derived rows were converted to `CIDv0` and fetched; 8 resolved. All 8 retrieved
+JSONs were re-hashed and **8/8 reproduced their own CIDs**, alongside the two standard
+IPFS reference vectors (empty file, `hello world\n`). Bytes to digest, demonstrated on
+real Loopring metadata across 8 independent creators.
+
+**So the 2026-08-03 entry stands and the 2026-08-09 "never been done" line is
+superseded.** `project_loopring_own_mints.md:206` - "the builder has never been validated
+against a single known-good sample ... that is the blocker" - **is now wrong** and should
+be corrected: the pipeline is validated, so a miss means the CONTENT is wrong, not the
+format, the wrapping or the tooling.
+
+**The bug that made the first attempt read 0/8:** in dag-pb, `PBNode.Data` is **field 1**
+(tag `0x0a`), not field 2. The merkledag proto declares `repeated PBLink Links = 2;
+optional bytes Data = 1;` - reversed from the obvious assumption. Using tag `0x12`
+produces a well-formed but wrong CID for every input. Isolated against the known empty-file
+CID `QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH`.
+
+Verified minimal implementation, no dependencies:
+
+```
+UnixFS Data  = 0x08 0x02 | 0x12 <varint len> <bytes> | 0x18 <varint len>
+PBNode       = 0x0a <varint len> <UnixFS Data>            <- Data is FIELD 1
+CIDv0        = base58( 0x12 0x20 || sha256(PBNode) )
+```
+
+Single-block only - correct for metadata JSONs, NOT for media over the chunk size.
+
+### WHAT IS STILL NOT DETERMINED: media chunking parameters
+
+**The SDK contains no media-hashing code at all.** `loopring_sdk/src/api/nft_api.ts` has
+exactly `ipfsCid0ToNftID` (`:325`), `ipfsNftIDToCid` (`:337`) and a gateway URL rewriter
+(`:252`). It never adds a file to IPFS. The circuits treat nftID as opaque. So **nothing in
+Loopring's own source specifies chunk size, `rawLeaves`, or CID version for media** - those
+belong to whatever client uploaded the file, and any value chosen for them is an assertion
+until measured against a real Loopring-pinned file.
+
+Empirical anchor for that measurement, captured 2026-08-10 from the AA5K sample:
+
+```
+directory  QmXohsVcDhMZSESG2KqGAcbbSWDQjHsYFnD8v6iPQi6wwu
+entry      'The Ape.jpg' -> QmeVizmeTzywpVq9emDRGjmjB7kK4HubBTqcyhbKo9TFte  tsize 491063
+```
+
+Recomputing that file's CID from its bytes under candidate parameter sets, and seeing which
+one reproduces `QmeVizme...`, determines the real chunking empirically. NOT YET DONE.
+
+### The original conflict, kept for the record
 
 Two entries in [[project-loopring-recovery]] contradicted each other and both were
 carried forward. Recording the conflict rather than resolving it, because resolving it
