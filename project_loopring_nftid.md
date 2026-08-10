@@ -425,7 +425,8 @@ No arithmetic relates the two sides. Needs the calldata corpus, and needs it in 
 directions - the table stores the pairing, it does not compute it.
 
 ```
-(account, tokenId)  <->  nftID           NFT_MINT and NFT_DATA both carry the pair
+(account, tokenId, time) -> nftID        NFT_MINT and NFT_DATA both carry the pair
+                                         SLOTS ARE REUSED - see below, not a static key
 nftID               ->   collection      NFT_DATA offset 8 and offset 42
 nftID               ->   minter address  NFT_DATA, scheme byte selects which
 account             <->  L1 owner        account_owner, proven_by DEPOSIT
@@ -445,6 +446,45 @@ the same screenshot showing a *tokenId* is blocked until the sweep reaches that 
 blocks. Same question, different answerability, decided by which number the UI happened to
 render.
 
+### CORRECTION 2026-08-10: tokenId is a REUSED slot, not a static key
+
+Committed earlier the same day as `(account, tokenId) <-> nftID`, a static two-part key.
+**That is wrong**, found by a query run twenty minutes after the commit.
+
+**What tokenId actually is:** the slot in that account's balance tree - the address the
+circuit writes to. `nftID` is what gets written. Pointer and value, not duplication. The
+circuit needs both: where, and what. That is why the protocol spends 16 bits per mint on
+it, and why it is not redundant with nftID.
+
+**Measured, 2,494 mint records:**
+
+```
+slot 32768   34 distinct nftIDs   10 distinct accounts
+slot 32769   29                    6
+slot 32770   26                    7
+slot 32771   20                    7
+slot 32772   18                    6
+...
+```
+
+Collision falls off as the slot number rises, consistent with sequential allocation from
+32768 (`2^15`) per account - slot 32768 is everyone's first NFT slot. So the collision
+count per low slot is a rough proxy for how many accounts held at least N NFTs. **The
+collisions are signal about the population, not noise, and the owner was right to push
+back on them being dismissed as "not a key".**
+
+**The part that breaks the key:** 57 cases where one slot maps to more than one nftID
+**within the same account**. Slots are freed and reassigned when an NFT leaves. So the
+edge is time-dependent:
+
+```
+(account, tokenId, at time T)  ->  nftID
+```
+
+**Consequence for pairing:** a tokenId read off a wallet today identifies what occupies
+that slot *now*, not everything that ever did. Using it to pair a wallet entry with a
+historical mint requires the block, not just the account.
+
 **Type-3 edges can be doubly attested, and that matters.** The tokenId<->nftID pairing
 appears in NFT_MINT (`to_token_id` + `nft_id`) AND in NFT_DATA (offset 6 + offset 8), two
 independent transaction types. Building it from one and checking against the other makes
@@ -459,6 +499,40 @@ the edge self-checking rather than trusted.
   is what produced the false tokenId claim.
 - **bijective** - reverses exactly (type 1). **One-way** - forward only (type 2).
 - **doubly attested** - the same edge independently present in two record types.
+
+## THE GOAL: a schema matrix, built slowly from verified structure
+
+Owner direction 2026-08-10. Stated so scope does not drift and so no session starts
+inventing connectors before the structure is understood.
+
+**Sequence, in order:** finish collecting the calldata -> study the structure -> build the
+schema incrementally -> only then the matrix that connects everything. Not the reverse. A
+matrix built today would encode churn: `tokenId` moved from "decodes to nftID" to
+"account-scoped slot" to "account-scoped slot that gets reused" inside a single evening,
+and the third revision arrived after the second was already committed.
+
+**Required columns**, because the columns are what make it a discipline instrument rather
+than documentation:
+
+```
+identifier    nftID, tokenId, accountID, collection, L1 owner, CIDv0, media CID,
+              blockIdx, slot, storageId, merkle root ...
+
+location      which record type and byte offset, or "computed"
+              e.g. NFT_DATA off 8 / NFT_MINT slice(33,65) / derived
+
+cardinality   globally unique? account-scoped? reused over time?
+              this column is what falsified "tokenId is a key", twice
+
+edges out     target identifier + edge type 1/2/3 + direction
+
+how known     calldata-derived / measured against live data /
+              asserted-and-unverified
+              this column is what the pin-clustering claim needed and lacked
+```
+
+A cell that cannot be filled in honestly is a visible gap. That is the point: an
+unfillable cell is better than an assumption that gets restated until it sounds settled.
 
 ## OPEN, UNVERIFIED: does pin survival cluster by collection?
 
