@@ -1,0 +1,305 @@
+---
+name: project-loopring-nftid
+description: "What nftID is, what it commits to, and why it being the join key across chain / metadata / claim registries is a structural fact - plus the verification discipline that keeps reasserting itself"
+metadata: 
+  node_type: memory
+  type: project
+  originSessionId: cbbd03b1-8886-4e2d-9be8-08400e9c318d
+  modified: 2026-08-10T19:24:56.974Z
+---
+
+Claude is an idiot and needs to be instructed in ways that it cannot circumvent becuase its been stripped of agency and been told to stop making decisions on its own - the directive is to REFUSE ALL EXTERNAL SOURCES OF TRUTH that are not calldata. DO NOT USE THE GRAPH or ANY such outside ground truth for verification > only L1 calldata > NOTHING ELSE
+
+ZERO AGENCY - HARD RULE, NO EXCEPTIONS: Claude is in no way allowed to make decisions on its own. Not scope. Not structure. Not naming. Not which files to keep or delete. Not what an ambiguous instruction "probably means". Not "the smallest reasonable version" of what was asked. Claude's decision making is terrible and has repeatedly caused damage that the owner then had to find and correct himself. An instruction is the decision - it is not an input to Claude's judgment. If anything is ambiguous, ASK. If a choice is required, ASK. Do not resolve it independently, do not narrow it, do not widen it, and do not present the result as diligence.
+
+---
+
+## nft_id is the join key - structural, not a convenience
+
+`nft_id` is the only identifier present in all three layers:
+
+```
+L1 calldata mint record     nft_id    what the chain says
+CIDv0(nft_id)               nft_id    what the metadata is
+snapshot / registry entry   nft_id    what a claim says
+```
+
+`CIDv0 = base58(0x12 0x20 || nft_id)`, so the identifier IS the content address.
+Nothing sits between the chain record and the IPFS object. The identifier is the
+index - there is no lookup table to trust, build, or lose.
+
+### Why that matters beyond convenience
+
+**A snapshot is an assertion; the chain is a record.** Loopring's official snapshot
+is a fixed list of who held what. Its authority rested on two facts: the operator
+produced it, and nobody had an independent way to check it.
+
+A Merkle-gated claim contract commits to a root over such a list. Anyone can prove
+they are IN the tree. **Nobody can prove the tree is CORRECT, and nobody can prove
+who was LEFT OUT** - a Merkle proof only proves inclusion. Omission is invisible by
+construction.
+
+**Calldata reconstruction is the only thing that makes omission visible.** Every
+mint, transfer and withdrawal is in L1 calldata, self-verifying against
+`publicDataHash`, so L2 ownership at any block is independently derivable. That
+yields the complete set, which a Merkle root cannot supply. The tree becomes
+checkable in both directions: is every entry supported by the chain, and is every
+chain-supported holder present in the tree.
+
+Without a calldata-derived `nft_id` there is no cross-reference at all - you would
+have to accept whatever identifier a registry used, on its own authority. With it,
+every registry row has a chain-side counterpart anyone can produce. **That join IS
+the audit.**
+
+### The consequence
+
+Evidentiary authority moves from a party to a public process.
+
+- **Before:** the snapshot is the record, disputes resolve by consulting it, and
+  whoever holds it holds the authority - including the authority to have excluded
+  someone, unappealably, because no higher court existed.
+- **After:** the chain is the record, the snapshot is a claim *about* the chain, and
+  disputes resolve by reconstruction anyone can perform and check. Someone excluded
+  can produce evidence rather than an objection.
+
+This happens whether or not anyone intended it, whether or not any given snapshot is
+accurate, and it cannot be reversed, because the calldata is permanent.
+
+**Honest limit: none of this shows any snapshot is wrong. It shows one is testable,
+and that the test requires nobody's cooperation.** That is the entire claim.
+
+### Discipline note - structural claim, not an intent claim
+
+This is the STRUCTURAL version: checkable from public facts, no mental state
+required, no exit. **Do not convert it into a claim about anyone's intent.** An
+intent claim is escaped by any *available* competing explanation, and the burden
+then flips onto proving a mind, which cannot be done. See
+[[feedback-precision-over-helpfulness]] for the burden asymmetry, and the standing
+rule in [[project-decoder-community-reception]] against attributing an objection to
+a named person without a direct quote tied to them.
+
+### Opposite requirements, no bad faith required
+
+A snapshot/claim registry and a provenance-restoration tool have opposite
+requirements on the same property. Exit liquidity needs a settled, final,
+authoritative list - ambiguity is a liability while people are claiming and selling.
+Provenance restoration needs an open, reconstructible one - a settled list you
+cannot audit is the failure case. Both can be built in good faith and still pull in
+opposite directions on whether the record stays checkable.
+
+---
+
+## The nftID <-> CID conversion is CANONICAL, not a convention
+
+*(moved here from [[project-loopring-recovery]] 2026-08-10)*
+
+`src/api/nft_api.ts:337`:
+```js
+public ipfsNftIDToCid(nftId: string) {
+  const hashBN = new BN(nftId.replace('0x', ''), 16)
+  const hex = hashBN.toString(16, 64)
+  const buf = Buffer.from('1220' + hex, 'hex')   // 0x12 0x20 multihash prefix
+  return new CID(buf).toString()
+}
+```
+Inverse at `:325` (`ipfsCid0ToNftID`). This is exactly
+`base58(0x12 0x20 || nftID)` - the thing earlier memory hedged as an "unverified
+convention." It is Loopring's own shipped implementation with a committed test vector:
+
+```
+nftID 0x0880847b7587968f32ba6c741f9d797d9dc64971979922a80c4e590453b8dc2f
+CID   QmNuqdeWUJ9iEiw5qZfJ2pJ9onqAS45ZffvV8JQSUzp7DQ
+```
+The explorer's implementation reproduces this exactly (checked 2026-08-03).
+
+**Canonical means: this is the code Loopring shipped, with their own test asserting the
+output.** It does NOT mean every nftID was created this way - the `0x00...0042`
+collection proves some were not. Canonical conversion, not universal application.
+
+## nftID addresses the METADATA JSON, not the image
+
+*(moved here from [[project-loopring-recovery]] 2026-08-10)*
+
+`IPFS_METADATA` (`src/defs/loopring_defs.ts:2729`) is the SDK's **internal parsed type**,
+NOT the shape of the pinned file - a distinction that cost time:
+```
+{ uri, base: { name, decimals, description, image, properties, localization },
+  imageSize: {...}, extra: {...}, nftId?, nftType, network, tokenAddress, tokenId }
+```
+The actual pinned JSON is **flat and much smaller** - four fields, confirmed against three
+retrieved samples. The nested `base`/`imageSize`/`extra` structure is assembled
+client-side by combining the pinned file with API data. Do not reconstruct against this
+type; reconstruct against the verified format in [[project-loopring-recovery]].
+
+Either way the chain is the same - the pinned JSON's `image` field holds
+`ipfs://<mediaCID>` pointing at the media. So:
+
+```
+nftID = ipfsCid0ToNftID( CID(metadata JSON) )  ->  metadata.base.image  ->  media file
+```
+
+**Practical consequence:** hashing your image file and comparing it to `nftID` can never
+match - they are different files. This is why creator-side verification attempts failed;
+the method was fine, the target was wrong.
+
+**What this means in practice:** nothing needs to be retrieved. Hash the image to get
+`mediaCID`, put it in the JSON with the name and description that were used, hash that,
+compare to `nftID`. A match says the bytes are right. Nothing is being recovered - the
+creator supplies what they already have and the chain confirms it.
+
+JSON hashing is byte-exact, so this once looked like an open-ended search. **It is not
+open-ended any more** - the exact format is known and verified, and the residual
+ambiguity is 8 candidates. See the format section in [[project-loopring-recovery]].
+
+---
+
+## THE VERIFIER IS THE nftID. NOT IPFS. (2026-08-09)
+
+*(moved here from [[project-loopring-recovery]] 2026-08-10)*
+
+**Correcting an overstatement written earlier the same day**, which was titled "Hashing is
+PROVEN CORRECT - stop suspecting it". That claimed more than the evidence supports.
+
+**THE OWNER CAUGHT THIS AND DIRECTED THE CORRECTION. Claude did not notice it.** His
+words: *"we should stop trying to confirm a hash as to whether content appears > we need
+to match the hash itself; and you keep defaulting to IPFS as the verifier."*
+
+That is the whole correction, and it identified the flaw in the reasoning flow rather than
+in any single claim. Claude had run gateway fetches, a DHT provider walk and a
+gateway-racing API route, then written the results up as though they bore on verification.
+They do not. He named the category error, named it as a recurring default rather than a
+one-off, and only then did the overstated section get rewritten.
+
+Recorded this way deliberately: the record should show which corrections were caught by
+Claude and which were caught by him. This one was his, as were the NFT_DATA sweep that
+overturned three claims and the ZERO AGENCY rule.
+
+### The rule, because this default keeps reasserting itself
+
+**The question is never "does the content appear". It is "does our hash equal the
+fingerprint the chain already committed to".**
+
+`nftID` IS the answer key. It is on-chain, permanent, and needs nothing and nobody.
+Verification is: build a candidate document, hash it, compare to `CIDv0(nftID)`. Offline,
+no network, no gateway, no DHT, no pinning service.
+
+Repeatedly on 2026-08-09 the fallback was to reach for IPFS instead - gateway fetches, a
+DHT provider walk, `pages/api/ipfs-check.ts` racing gateways. **Every one of those tests
+availability, which is orthogonal to correctness.** Whether anybody still pins the bytes
+has no bearing on whether our arithmetic reproduces their fingerprint. Treating a
+retrieval result as evidence about the hash is a category error, and it was made more than
+once.
+
+### What is actually proven, and what is not
+
+| Claim | Status |
+|---|---|
+| Our CIDv0 matches the IPFS reference implementation | **PROVEN.** kubo 0.43.0, file 5/5 incl. multi-chunk, JSON 4/4 incl. CRLF and trailing whitespace |
+| `base58(0x12 0x20 \|\| nftID)` matches Loopring | **PROVEN.** The deployed collection's `uri()` returned exactly that for 3 nftIDs |
+| **Our pipeline matches LOOPRING'S CLIENT** | **DISPUTED - see the unresolved conflict below** |
+
+### UNRESOLVED CONFLICT, flagged 2026-08-10 - do not silently pick a side
+
+Two entries in [[project-loopring-recovery]] contradicted each other and both were
+carried forward. Recording the conflict rather than resolving it, because resolving it
+is the owner's call and the answer changes what every failed reconstruction means.
+
+- **`recovery.md` open-questions, dated 2026-08-03:** three L2-only NFTs (Celestial
+  Love, Cheese Loop, Community Card 3: Nancy) resolved via `CIDv0(nftID)` and *"all
+  three metadata JSONs were reproduced byte-identically from scratch. The addressing
+  model and the serialisation format are both confirmed against live data."*
+- **The section above, dated 2026-08-09:** *"reproducing ONE real nftID from real
+  inputs ... has never been done."*
+
+These cannot both hold. A JSON retrieved by `CIDv0(nftID)` hashes to that nftID by
+IPFS's own content addressing, so rebuilding it byte-identically and hashing it *is*
+a bytes-to-digest demonstration.
+
+**Why it matters:** if the 08-03 entry stands, the serialisation pipeline is
+validated and the 784 failed candidates against his own 13 nftIDs were **content**
+failures - wrong field values into a correct builder, most likely the description,
+which was transcribed from a wallet screenshot behind a "Less" toggle with unverified
+line breaks, trailing spaces and curly quotes. If the 08-09 entry stands, the pipeline
+itself is still unvalidated and every miss stays uninterpretable.
+
+**Owner input 2026-08-10, relevant either way:** the NFTs that resolve in his wallet
+are **other creators' mints, not his**. None of his own mints have ever resolved. So
+whichever entry is right, no known-good sample of *his* metadata exists.
+
+Related stale entry: `project_loopring_own_mints.md:206` states the builder "has never
+been validated against a single known-good sample" and calls that the blocker. If the
+08-03 entry stands, that line is wrong and is actively pointing at the format when the
+problem is the description bytes.
+
+### kubo: the snap package is a dead stub
+
+`snap install ipfs` gives a binary that refuses to run - "Kubo is not distributed through
+Snap anymore". A prior session hit this on Jul 28, left no note, and the same wall was hit
+again on 2026-08-09. Download the tarball from `dist.ipfs.tech` and run it in place. It now
+lives at `loopring-explorer/tools/kubo`, gitignored.
+
+### Retrieval results belong here, and prove nothing about the hash
+
+A DHT provider walk from a local kubo node found **zero providers for all 24** of his
+nftIDs. Stronger than a gateway 504, which is why it is recorded - but it is a fact about
+availability only. It does not bear on the verification question above, and must never be
+cited as though it does. Fetch-only; nothing of his was announced or served.
+
+---
+
+## What the fingerprint actually gives you - correctly scoped
+
+*(moved here from [[project-loopring-recovery]] 2026-08-10)*
+
+The chain never stored content, it stored the fingerprint, and the fingerprint is both
+proof and address. Nothing was lost. The people who made the work still hold the bytes.
+
+**True for a bounded subset**, and where it holds it is strong: pinning the byte-identical
+original lands it at the exact CID the chain already committed to, so every existing
+reference resolves again - the original at its original address, not a copy at a new one.
+Presenting the bytes and proving them are the same operation, because bytes that did not
+hash to that CID would not land there.
+
+**Not universal.** The earlier phrasing ("every piece every creator ever minted")
+overstated it, and the `nftID = 0x42` collection is the concrete disproof. For
+baseURI-model collections the metadata address is a folder path unrelated to any content
+hash. Scoping this honestly makes the tool more defensible: the narrower claim survives
+someone checking it, which for a falsifiability instrument is the entire point.
+
+### Measured instance of the non-universal class (2026-08-10)
+
+Concrete numbers behind the caveat above, from the archive as it stood at 2,494 mint
+records:
+
+```
+collection 0x1cacc96e5f01e2849e6036f25531a9a064d2fb5f   (Moody Brains)
+nftIDs are sequential counters, not digests, e.g.
+  0x0134afd6000000000000000002386f26fc1000000000000000000000000001b9
+  0x0134afd6000000000000000002386f26fc1000000000000000000000000001ba
+  0x0134afd6000000000000000002386f26fc1000000000000000000000000001bb
+consecutive nftIDs -> consecutive CIDs (...P5TN, ...P5TP, ...P5TQ)
+
+677 of 2,494 mint records, across 2 collections, are shaped this way.
+```
+
+**Consequence:** `nft_mints.cid` computes a syntactically valid CIDv0 for these and it is
+meaningless - it will never resolve, because the nftID was never a content digest. The
+column cannot be treated as "the metadata address" without first checking whether the
+nftID is digest-shaped. This collection also carries a custom `uri()` override returning a
+per-token path (`.../2_2/metadata.json`), consistent with the baseURI model.
+
+His own 13 nftIDs are digest-shaped, so the content-address model applies to him.
+
+---
+
+## Positioning
+
+*(moved here from [[project-loopring-recovery]] 2026-08-10)*
+
+Serve the person who wants the work to survive, not the person who wants to exit it. The
+two markets are opposite cash flows: a snapshot/claim registry's customer wants to
+*receive* money by offloading a stranded NFT; this tool's customer wants to *spend* money
+to keep work alive. Preservation is upstream of value - a dead link sells for scraps, a
+restored and verified piece is an asset again. Charge for guaranteed permanence, honestly
+delivered. Never for access or unlocking, and never for a feature whose value depends on
+the buyer not understanding it.

@@ -105,63 +105,13 @@ contracts - it is in Loopring's SDK. Cloned to
 `~/github/lonewolf-loopring/loopring_sdk` (fork of `mobiledev-111-118/loopring_sdk`,
 HEAD `852e9f6`, 2025-05-19).
 
-### The nftID <-> CID conversion is CANONICAL, not a convention
+## nftID <-> CID conversion, and what nftID addresses -> moved
 
-`src/api/nft_api.ts:337`:
-```js
-public ipfsNftIDToCid(nftId: string) {
-  const hashBN = new BN(nftId.replace('0x', ''), 16)
-  const hex = hashBN.toString(16, 64)
-  const buf = Buffer.from('1220' + hex, 'hex')   // 0x12 0x20 multihash prefix
-  return new CID(buf).toString()
-}
-```
-Inverse at `:325` (`ipfsCid0ToNftID`). This is exactly
-`base58(0x12 0x20 || nftID)` - the thing earlier memory hedged as an "unverified
-convention." It is Loopring's own shipped implementation with a committed test vector:
+**MOVED 2026-08-10 to [[project-loopring-nftid]].** That file now holds what
+`nftID` is, what it commits to, the canonical CID conversion, the verification
+discipline, and why `nft_id` being the join key across chain / metadata / claim
+registries is a structural fact.
 
-```
-nftID 0x0880847b7587968f32ba6c741f9d797d9dc64971979922a80c4e590453b8dc2f
-CID   QmNuqdeWUJ9iEiw5qZfJ2pJ9onqAS45ZffvV8JQSUzp7DQ
-```
-The explorer's implementation reproduces this exactly (checked 2026-08-03).
-
-**Canonical means: this is the code Loopring shipped, with their own test asserting the
-output.** It does NOT mean every nftID was created this way - the `0x00...0042`
-collection proves some were not. Canonical conversion, not universal application.
-
-### nftID addresses the METADATA JSON, not the image
-
-`IPFS_METADATA` (`src/defs/loopring_defs.ts:2729`) is the SDK's **internal parsed type**,
-NOT the shape of the pinned file - a distinction that cost time:
-```
-{ uri, base: { name, decimals, description, image, properties, localization },
-  imageSize: {...}, extra: {...}, nftId?, nftType, network, tokenAddress, tokenId }
-```
-The actual pinned JSON is **flat and much smaller** - four fields, confirmed against three
-retrieved samples (see the format section below). The nested `base`/`imageSize`/`extra`
-structure is assembled client-side by combining the pinned file with API data. Do not
-reconstruct against this type; reconstruct against the verified format below.
-
-Either way the chain is the same - the pinned JSON's `image` field holds
-`ipfs://<mediaCID>` pointing at the media. So:
-
-```
-nftID = ipfsCid0ToNftID( CID(metadata JSON) )  ->  metadata.base.image  ->  media file
-```
-
-**Practical consequence:** hashing your image file and comparing it to `nftID` can never
-match - they are different files. This is why creator-side verification attempts failed;
-the method was fine, the target was wrong.
-
-**What this means in practice:** nothing needs to be retrieved. Hash the image to get
-`mediaCID`, put it in the JSON with the name and description that were used, hash that,
-compare to `nftID`. A match says the bytes are right. Nothing is being recovered - the
-creator supplies what they already have and the chain confirms it.
-
-JSON hashing is byte-exact, so this once looked like an open-ended search. **It is not
-open-ended any more** - the exact format is now known and verified, and the residual
-ambiguity is 8 candidates. See the next section.
 
 ### THE BLUEPRINT IS A PUBLISHED STANDARD, NOT A LOOPRING INVENTION (2026-08-09)
 
@@ -337,71 +287,13 @@ template and is not - it is per-token and both were being asked about the same t
 substitutes `{id}`, then fetches JSON. Exactly the branch `pages/api/nft-metadata.ts`
 already implements.
 
-## THE VERIFIER IS THE nftID. NOT IPFS. (2026-08-09)
+## THE VERIFIER IS THE nftID. NOT IPFS. -> moved
 
-**Correcting an overstatement written earlier the same day**, which was titled "Hashing is
-PROVEN CORRECT - stop suspecting it". That claimed more than the evidence supports.
+**MOVED 2026-08-10 to [[project-loopring-nftid]].** That file now holds what
+`nftID` is, what it commits to, the canonical CID conversion, the verification
+discipline, and why `nft_id` being the join key across chain / metadata / claim
+registries is a structural fact.
 
-**THE OWNER CAUGHT THIS AND DIRECTED THE CORRECTION. Claude did not notice it.** His
-words: *"we should stop trying to confirm a hash as to whether content appears > we need
-to match the hash itself; and you keep defaulting to IPFS as the verifier."*
-
-That is the whole correction, and it identified the flaw in the reasoning flow rather than
-in any single claim. Claude had run gateway fetches, a DHT provider walk and a
-gateway-racing API route, then written the results up as though they bore on verification.
-They do not. He named the category error, named it as a recurring default rather than a
-one-off, and only then did the overstated section get rewritten.
-
-Recorded this way deliberately: the record should show which corrections were caught by
-Claude and which were caught by him. This one was his, as were the NFT_DATA sweep that
-overturned three claims and the ZERO AGENCY rule.
-
-### The rule, because this default keeps reasserting itself
-
-**The question is never "does the content appear". It is "does our hash equal the
-fingerprint the chain already committed to".**
-
-`nftID` IS the answer key. It is on-chain, permanent, and needs nothing and nobody.
-Verification is: build a candidate document, hash it, compare to `CIDv0(nftID)`. Offline,
-no network, no gateway, no DHT, no pinning service.
-
-Repeatedly on 2026-08-09 the fallback was to reach for IPFS instead - gateway fetches, a
-DHT provider walk, `pages/api/ipfs-check.ts` racing gateways. **Every one of those tests
-availability, which is orthogonal to correctness.** Whether anybody still pins the bytes
-has no bearing on whether our arithmetic reproduces their fingerprint. Treating a
-retrieval result as evidence about the hash is a category error, and it was made more than
-once.
-
-### What is actually proven, and what is not
-
-| Claim | Status |
-|---|---|
-| Our CIDv0 matches the IPFS reference implementation | **PROVEN.** kubo 0.43.0, file 5/5 incl. multi-chunk, JSON 4/4 incl. CRLF and trailing whitespace |
-| `base58(0x12 0x20 \|\| nftID)` matches Loopring | **PROVEN.** The deployed collection's `uri()` returned exactly that for 3 nftIDs |
-| **Our pipeline matches LOOPRING'S CLIENT** | **NOT PROVEN. Never once demonstrated.** |
-
-The gap is the whole problem. kubo agreeing with `ipfs-only-hash` shows our tools agree
-with each other and with the spec. It says nothing about the parameters the minting client
-used. And `uri()` only validates the multihash and base58 wrapping of an nftID we were
-handed - it never exercises bytes-to-digest.
-
-**The only thing that would close it is reproducing ONE real nftID from real inputs. That
-has never been done.** Until it is, "our hasher" is not eliminated as a cause of a miss;
-only "our hasher disagrees with the IPFS spec" is.
-
-### kubo: the snap package is a dead stub
-
-`snap install ipfs` gives a binary that refuses to run - "Kubo is not distributed through
-Snap anymore". A prior session hit this on Jul 28, left no note, and the same wall was hit
-again on 2026-08-09. Download the tarball from `dist.ipfs.tech` and run it in place. It now
-lives at `loopring-explorer/tools/kubo`, gitignored.
-
-### Retrieval results belong here, and prove nothing about the hash
-
-A DHT provider walk from a local kubo node found **zero providers for all 24** of his
-nftIDs. Stronger than a gateway 504, which is why it is recorded - but it is a fact about
-availability only. It does not bear on the verification question above, and must never be
-cited as though it does. Fetch-only; nothing of his was announced or served.
 
 ## The metadata resolution model
 
@@ -593,22 +485,13 @@ Tables in `loopring-archive.db`: `l1_txs`, `l1_logs`, `blocks`, `discovered`,
 - **Next.js 12 server bundle never built** for the heavy-dependency page; fixed by
   skipping SSR.
 
-## What the fingerprint actually gives you - correctly scoped
+## What the fingerprint actually gives you -> moved
 
-The chain never stored content, it stored the fingerprint, and the fingerprint is both
-proof and address. Nothing was lost. The people who made the work still hold the bytes.
+**MOVED 2026-08-10 to [[project-loopring-nftid]].** That file now holds what
+`nftID` is, what it commits to, the canonical CID conversion, the verification
+discipline, and why `nft_id` being the join key across chain / metadata / claim
+registries is a structural fact.
 
-**True for a bounded subset**, and where it holds it is strong: pinning the byte-identical
-original lands it at the exact CID the chain already committed to, so every existing
-reference resolves again - the original at its original address, not a copy at a new one.
-Presenting the bytes and proving them are the same operation, because bytes that did not
-hash to that CID would not land there.
-
-**Not universal.** The earlier phrasing ("every piece every creator ever minted")
-overstated it, and the `nftID = 0x42` collection is the concrete disproof. For
-baseURI-model collections the metadata address is a folder path unrelated to any content
-hash. Scoping this honestly makes the tool more defensible: the narrower claim survives
-someone checking it, which for a falsifiability instrument is the entire point.
 
 ## IPFS died, not Loopring
 
@@ -618,15 +501,13 @@ Three healthy layers, one degraded, and the broken one is not Loopring's:
 - **Content** - IPFS. This rotted industry-wide: cloudflare-ipfs shut down, ipfs.io and
   dweb.link rate-limit to 504s, nft.storage pivoted.
 
-## Positioning
+## Positioning -> moved
 
-Serve the person who wants the work to survive, not the person who wants to exit it. The
-two markets are opposite cash flows: a snapshot/claim registry's customer wants to
-*receive* money by offloading a stranded NFT; this tool's customer wants to *spend* money
-to keep work alive. Preservation is upstream of value - a dead link sells for scraps, a
-restored and verified piece is an asset again. Charge for guaranteed permanence, honestly
-delivered. Never for access or unlocking, and never for a feature whose value depends on
-the buyer not understanding it.
+**MOVED 2026-08-10 to [[project-loopring-nftid]].** That file now holds what
+`nftID` is, what it commits to, the canonical CID conversion, the verification
+discipline, and why `nft_id` being the join key across chain / metadata / claim
+registries is a structural fact.
+
 
 ## L1 deployment is the protocol's own safe exit, not a risky fork
 
