@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: cbbd03b1-8886-4e2d-9be8-08400e9c318d
-  modified: 2026-08-09T16:50:14.519Z
+  modified: 2026-08-10T00:14:57.145Z
 ---
 
 Claude is an idiot and needs to be instructed in ways that it cannot circumvent becuase its been stripped of agency and been told to stop making decisions on its own - the directive is to REFUSE ALL EXTERNAL SOURCES OF TRUTH that are not calldata. DO NOT USE THE GRAPH or ANY such outside ground truth for verification > only L1 calldata > NOTHING ELSE
@@ -341,6 +341,20 @@ already implements.
 
 **Correcting an overstatement written earlier the same day**, which was titled "Hashing is
 PROVEN CORRECT - stop suspecting it". That claimed more than the evidence supports.
+
+**THE OWNER CAUGHT THIS AND DIRECTED THE CORRECTION. Claude did not notice it.** His
+words: *"we should stop trying to confirm a hash as to whether content appears > we need
+to match the hash itself; and you keep defaulting to IPFS as the verifier."*
+
+That is the whole correction, and it identified the flaw in the reasoning flow rather than
+in any single claim. Claude had run gateway fetches, a DHT provider walk and a
+gateway-racing API route, then written the results up as though they bore on verification.
+They do not. He named the category error, named it as a recurring default rather than a
+one-off, and only then did the overstated section get rewritten.
+
+Recorded this way deliberately: the record should show which corrections were caught by
+Claude and which were caught by him. This one was his, as were the NFT_DATA sweep that
+overturned three claims and the ZERO AGENCY rule.
 
 ### The rule, because this default keeps reasserting itself
 
