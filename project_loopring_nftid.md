@@ -244,8 +244,62 @@ directory  QmXohsVcDhMZSESG2KqGAcbbSWDQjHsYFnD8v6iPQi6wwu
 entry      'The Ape.jpg' -> QmeVizmeTzywpVq9emDRGjmjB7kK4HubBTqcyhbKo9TFte  tsize 491063
 ```
 
-Recomputing that file's CID from its bytes under candidate parameter sets, and seeing which
-one reproduces `QmeVizme...`, determines the real chunking empirically. NOT YET DONE.
+### MEASURED 2026-08-10: rawLeaves is FALSE, CIDv0, kubo defaults
+
+**DONE, and it is no longer an assertion.** The file above was fetched from IPFS
+(490,931 bytes, multi-chunk) and its CID recomputed from the retrieved bytes under
+candidate parameter sets:
+
+```
+cidVersion 0, rawLeaves false (kubo default)  QmeVizmeTzywpVq9emDRGjmjB7kK4HubBTqcyhbKo9TFte  MATCH
+cidVersion 0, rawLeaves true                  QmcQwmYK69H9kRCjvXxmoZ5SRsS79rkhtV7zpNpbpZmQAt  no
+cidVersion 1, rawLeaves true                  bafybeigrdu5koiftup4rx4rxjecjzoco6wxbyklmkpr6wp4p23bu4fb2xe  no
+```
+
+**So the pinning client used CIDv0 with dag-pb leaves - `rawLeaves: false`.** This was
+previously listed as an open unknown and as a candidate explanation for reconstruction
+misses; it is neither any more. Measured against a real Loopring-pinned mint, not
+assumed, and not taken from documentation.
+
+**Caveat on chunk size, stated so it is not overclaimed:** `ipfs-only-hash` silently
+IGNORES the `chunker` option - 64KiB, 256KiB and 1MiB all returned the identical CID for
+a 490,931-byte file, which is impossible if the option were honoured. So what is
+established is *the library default* (256 KiB), which is what matched. Chunk size has NOT
+been independently discriminated. To do that properly, vary it with a tool that honours
+the setting (kubo itself) against the same file.
+
+**Correct invocation, now evidence-backed:**
+
+```js
+await Hash.of(buf, { cidVersion: 0, rawLeaves: false })   // do NOT pass chunker, it is ignored
+```
+
+Media CIDs computed this way 2026-08-10 for the Coffee Pack source folder:
+
+```
+1619664B  QmctBjhj1er6pphBUZxotY1F8CKQARDXtY2kk2DqbMA8oQ  Coffee Pack.png
+ 161752B  QmYMqDtkNJmcq4zuudRVfRz4YKuXRMEVXZuLUGURCX6Aut  Coffee Cup.glb
+3237040B  QmZeQDjLKFrsTKfGgkHmwWgVrM1ye5gKgWjaw8zf82gUM8  Espresso Cup.glb
+2783848B  QmaiNEQkn9vTvmoKb3fwK2BJBd9grnofoUEGM9dM9nVgiT  Saucer.glb
+6020436B  QmeEKhjJqfkpW4VLrRASefCTtD1XzpWQUHrLyrGMahu3Ji  Espresso n Saucer.glb
+```
+
+`Coffee Cup.glb` reproduces the value already in `loopring-explorer/tools/media-cids.txt`
+from prior work, so the two independent runs agree.
+
+**Coffee House Pack target, from the owner's wallet 2026-08-10:** the wallet shows a
+77-digit decimal, which is the nftID in base 10 - a base conversion, NOT a "decode", and
+NOT the 16-bit token slot.
+
+```
+decimal  86090671987523398724512654037451916210989953119795086478439740601456181482636
+nftID    0xbe5597f487838930b1bc003db7d1a1b8385c9f119795e9de464fa589c511948c
+CIDv0    Qmb9dsVzYvCo4C2VWrY488gkrqjtJwQxG3W5LZ3s8HakLj
+```
+
+Not in the archive yet (25% swept) and does not resolve on IPFS. It is the first target
+where the media CID, the JSON format and the hasher are all independently established, so
+a miss against it is now unambiguously a CONTENT failure.
 
 ### The original conflict, kept for the record
 
