@@ -395,6 +395,71 @@ His own 13 nftIDs are digest-shaped, so the content-address model applies to him
 
 ---
 
+## EDGE TYPES - the general pattern behind every indexing connector
+
+Owner framing 2026-08-10, generalised from the tokenId/nftID case. Every connector in
+this project is one of three kinds, and which kind it is determines whether it works
+offline, whether it reverses, and whether it needs the archive at all. Getting this wrong
+is how "you can decode a tokenId into an nftID" got asserted.
+
+**1. Bijective conversion.** Pure arithmetic. No data, no corpus, no network. Reverses
+exactly. Works forever, for anyone, with nothing but the value.
+
+```
+nftID  <->  decimal        base 16 <-> base 10, round trip verified
+nftID  <->  CIDv0          prepend / strip the 0x12 0x20 multihash prefix, then base58
+CIDv0  <->  CIDv1          re-encode the same multihash under a different multibase/codec
+```
+
+**2. One-way derivation.** A hash. Computable forward by anyone, never reversible. This is
+what makes the whole scheme work as proof: producing bytes and proving them are the same
+operation.
+
+```
+metadata bytes  ->  CIDv0     dag-pb/UnixFS wrap, then sha256      NEVER the reverse
+media bytes     ->  CIDv0     same, multi-chunk over 256 KiB       NEVER the reverse
+```
+
+**3. Indexed edge.** Exists only because the chain wrote both values into the same record.
+No arithmetic relates the two sides. Needs the calldata corpus, and needs it in BOTH
+directions - the table stores the pairing, it does not compute it.
+
+```
+(account, tokenId)  <->  nftID           NFT_MINT and NFT_DATA both carry the pair
+nftID               ->   collection      NFT_DATA offset 8 and offset 42
+nftID               ->   minter address  NFT_DATA, scheme byte selects which
+account             <->  L1 owner        account_owner, proven_by DEPOSIT
+nftID               ->   block, slot     NFT_MINT position
+```
+
+### Why the distinction is operational, not academic
+
+**A type-1 or type-2 edge needs nothing.** Hand over a 77-digit decimal or a CID and the
+whole conversion chain runs offline, today, with no archive. That is why the Coffee House
+Pack nftID fell straight out of the wallet's decimal.
+
+**A type-3 edge is gated on the sweep.** `tokenId` alone is not even a key - 400 cases
+exist where one tokenId maps to multiple nftIDs across accounts, because it is an
+account-scoped slot number. So a wallet screenshot showing a *decimal* is answerable now;
+the same screenshot showing a *tokenId* is blocked until the sweep reaches that account's
+blocks. Same question, different answerability, decided by which number the UI happened to
+render.
+
+**Type-3 edges can be doubly attested, and that matters.** The tokenId<->nftID pairing
+appears in NFT_MINT (`to_token_id` + `nft_id`) AND in NFT_DATA (offset 6 + offset 8), two
+independent transaction types. Building it from one and checking against the other makes
+the edge self-checking rather than trusted.
+
+### Terminology, so the lingo is consistent
+
+- **edge** - a connection between two identifiers. "Hop" is fine for traversing one.
+- **derivable edge** (types 1 and 2) - computed, needs no corpus. Say "convert".
+- **indexed edge** (type 3) - witnessed by a record, needs the corpus. Say "look up" or
+  "join". **Never say "decode" for one of these** - that word implies a derivable edge and
+  is what produced the false tokenId claim.
+- **bijective** - reverses exactly (type 1). **One-way** - forward only (type 2).
+- **doubly attested** - the same edge independently present in two record types.
+
 ## OPEN, UNVERIFIED: does pin survival cluster by collection?
 
 **STATUS: asserted by Claude, never measured. Owner instruction 2026-08-10: mark it,
