@@ -115,6 +115,70 @@ Identifying `0x7a520803...` means resolving one of those four nftIDs to its meta
 reading the `name` field, or the owner recognising the work. **Do not infer it from the
 other collection.**
 
+## The two NFTs worked on directly (2026-08-09)
+
+Everything below came from him or from the chain, and is recorded so no future session
+re-derives it or re-runs the same failed sweeps.
+
+### Coffee House Pack
+```
+tokenID (decimal) 86090671987523398724512654037451916210989953119795086478439740601456181482636
+nftID             0xbe5597f487838930b1bc003db7d1a1b8385c9f119795e9de464fa589c511948c
+CIDv0 (metadata)  Qmb9dsVzYvCo4C2VWrY488gkrqjtJwQxG3W5LZ3s8HakLj
+collection        0x8eb4228702fc4cdf202b9dc17cd50b05dce096fe  (3D Metaverse Assets)
+name              Coffee House Pack
+description       This Coffee House Pack is SURE to be a coffee aficionado's dream!
+held              488  (of an edition he believes was 500)
+source folder     /home/zenko/Creations/Metaverse Assets/Coffee Pack
+```
+NOT in the archive - its mint falls outside the 9,954-block window, so `creatorFeeBips`
+is unreadable for it.
+
+### Quest POI - the wallet calls it "Point of Interest Marker"
+```
+tokenID (decimal) 87915086873263964949986678250415073833433150787371560661018672339866483502773
+nftID             0xc25e2d01af6f9c791ddfabb182e3c4a26221f0777c406714477fedb89e3d2eb5
+CIDv0 (metadata)  QmbRP6KJbqW1U62or1891KarQZPZYgf5uNfMiP7CthJ6FE
+collection        0x8eb4228702fc4cdf202b9dc17cd50b05dce096fe
+name              Point of Interest Marker          <- NOT "Quest POI", which is the folder
+description       A Point of Interest marker is a navigational guidance marker in an area
+                  or vicinity that highlights or draws attention to a noteworthy location.
+                  Whether it be a Quest, Landmark, or any other place of special interest.
+properties        color = black                     <- the wallet renders a trait
+image             Quest POI.jpg      -> QmPPRELUYnh7SoDsY5AgajqzFHLHGjm2emMHXPJJDMRE8N
+animation         POI-Marker.glb     -> QmabpPeVySFV9s3XngVM4QDF4fXfmSWNHtPNbmZNePzxcQ
+creatorFeeBips    10   (READ FROM NFT_DATA CALLDATA, not guessed)
+source folder     /home/zenko/Creations/Metaverse Assets/Quest POI
+```
+**Quest POI proves the four-field metadata format in [[project-loopring-recovery]] is
+incomplete.** It carries a trait the samples never had.
+
+### What was tried and ELIMINATED - do not repeat
+
+| Sweep | Candidates | Result |
+|---|---|---|
+| Coffee House Pack, 9 media files x 2 apostrophes x royalty {10,0,5} x 8 whitespace | 432 | no match |
+| Quest POI, 4 image + 7 animation CID encodings x 6 trait forms x royalty {10,0,5} x 8 whitespace, hashed BOTH dag-pb and raw sha256 | 4,032 | no match |
+
+Eliminated as causes: **the hasher** (kubo agrees at every link), **the media CID
+encoding** (raw-leaves, CIDv1 and trickle variants all generated with kubo and tested),
+**royalty** (10 is confirmed from calldata for Quest POI), **whitespace** (all 8), and
+**the apostrophe form**.
+
+Not eliminated: whether those files are the uploaded bytes, and **the document's field
+set** - which Quest POI already showed memory has wrong.
+
+### Who holds his work on L1
+
+Two collectors, 19 units across 13 tokens, all withdrawn to L1:
+```
+0xda0f9f916db23d3c8c097376f60196483550869b   L2 account 298669   12 of his
+0x7e5863f0246602c12765e11a935c6697b090201c                        2 of his
+```
+On 2026-01-01 06:31:11 UTC account 298669 withdrew 17 NFTs across 9 collections in one
+operator block submission, 8 of them his, plus a second tx with 4 more. He did NOT
+withdraw anything - every one of these was a collector exiting.
+
 ## Archive state (2026-08-09)
 
 - `~/github/lonewolf-loopring/loopring-archive/loopring-archive.db`
