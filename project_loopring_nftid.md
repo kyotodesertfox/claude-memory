@@ -395,6 +395,53 @@ His own 13 nftIDs are digest-shaped, so the content-address model applies to him
 
 ---
 
+## OPEN, UNVERIFIED: does pin survival cluster by collection?
+
+**STATUS: asserted by Claude, never measured. Owner instruction 2026-08-10: mark it,
+do NOT settle it yet.** Recorded here so a future session does not mistake it for an
+established fact and reason from it, which already happened once.
+
+**The claim:** whoever pinned a collection pinned all of it, so IPFS survival is
+all-or-nothing per collection rather than per NFT.
+
+**How it went wrong.** Claude asserted this in conversation, then used it to reduce the
+owner's 13 unresolvable mints to 2 independent trials, because his 13 sit in 2
+collections. That reduction is the entire difference between:
+
+```
+13 independent trials at 67% survival   ->  0.33^13  ~ 6 in 10,000,000   anomalous
+2  independent trials at 67% survival   ->  0.33^2   ~ 11%               unremarkable
+```
+
+Claude then cited the claim back to the owner as "your own notes record" - it was neither
+his, nor recorded, nor measured. He caught it. **The conclusion that his dead pins are
+unremarkable rests entirely on an unverified assertion; if clustering is false, the
+anomaly stands.**
+
+**What IS measured (2026-08-10, single sample):** 12 random digest-shaped nftIDs drawn
+from NFT_DATA rows, 8 resolved on dweb.link, 4 returned gateway 301s. 67% survival across
+8 independent creators. That is a global rate. It says nothing about clustering.
+
+**The test that would settle it, NOT YET RUN:**
+
+Select collections holding >= 5 digest-shaped nftIDs. Probe >= 4 nftIDs from each, across
+>= 6 collections. Then look at the per-collection resolution distribution:
+
+- **bimodal** (collections nearly all-alive or nearly all-dead) -> clustering is real, the
+  reduction to 2 trials is justified, and the owner's result is unremarkable
+- **mixed within collections** -> clustering is false, the trials are closer to
+  independent, and 0/13 against a 67% base rate is a genuine anomaly needing an
+  explanation
+
+Gateway 301/504 responses must be retried rather than scored as failures - tonight 4 of 12
+were gateway noise, and scoring those as "dead" would manufacture the very clustering the
+test is looking for.
+
+**Even a bimodal result identifies a mechanism, not a motive.** Selective unpinning is
+mechanically trivial, leaves no audit trail, and is observationally identical to a lapsed
+subscription, a shut-down pinning service, node garbage collection or a dead disk. Absence
+carries no signature. See the discipline note above: structural claims only.
+
 ## Positioning
 
 *(moved here from [[project-loopring-recovery]] 2026-08-10)*
