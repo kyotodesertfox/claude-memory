@@ -426,6 +426,37 @@ available path for them - a useful reminder that the deployed case may be the mi
 will never match.** A verifier built on raw sha256 fails against genuine originals - a
 bug that shipped once, see [[feedback-verify-before-asserting]].
 
+## ARCHITECTURE: read the chain, do not read a table (2026-08-09, owner directive)
+
+**"stop using the archive in the code / source of truth. BUILD OFF THE CALLDATA."**
+
+The NFT decoder page reads three derived SQLite tables - `account_owner`, `nft_mints`,
+`nft_collections` - and never parses a byte of calldata. `pages/decode.tsx` does the
+opposite and is the pattern to follow: give it a transaction hash, it fetches and parses
+live, stores nothing.
+
+The archive itself is honest about blocks - each is checked against its own commitment at
+ingest - but the derived tables have no verification at all. They are Claude's parser
+output and can be stale, partial or wrong with no signal. That is the same structural
+problem as The Graph, one step removed: the index is now ours, which changes who is
+trusted and nothing else.
+
+**Ground truth is Ethereum consensus. Everything else is a copy of a copy:**
+```
+Ethereum consensus     ground truth
+  RPC endpoint         someone's claim about it
+    blocks table       our copy of that claim
+      derived tables   our parse of our copy
+        the page       what the user sees
+```
+A copy is legitimate when it is **reproducible**, not when it is trusted. The data
+availability guarantee means anyone can rebuild it and compare, and the claim to make is
+never "I have the data" but "here is how you get the same data, and if yours differs one
+of us is wrong and we can find out which."
+
+**The database is not required for this.** See [[project-loopring-protocol]] - only
+address-to-mints needs a scan; everything else reads the chain directly.
+
 ## CODE IS BEHIND MEMORY - open work as of 2026-08-09
 
 Normally memory lags the code. Here it is the reverse: the contract sweep found things the

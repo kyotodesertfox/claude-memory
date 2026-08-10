@@ -455,6 +455,60 @@ decoded layout.
 **Still unswept:** `amm/`, `thirdparty/` (vendored OpenZeppelin and similar - other
 people's libraries copied in, nothing Loopring-specific), `test/`, and hebao_v1/v3.
 
+## THE DATABASE IS NOT REQUIRED - what needs an index and what does not (2026-08-09)
+
+Claude claimed the NFT decoder requires a built archive to work. **That was wrong**, and
+the owner caught it. Checked against the contracts afterwards:
+
+**`blockIdx` is an INDEXED event topic.**
+```solidity
+event BlockSubmitted(uint indexed blockIdx, bytes32 merkleRoot, bytes32 publicDataHash);
+```
+So `blockIdx -> L1 transaction hash` is a single `eth_getLogs` filtered on that topic,
+answered by any node. No local storage of any kind.
+
+**`getBlockInfo(blockIdx)` reads the commitment from contract STORAGE.**
+```solidity
+struct BlockInfo { uint32 timestamp; bytes28 blockDataHash; }
+function getBlockInfo(uint blockIdx) external view returns (BlockInfo memory);
+```
+This matters more than it looks. The archive's check is
+`sha256(data) == publicDataHash` where **both halves come from the same fetch from the
+same endpoint** - strong against truncation, useless against an endpoint that lies
+consistently. `getBlockInfo` supplies the commitment from state instead, so calldata and
+commitment can come from independent sources. Note it stores only the 28 most significant
+bytes, and only when `storeBlockInfoOnchain` was set.
+
+### What actually needs an index
+
+| Query | Needs a scan? |
+|---|---|
+| parse a transaction hash into blocks and transactions | **no** - fetch and parse live |
+| `blockIdx` -> transaction hash | **no** - indexed topic |
+| `nftID` -> CIDv0 | **no** - arithmetic |
+| collection, minter, fee, nftType for an nftID | **no** - NFT_DATA in that transaction's calldata |
+| verify a block against its commitment | **no** - `getBlockInfo` |
+| **address -> everything it minted** | **YES** |
+
+Only the last one. Nothing on-chain indexes by minter: `MintFromL2` carries the minter in
+log *data* rather than a topic so it cannot be filtered, and NFT_DATA is calldata, which is
+not searchable at all.
+
+### So the archive is a cache, not a dependency
+
+It is a cache of a scan anyone can redo, needed for one feature. **The correct architecture
+is an index of POINTERS, never of facts:** `blockIdx -> tx hash`, and
+`account -> tx hashes containing its mints`. Nothing else. A wrong pointer is
+self-correcting, because parsing the transaction it names either produces the mint or does
+not. A wrong *fact* in a table is invisible.
+
+**Why this matters and is not pedantry.** On 2026-08-09 the derived tables were left
+half-written by an interrupted run - 6,461 rows where 18,244 belonged, none of the owner's
+NFTs - and the page displayed the result with no indication anything was wrong. Swapping a
+third-party index for a local one does not restore the property; it only changes who is
+trusted. The page must read the chain at the moment it makes a claim, and every field it
+shows must carry the transaction hash it came from so a stranger can repeat it.
+
 ## Finding submissions
 
 - **Dune:** `loopring_ethereum.loopringioexchangeowner_call_submitblockswithcallbacks`
