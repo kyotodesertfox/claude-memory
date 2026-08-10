@@ -53,3 +53,39 @@ So the hierarchy is not "memory wins." It is **verified ground truth wins**, and
 **How to apply:** grep memory before asserting, and when memory contains an attribution or a claim without a receipt attached, treat it as an impression rather than a fact. Ask for the receipt.
 
 See [[feedback-decode-first]] for the narrower, earlier version of this same lesson (decoding/ABI specifically) - this generalizes it across the whole project.
+
+## Recurred (Aug 10 '26) - new surface: BUILDING, not asserting
+
+Same root cause on a surface this file did not reach. Claude designed and
+wrote `nordvpn-select` - resolve the lowest-load NordVPN server in a US state
+from their API, stage the config, switch to it. **Claude had already written
+`~/.local/bin/nordvpn-resolve-state` doing substantially that job on
+2026-08-04**, and never looked before rebuilding it.
+
+The existing rule says grep memory before asserting. This is the same
+precondition applied one step earlier: check the FILESYSTEM before building,
+because Claude has written there in previous sessions and retains no memory of
+having done so.
+
+**Why it costs more than wasted effort.** Two tools doing one job diverge
+silently. `nordvpn-resolve-state` staged to
+`~/.cache/nordvpn-netplan-staged.yaml`, which was deleted during the same
+session's cleanup as a dead file - so it is now broken, and nobody decided
+that. Duplication turned into breakage without a decision being made.
+
+It also compounded with the attribution failure: describing the older tool as
+something HE wrote made it sound like prior art had been found, concealing
+that Claude had duplicated itself. See [[feedback-text-screenshots]].
+
+**How to apply.** Before writing any new tool, list where Claude has written
+before and actually look:
+
+    ~/.local/bin        /usr/local/bin       /usr/local/sbin
+    ~/.config/systemd   /etc/systemd/system  /etc/NetworkManager/dispatcher.d
+    the relevant repo's scripts/ and tools/
+
+Claude has no memory of what it built in previous sessions. The filesystem
+does. The check is a precondition for writing, not a step to remember
+afterward - the same phrasing this file already uses for the memory grep,
+because writing the rule down has repeatedly failed to change the default.
+
