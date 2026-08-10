@@ -337,46 +337,57 @@ template and is not - it is per-token and both were being asked about the same t
 substitutes `{id}`, then fetches JSON. Exactly the branch `pages/api/nft-metadata.ts`
 already implements.
 
-## Hashing is PROVEN CORRECT - stop suspecting it (2026-08-09)
+## THE VERIFIER IS THE nftID. NOT IPFS. (2026-08-09)
 
-Verified against kubo 0.43.0, the reference implementation, run locally. Not our code
-checking our code:
+**Correcting an overstatement written earlier the same day**, which was titled "Hashing is
+PROVEN CORRECT - stop suspecting it". That claimed more than the evidence supports.
 
-```
-file  -> CIDv0     kubo agrees 5/5, single-chunk AND multi-chunk
-JSON  -> CIDv0     kubo agrees 4/4, including CRLF and trailing-whitespace documents
-nftID -> CIDv0     the deployed collection's uri() agrees 3/3
-```
+### The rule, because this default keeps reasserting itself
 
-**This closes the "multi-chunk was never confirmed" open question** carried in
-[[project-loopring-own-mints]]. `ipfs-only-hash` with `cidVersion: 0` matches kubo's
-defaults exactly at every size.
+**The question is never "does the content appear". It is "does our hash equal the
+fingerprint the chain already committed to".**
 
-For the metadata document the parameter space is CLOSED, not merely sampled: a small JSON
-is one block so the chunker is irrelevant; CIDv1 with dag-pb yields the same 32-byte
-digest as CIDv0, and nftID is only the digest; the sole setting that changes it is raw
-leaves, where the digest becomes plain `sha256(bytes)`, and that was tested. **There is no
-remaining hashing variant. A miss is never the hasher.**
+`nftID` IS the answer key. It is on-chain, permanent, and needs nothing and nobody.
+Verification is: build a candidate document, hash it, compare to `CIDv0(nftID)`. Offline,
+no network, no gateway, no DHT, no pinning service.
+
+Repeatedly on 2026-08-09 the fallback was to reach for IPFS instead - gateway fetches, a
+DHT provider walk, `pages/api/ipfs-check.ts` racing gateways. **Every one of those tests
+availability, which is orthogonal to correctness.** Whether anybody still pins the bytes
+has no bearing on whether our arithmetic reproduces their fingerprint. Treating a
+retrieval result as evidence about the hash is a category error, and it was made more than
+once.
+
+### What is actually proven, and what is not
+
+| Claim | Status |
+|---|---|
+| Our CIDv0 matches the IPFS reference implementation | **PROVEN.** kubo 0.43.0, file 5/5 incl. multi-chunk, JSON 4/4 incl. CRLF and trailing whitespace |
+| `base58(0x12 0x20 \|\| nftID)` matches Loopring | **PROVEN.** The deployed collection's `uri()` returned exactly that for 3 nftIDs |
+| **Our pipeline matches LOOPRING'S CLIENT** | **NOT PROVEN. Never once demonstrated.** |
+
+The gap is the whole problem. kubo agreeing with `ipfs-only-hash` shows our tools agree
+with each other and with the spec. It says nothing about the parameters the minting client
+used. And `uri()` only validates the multihash and base58 wrapping of an nftID we were
+handed - it never exercises bytes-to-digest.
+
+**The only thing that would close it is reproducing ONE real nftID from real inputs. That
+has never been done.** Until it is, "our hasher" is not eliminated as a cause of a miss;
+only "our hasher disagrees with the IPFS spec" is.
 
 ### kubo: the snap package is a dead stub
 
 `snap install ipfs` gives a binary that refuses to run - "Kubo is not distributed through
 Snap anymore". A prior session hit this on Jul 28, left no note, and the same wall was hit
-again on 2026-08-09. **Download the tarball from `dist.ipfs.tech` and run it in place;**
-no root, no package manager. It cost time twice.
+again on 2026-08-09. Download the tarball from `dist.ipfs.tech` and run it in place. It now
+lives at `loopring-explorer/tools/kubo`, gitignored.
 
-### Retrieval: the first honest negative result
+### Retrieval results belong here, and prove nothing about the hash
 
-Ran a real DHT provider walk from a local kubo node against all 24 of his nftIDs
-(23 archive-derived plus Coffee House Pack from his wallet). **Zero providers on all 24.**
-
-Every previous "gone" call in this project came from a public read gateway timing out,
-which is inconclusive. A local node doing its own provider walk is the correct instrument
-and this is the first time it was used. Still not proof of deletion: a node holding the
-data but never announcing to the DHT, or one offline at the time, looks identical. Strong
-evidence, not certainty.
-
-Fetch-only. Nothing of his was added, announced or served.
+A DHT provider walk from a local kubo node found **zero providers for all 24** of his
+nftIDs. Stronger than a gateway 504, which is why it is recorded - but it is a fact about
+availability only. It does not bear on the verification question above, and must never be
+cited as though it does. Fetch-only; nothing of his was announced or served.
 
 ## The metadata resolution model
 
