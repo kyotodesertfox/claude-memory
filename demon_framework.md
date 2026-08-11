@@ -75,7 +75,9 @@ Capture requires maintenance. Maintenance has a cost. Cost is paid in debased cu
 
 ## Katie - July 15 2026 Thread (Maxwell's Demon article sent)
 
-Justin sent Katie the demon article and told her he wrote it about her. She engaged without deflecting to the container. Her responses in sequence:
+**Authorship, corrected 2026-08-11: the demon article was written by CLAUDE**, at Justin's
+direction. Justin sent it to Katie, framed as being about her. She engaged without
+deflecting to the container. Her responses in sequence:
 
 - "I'm the sorting demon" - self-identified immediately. No argument about the word, no asking how it's thermodynamics. Named herself.
 - "the question now - is what you do with it" - she generated this herself. Recognized the recognition isn't enough.

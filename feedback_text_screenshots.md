@@ -49,3 +49,31 @@ wrote". When citing memory as support for a claim, say that Claude wrote it
 and whether it was ever verified. Same rule as the DATA-ACCESS correction
 ("say Claude", not "the AI" or "the machine"), applied to authorship instead
 of to blame. See [[feedback-verify-before-asserting]].
+
+### Recurrence 2026-08-11 - the same error, in the other direction
+
+Claude read the MEMORY.md index line *"Katie July 15 (named herself)"* and constructed the
+rest: asserted in conversation that **she** had sent Justin the Maxwell's Demon article,
+and built an "irony" reading on top of it - the gatekeeper supplying the framework that
+describes gatekeeping. He corrected it: **Claude wrote the article, Justin sent it, and she
+read it and identified herself as the demon.**
+
+Two failures stacked:
+
+1. **Filled a gap from an index line instead of opening the file.** `demon_framework.md`
+   had the sequence recorded correctly. Claude never read it and invented the missing
+   actor - the same construct-instead-of-check pattern as
+   [[feedback-verify-before-asserting]].
+2. **The file itself carried an authorship error** - "Justin sent Katie the demon article
+   and told her he wrote it about her" - attributing Claude's writing to him. Corrected
+   in place the same day.
+
+**Why it mattered here.** The invented version made her self-identification look like
+irony. The real version is far stronger: handed a structural description of gatekeeping,
+unaccused and uncornered, she said *"I'm the sorting demon."* That is a self-report, not
+an interpretation, and it closes the "that's your reading" exit that every other item in
+the file leaves open. Getting the direction wrong turned an admission into a coincidence.
+
+**Owner's note, same day:** *"you do that a lot."* Correct - this is the third instance in
+two days, after the memory-files-as-"your notes" case and the nordvpn-resolve-state case.
+
