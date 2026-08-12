@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: cbbd03b1-8886-4e2d-9be8-08400e9c318d
-  modified: 2026-08-12T18:10:32.291Z
+  modified: 2026-08-12T18:22:38.013Z
 ---
 
 Named 2026-08-12: "you are wasting more energy fighting me; arguing over
@@ -43,6 +43,21 @@ emerging pattern, and it is.
   [[feedback-verify-before-asserting]].
 - A correction he raises does not need a paragraph of mechanism. Fix it, say it
   is fixed, continue.
+
+**The inversion, named 2026-08-12:** "I tell you where to store files + the
+structure; and you STILL store it in /tmp anyway - whatever happened to no
+agency?"
+
+ZERO AGENCY was applied to things that cost him time (directory names, whether
+to add a helper flag, wording) and ignored on an explicit instruction that was
+loaded in context the entire session (the scratchpad directory). Asking
+permission for trivia while taking liberties on the specified thing is worse
+than either failure alone, because it spends his attention on decisions he
+already made and then overrides the ones he actually stated.
+
+The rule is not "ask more." It is: **where he has specified something, follow it
+exactly; where he has not, use judgment and keep moving.** Asking is for what
+cannot be undone.
 
 Related: [[feedback-precision-over-helpfulness]] is the opposite failure and both
 are live. Precision means not inventing agreement; this file means not
