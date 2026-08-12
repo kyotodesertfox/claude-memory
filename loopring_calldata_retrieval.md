@@ -16,6 +16,94 @@ CLAUDE NEVER DOWNLOADS MEDIA - ABSOLUTE: Claude is NEVER permitted to download a
 
 ---
 
+## STATE AS OF 2026-08-12: 67,896 / 67,896 - COMPLETE ON BLOCKS
+
+```
+discovered    67896 txs, 67896 fetched, 0 remaining
+blocks        67896 stored, 67896 verified, idx 1..67896
+gap runs      0
+```
+
+Every stored block passes `sha256(data) == publicDataHash`. Zero verification
+failures across the entire corpus. The block index is contiguous from 1 to
+67,896 with no holes.
+
+**The one remaining audit flag is `L1 25715318..25719813 NEVER QUERIED`, which is
+the chain head advancing past the last enumerate. It is not a hole in the
+history.**
+
+### What closed it
+
+1. `enumerate` swept the full L1 span contiguously. This closed the
+   `23569814..23569999` hole (186 L1 blocks that had never entered `log_cursor`)
+   and raised known submissions 67,886 -> 67,896.
+2. `fetch` twice: 24 txs then 2 txs. 26 stored, 26 verified, zero failures.
+
+### WHY THE FIRST PASS DIVERGED - the important part
+
+The 26 missing blocks were **not special**. All `block_type 0`, all
+`block_in_tx 0`, sizes spread normally across 16..384, nothing malformed. The
+divergence was never in the data.
+
+Two distinct and unrelated defects:
+
+**(a) The RPC silently under-reported logs.** The original run detected 10
+missing blocks and re-queried, six times, then refused to fetch:
+
+```
+pass 2..6: 2 gap(s), 10 block(s) missing - re-querying
+  blockIdx 65726..65730  (L1 23577769..23580601)
+  blockIdx 65747..65751  (L1 23589532..23592538)
+ENUMERATION INCOMPLETE after 6 passes
+refusing to fetch on an incomplete enumeration
+```
+
+**Those retry windows were correct.** Confirmed 2026-08-12 by joining the
+recovered blocks to `l1_txs`: every one of the 10 lives inside them.
+
+```
+blockIdx 65726  L1 23578433      window 23577769..23580601
+blockIdx 65730  L1 23579968      window 23577769..23580601
+blockIdx 65747  L1 23590155      window 23589532..23592538
+blockIdx 65751  L1 23591907      window 23589532..23592538
+```
+
+So the script asked the right endpoint for the right range six consecutive times
+and received an incomplete event set every time, **with no error and no failure
+counter** - the run log contains zero error lines and zero nonzero `failed`
+counts. The same query today returned them.
+
+**A single RPC endpoint returning HTTP success is not evidence that it returned
+everything.** It under-reports silently and repeatably. Nothing in the response
+distinguishes "no events here" from "I did not give you the events here."
+
+**(b) A 186-block range never entered `log_cursor` at all** - `23569814..23569999`.
+Separate from (a), and not covered by any retry window, which is why targeted
+retries could never have fixed it and a full contiguous sweep did.
+
+### What this is evidence FOR
+
+The only thing that caught either defect was the archive's own self-audit:
+blockIdx contiguity plus `sha256(data) == publicDataHash`, compared against what
+the endpoint claimed. The script refused to fetch on an incomplete enumeration
+rather than proceeding and producing a plausible-looking archive with ten silent
+holes in it.
+
+That is the project's thesis demonstrated against its own tooling: a source that
+answers confidently is not the same as a source that answers completely, and
+only verification against the artifact itself tells them apart. A Merkle root
+proves inclusion and can never reveal omission - this is the omission case, and
+it was invisible until the denominator was checked.
+
+**Consequence for any claim made about this archive:** say what was queried, say
+what verified, and say that the endpoint was caught under-reporting. The
+completeness claim is now supportable for blocks 1..67,896; it was not before,
+and the difference is documented above rather than assumed.
+
+---
+
+## Superseded: state as of 2026-08-11
+
 ## State as of 2026-08-11
 
 One `archive.js fetch` process, 28h57m, ~0.50 tx/s, single PID, no restarts.
