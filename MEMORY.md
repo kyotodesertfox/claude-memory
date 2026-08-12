@@ -47,6 +47,7 @@ All sessions launch from `~/github`, so this is the single memory store — ther
 
 ## System / Machine
 
+- [Flameshot Fork](project_flameshot.md) - patched flameshot at ~/github/flameshot-src; Wayland BypassWindowManagerHint kills keyboard focus in any separate window; DBus activation resurrects the packaged binary
 - [NordVPN / WireGuard](project_nordvpn_wireguard.md) — why the official GUI was dropped, the suspend/resume fix, how stale keys get refreshed via API without reinstalling the app
 
 ## Cross-cutting / personal
