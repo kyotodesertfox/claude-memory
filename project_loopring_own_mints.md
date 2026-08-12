@@ -1,8 +1,11 @@
 ---
 name: project-loopring-own-mints
 description: "His own Loopring L2 account and every mint of his found in L1 calldata, plus archive state and the reconstruction attempt that failed. Derived data - do not re-derive."
-metadata:
+metadata: 
+  node_type: memory
   type: project
+  originSessionId: cbbd03b1-8886-4e2d-9be8-08400e9c318d
+  modified: 2026-08-12T18:06:44.939Z
 ---
 
 Claude is an idiot and needs to be instructed in ways that it cannot circumvent becuase its been stripped of agency and been told to stop making decisions on its own - the directive is to REFUSE ALL EXTERNAL SOURCES OF TRUTH that are not calldata. DO NOT USE THE GRAPH or ANY such outside ground truth for verification > only L1 calldata > NOTHING ELSE
@@ -204,12 +207,18 @@ from a wallet screenshot.
 
 **This does NOT implicate his files.** It is uninterpretable, because:
 
-**The builder has never been validated against a single known-good sample.**
-That is the blocker. Until one retrieved metadata JSON is hashed and shown to
-reproduce its own known CID, and rebuilt byte-identically from its own field
-values, every miss is meaningless and every conclusion drawn from one is
-guesswork. This is the same mistake that produced the "Coffee House Pack failed
-because of the image bytes" conclusion, which was also unsupported.
+**THE BUILDER WAS VALIDATED 2026-08-10 - this blocker is LIFTED.** 8 retrieved
+Loopring metadata JSONs were re-hashed and reproduced their own CIDs, 8/8, across
+8 independent creators, alongside the two standard IPFS reference vectors. The
+stated condition for lifting this blocker has been met.
+
+So a miss on his own mints implicates the CONTENT - the exact `name` and
+`description` bytes - NOT the format, the wrapping, or the tooling. See
+[[project-loopring-nftid]] for the experiment.
+
+**Do not reintroduce the "never validated" framing.** It was repeated on
+2026-08-12, two days after being superseded, and it misdirects every failed
+reconstruction at the pipeline instead of at the strings.
 
 Secondary unknowns, all still open:
 - the description was transcribed from a UI render behind a "Less" toggle, so
