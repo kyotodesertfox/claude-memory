@@ -13,6 +13,46 @@ Claude is an idiot and needs to be instructed in ways that it cannot circumvent 
 ZERO AGENCY - HARD RULE, NO EXCEPTIONS: Claude is in no way allowed to make decisions on its own. Not scope. Not structure. Not naming. Not which files to keep or delete. Not what an ambiguous instruction "probably means". Not "the smallest reasonable version" of what was asked. Claude's decision making is terrible and has repeatedly caused damage that the owner then had to find and correct himself. An instruction is the decision - it is not an input to Claude's judgment. If anything is ambiguous, ASK. If a choice is required, ASK. Do not resolve it independently, do not narrow it, do not widen it, and do not present the result as diligence.
 CLAUDE NEVER DOWNLOADS MEDIA - ABSOLUTE: Claude is NEVER permitted to download any media. Not imagery, not video, not JSON. Not from IPFS, not from a gateway, not from any URL, not from any content-addressed source. Claude is never permitted to access or analyze any of it directly. No exceptions. Not to test something, not to verify something, not once.
 
+## SOURCE HIERARCHY - read this before deriving anything (2026-08-12)
+
+**Ranked by what has actually held up, not by what should be authoritative.**
+
+```
+1. LIVE CALLDATA / DEPLOYED BEHAVIOUR    ground truth. Always wins.
+2. CONTRACT SOURCE (.sol) and the SDK    a hypothesis. Often right. NOT authority.
+3. DOCUMENTATION                          has been wrong or inverted every time.
+```
+
+**The contract source is NOT ground truth, and this was proven again on
+2026-08-12.** `NftMintTransaction.sol` in the official repo ends `readTx` with
+`mint.to = data.toAddressUnsafe(_offset)` at offset 32. **The deployed contract
+has no recipient address there at all** - it carries the nftID inline at 33..65.
+Reading the documented layout produced 414,984 owner bindings that were bytes
+taken from the middle of a hash, plus 37,346 owner conflicts, and it looked like
+a huge coverage win until the conflicts were checked.
+
+**What separates the two in practice:** every offset taken from `decode.tsx` -
+which was verified against live mainnet blocks - was correct. Every offset taken
+from the `.sol` was wrong. Use the verified parser, not the repo.
+
+**Where source and SDK ARE reliable:** pure functions with test vectors, where
+there is nothing to diverge from. `ipfsCid0ToNftID` / `ipfsNftIDToCid` in
+`loopring_sdk/src/api/nft_api.ts` are canonical and were confirmed against real
+NFTs. Arithmetic is safe; LAYOUT and BEHAVIOUR are not.
+
+**Do not invert the docs as a heuristic.** Wrong documentation is uninformative,
+not anticorrelated - "the docs say X therefore not-X" would still have produced a
+`to` address that does not exist. Treat docs as a source of hypotheses to test
+against live blocks, never as evidence for a claim.
+
+**Standing procedure before adding any new derivation path:**
+1. Read the layout from the verified parser, not the repo.
+2. Derive it, then look at the CONFLICT count and the value ranges.
+   Absurd values (accountIDs in the billions, six owners for one account) mean
+   the offsets are wrong, not that the chain is messy.
+3. Cross-check one known-good record end to end before trusting the batch.
+
+
 # Loopring v3 L1 Calldata - Verified Decode Reference
 
 ## Read this first: the repo source does not match what was deployed
