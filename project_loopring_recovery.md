@@ -158,7 +158,55 @@ a whole afternoon down a dead end. The dated record is in
 - **CIDv0 single-chunk only is verified.** Anything over 262144 bytes needs multi-chunk DAG
   construction, which is NOT verified, and every real image exceeds it.
 
-### THE METADATA JSON FORMAT - cracked and byte-verified (2026-08-03)
+### 2026-08-12: THERE IS NO LOOPRING METADATA FORMAT - the section below is ONE UPLOADER'S
+
+**Read this before using the "8 deterministic candidates" method on anything.**
+
+Two more real, resolving metadata JSONs were retrieved and BOTH re-hash to their
+own nftIDs exactly. Both contradict the format recorded below, and each other.
+
+```
+AA5K            flat, CRLF, keys alphabetical, ": " except royalty ":"      157 B
+Punk Cyborgs    4-SPACE INDENT, LF endings, arbitrary key order, ": "     1,614 B
+Buck: The Album MINIFIED - zero whitespace, no line endings, arbitrary     1,411 B
+```
+
+- `Punk Cyborgs #321`, nftID `0xd5aa81a1...`, CID `QmciiM1jHakdy98YjRTF4x65ccYDFTPZjtoFXe2FZZXjGg`,
+  minted block 36,951 (2023-02-06), `creator_fee_bips 9`. Keys in order: name,
+  description, royalty_percentage, id, attributes, properties, royalty_address,
+  artist, image, animation_url. Pretty-printed, four spaces, LF.
+- `Buck: The Album`, nftID `0x57f2d99e...`, CID `QmUFxxTrxTVekunJF52soeRsnmexiHmoy1wMkvqGhcMX6R`,
+  minted block 40,311 (2023-04-28), amount 4,520. A GAMESTOP mint -
+  `collection_metadata` points at `api.nft.gamestop.com`. Entirely minified.
+  Contains U+2019 curly apostrophes and literal `\n\n` inside `description`.
+
+**The protocol hashes whatever bytes it is handed.** `nftID` is a `uint256` the
+CLIENT computes and supplies as an input to the mint - nothing in the circuit
+derives or validates it. So serialisation is a property of the UPLOADER, never of
+Loopring.
+
+**Consequences, and they are load-bearing:**
+
+1. The "8 deterministic candidates, never a search" claim is valid ONLY for files
+   produced by the same uploader as the four samples below - probably Loopring's
+   own minting UI. It is NOT a general method.
+2. For any other uploader the whitespace, indentation and key order are arbitrary
+   and the search space is UNBOUNDED. Do not tell the owner a reconstruction is
+   "8 candidates away" without first establishing which tool made the file.
+3. Fields seen beyond the original four: `id`, `properties` (duplicating
+   `attributes`), `royalty_address`, `artist`, `animation_url`,
+   `collection_metadata`.
+4. `attributes` is the OpenSea shape `[{"trait_type":..,"value":..}]`, CONFIRMED
+   on two real files. Several creators ALSO emit `properties` as a flat object
+   with the same pairs.
+5. `royalty_percentage` matches `creator_fee_bips` from calldata per mint, and it
+   VARIES - 9 on Punk Cyborgs, 10 on Buck. Read it from `nft_mints`, never assume 10.
+
+**Before attempting any reconstruction, establish which tool produced the file.**
+If the owner minted through Loopring's UI, the format below applies. If he
+uploaded his own JSON, it does not, and candidate generation is not the method.
+
+### THE METADATA JSON FORMAT - cracked and byte-verified (2026-08-03) - ONE uploader only
 
 The highest-value finding of the whole effort. Reconstruction was blocked on not knowing
 the exact serialisation; a single retrieved sample solved it, and three independent
