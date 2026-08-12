@@ -81,6 +81,69 @@ distinguishes "no events here" from "I did not give you the events here."
 Separate from (a), and not covered by any retry window, which is why targeted
 retries could never have fixed it and a full contiguous sweep did.
 
+### WHAT ACTUALLY GUARANTEES ACCURACY - and exactly what does not
+
+Established by reading `archive.js` on 2026-08-12, not assumed. State this
+precisely when making any claim about the archive, because the guarantees differ
+by failure mode and only one of them is cryptographic.
+
+**Corruption and truncation - CRYPTOGRAPHICALLY CAUGHT, per block.**
+
+```js
+sha256(b.data) === ev.publicDataHash        // archive.js:409
+```
+
+The two sides come from different chain objects: `b.data` is decoded from the
+transaction's CALLDATA (`tx.input`), `publicDataHash` is read out of the
+`BlockSubmitted` event in the transaction RECEIPT, emitted by ExchangeV3 when the
+EVM executed that submission. A truncated body or a mismatched reply fails and is
+stored with `verified=0`. 67,896 / 67,896 pass.
+
+**Omission in the middle - caught by DENSITY, not by cryptography.** `blockIdx` is
+the operator's own counter, so a submission never returned leaves a hole in the
+integers. This is what surfaced the 10 missing blocks.
+
+Measured 2026-08-12: `discovered_blocks` holds 67,896 rows spanning 1..67,896
+with **zero skips**. The script's defensive comment - "some blockIdx values never
+emitted an event, skips are not data loss" - describes a possibility that does
+not occur in this corpus. The set is dense.
+
+**Omission at the END - NOT caught by density**, because a truncated tail leaves
+no hole. Covered instead by the separate L1-span audit: every L1 block in
+`11149814..25740841` was queried, checked against the chain head.
+
+**WHAT IS NOT COVERED, and must never be claimed:** nothing verifies the receipt
+against a block's receipts root, or the transaction against a transactions root.
+The sha256 check proves calldata and receipt AGREE WITH EACH OTHER. It does not
+prove the endpoint did not serve a coherent fabricated pair. Closing that gap
+requires verifying against block headers, which no script here does.
+
+**So the supportable claim is:** this corpus is complete and internally
+consistent against the chain's own commitments, obtained from a single log
+provider that was caught under-reporting and then corrected. **NOT:** proven
+authentic against Ethereum consensus. Do not upgrade the wording.
+
+### THE STRUCTURAL WEAKNESS: one log provider
+
+```js
+const LOG_ENDPOINTS = ['https://eth.drpc.org'];     // archive.js:51
+```
+
+`eth_getLogs` returns a bare JSON array. No count, no proof, no assertion that it
+is the complete set - **a short array and a correct array are indistinguishable
+from the response alone.** Log lookups are served from a node's private index, and
+a node that resynced, pruned or is mid-reindex can answer 200 with holes in it.
+
+With one provider, retrying is not verification. It is asking the same witness the
+same question again, and on 2026-08-11 it gave the same wrong answer six times.
+`TX_ENDPOINTS` has three providers; `LOG_ENDPOINTS` has one, because only drpc
+served archive `eth_getLogs` free at the time.
+
+**Improvement not yet made:** a second log provider would let two sources disagree,
+which is the only way to catch under-reporting AT QUERY TIME rather than after the
+fact via density. Until then, the density audit is the sole detector and it only
+works for holes in the middle.
+
 ### What this is evidence FOR
 
 The only thing that caught either defect was the archive's own self-audit:

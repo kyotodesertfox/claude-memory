@@ -65,6 +65,78 @@ Note "Pizza Pie on a Stone" displays **85** in the wallet. That is the balance
 held now, not the mint amount. Two candidates have `amount = 100`
 (58754/21 and 58788/43) but neither is confirmed to be Pizza.
 
+## 2026-08-12: A THIRD COLLECTION, and two NFTs outside the known 13
+
+**`0x73236b2a7943B208bC881ABf44F9C2BA81Fd4B49` - displayed as "3D Art by LoNEWolf"**
+(stylised with a Greek capital Xi for the E). Read from the wallet UI on
+2026-08-12, NOT chain-derived. This is a third collection; memory previously
+recorded only two.
+
+**Coffee House Pack is NOT among the 13 above. House on the Prairie IS** - it is
+the row `64755 | 12 | 0x4e5665... | 10 | 1 | 0 | 33310`.
+
+That the Coffee House Pack is absent is not evidence of anything: the 13 come from
+a `nft_mints` table covering only block_idx 57,923..67,894, roughly 15% of the
+chain. That list was never the complete set of his mints and must not be treated
+as one.
+
+```
+Coffee House Pack        collection 0x8eb4228702fc4cdf202b9dc17cd50b05dce096fe
+  tokenID   86090671987523398724512654037451916210989953119795086478439740601456181482636
+  nftID     0xbe5597f487838930b1bc003db7d1a1b8385c9f119795e9de464fa589c511948c
+  CIDv0     Qmb9dsVzYvCo4C2VWrY488gkrqjtJwQxG3W5LZ3s8HakLj
+  supply    488, ERC-1155
+  name         Coffee House Pack
+  description  This Coffee House Pack is SURE to be a coffee aficionado's dream!
+  NOT in nft_mints at all.
+
+House on the Prairie     collection 0x73236b2a7943B208bC881ABf44F9C2BA81Fd4B49
+  tokenID   35433053511816378632525930145375279704315336728067966703293352231243517858749
+  nftID     0x4e5665c83c95a671a6d2d81328198b87a789f20347955569f4eb0b04518113bd
+  CIDv0     QmTcSvLZxeUEs7vufquKBkCyKNwWDei96BEdSwzXWiR4J8
+  supply    1, ERC-1155, minted L2 block 64,755
+  attributes   BlenderArt = House      <- FIRST alphabetically, ahead of description
+  IS in nft_mints. NOT in nft_collections, which stops at block 61,821.
+```
+
+**Both reconstructions MISS.** Sources tried: `Coffee Pack.png`
+(`~/Creations/Metaverse Assets/Coffee Pack/`) and `House.png`
+(`~/Desktop/Blender Sources/House/`), each in both image forms, across all
+whitespace variants. The owner noted the minted Coffee Pack file may have been a
+`.jpg`, which would be different bytes and therefore unreachable from the `.png`.
+
+**First NFT seen carrying `attributes`.** OpenSea extension shape, sorts first.
+
+## Where the staged reconstructions live
+
+```
+~/github/lonewolf-loopring/ipfs-node/      PRIVATE repo - kubo node + tooling
+  ingest.sh          stage + --verify + --hash
+  nftid-to-cid.py    nftID <-> CIDv0 both directions
+  rebuild.py         candidates against a known nftID
+  stage-nft.py       THE FLOW: image -> CID -> JSON -> check against nftID
+
+~/github/lonewolf-loopring/ipfs-content/   PUBLIC repo - the files + manifest.tsv
+  <collection-slug>/<nftID>/metadata.json
+  <collection-slug>/<nftID>/<image>
+  <collection-slug>/NOTES.md               one section per nftID
+```
+
+`metadata.json` written by a non-matching run is a RECONSTRUCTION ATTEMPT and
+NOTES.md says so explicitly. Do not serve one as though it were original.
+
+## THE FORMAT DETAIL THAT INVALIDATED EVERY EARLIER CANDIDATE
+
+`royalty_percentage` uses `":` with **NO SPACE**. `description`, `image` and
+`name` use `": "` WITH a space. This is in the real minted bytes and was recorded
+in [[project-loopring-recovery]], but the rebuild tooling written on 2026-08-12
+used `": "` for every key - so every candidate carrying `royalty_percentage` was
+wrong before whitespace was even considered.
+
+Fixed same day. The serialiser now reproduces the AA5K sample byte-exactly: 157
+bytes, `QmcUJs3qypHMY1tsSBW6JR6JSsQghkXMKk9ectom25Fv6V`. **It is validated against
+a real minted file, not against itself.**
+
 ## His collections
 
 Both `owner()` to `0xc22724df2f8d30db4ed2f3bff317897bfc2c494b` on L1. That part is a
