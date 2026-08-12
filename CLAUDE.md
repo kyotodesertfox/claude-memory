@@ -95,6 +95,15 @@ Never run `git push` unless explicitly told to. "Commit" = `git add` + `git comm
 ### Never Restart Services
 Never run `systemctl restart`, `pkill`, `nohup`, or any process restart command. Stop at "file is updated - restart when ready." User handles all process management.
 
+### Never Write To /tmp - Use The Scratchpad
+Never write anything to `/tmp` directly. Every session is given a scratchpad directory and that is the only place temporary files go: intermediate results, working scripts, candidate output, test artifacts, anything that is not a real project file.
+
+`/tmp` is shared, unnamespaced, outlives the session, and litters the machine with files nobody can trace back to a source. The scratchpad is per-session and isolated.
+
+If a file matters it goes in the project. If it does not matter it goes in the scratchpad. There is no third case, and "just for a second" is not one.
+
+Only exception: the Pi deploy rule below, which stages through `/tmp` deliberately so the SCP source path stays simple. Clean it up afterwards.
+
 ### Pi Deploys - Write Local, Then SCP
 Always write the file locally then `scp` to Pi (192.168.12.3). Never write directly via SSH. Write to `/tmp/filename`, then `scp /tmp/filename zenko@192.168.12.3:~/target/`.
 
