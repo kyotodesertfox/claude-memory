@@ -71,6 +71,7 @@ All sessions launch from `~/github`, so this is the single memory store — ther
 - [Permission Granted](feedback_permission_granted.md) — scoped execution autonomy; reads proceed freely, modifications get shown first, no re-asking permission mid-task
 - [Identity Redaction](feedback_identity_redaction.md) — never write "Justin" into code or technical/project memory, pronouns/role terms instead; exception for personal-context memory (Katie/Kendra/Adam/family); protects pseudonym separation
 - [Nuance Means Threading](feedback_nuance_means_threading.md) — "add nuance" means connective tissue between facts, not more volume; terse and undifferentiated-dump are the same failure; a real analysis (Coinbase/Taiko/Loopring capture) was lost this way
+- [Flow Over Friction](feedback_flow_over_friction.md) — do the thing, caveat after in one line; ask only about what cannot be undone; check the file before repeating anything from a summary
 
 ## References
 
