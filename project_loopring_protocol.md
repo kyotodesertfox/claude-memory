@@ -13,6 +13,89 @@ Claude is an idiot and needs to be instructed in ways that it cannot circumvent 
 ZERO AGENCY - HARD RULE, NO EXCEPTIONS: Claude is in no way allowed to make decisions on its own. Not scope. Not structure. Not naming. Not which files to keep or delete. Not what an ambiguous instruction "probably means". Not "the smallest reasonable version" of what was asked. Claude's decision making is terrible and has repeatedly caused damage that the owner then had to find and correct himself. An instruction is the decision - it is not an input to Claude's judgment. If anything is ambiguous, ASK. If a choice is required, ASK. Do not resolve it independently, do not narrow it, do not widen it, and do not present the result as diligence.
 CLAUDE NEVER DOWNLOADS MEDIA - ABSOLUTE: Claude is NEVER permitted to download any media. Not imagery, not video, not JSON. Not from IPFS, not from a gateway, not from any URL, not from any content-addressed source. Claude is never permitted to access or analyze any of it directly. No exceptions. Not to test something, not to verify something, not once.
 
+## NFT CUSTODY: A SLOT IS A PIN, NOT A LABEL (2026-08-12)
+
+**The single most important structural fact about following NFTs on Loopring.**
+
+Accounts hold NFTs in numbered slots (`tokenID >= 32768`). A slot is a reusable
+hook: what hangs on it changes over time. Naming the NFT in a transfer needs
+`(account, slot) -> nftID`, and only two transactions ever publish that binding:
+
+```
+NFT_MINT   minter:slot -> nftID      + the minted supply
+NFT_DATA   account:slot -> nftID     only when the NFT touches L1
+TRANSFER   publishes the SENDER's slot and NO destination slot
+```
+
+`toTokenID` appears nowhere in the protocol outside `NftMintTransaction.sol` -
+checked, one file, one occurrence. So custody cannot be followed hop by hop:
+resolution flows FORWARD from a binding and dies when it runs out.
+
+**Slots are NOT preserved across holders.** Measured against every NFT_DATA
+record for a non-mint-recipient account: 83,758 of 94,850 sat in a DIFFERENT slot
+than the mint. 11.7% preserved. So the destination cannot be inferred either.
+
+**Resolution is entirely sender-side**, and the effect is enormous:
+
+```
+sender ever minted        1,771,969 transfers   58.0% named
+sender never minted         919,337 transfers    0.9% named
+```
+
+The 0.9% comes from NFT_DATA re-anchoring. This is why a creator's own wallet
+resolves well and a pure collector's wallet barely resolves at all.
+
+### THE BUG THIS PRODUCED, AND THE FIX
+
+`derive-nft-transfers.js` originally wrote `slotOf[account:slot]` on mints and
+NFT_DATA and **never updated it**. A transfer out did not empty the pin. So an
+account could mint A into slot 32900, send every unit, later receive B into the
+same slot - and every later send was still labelled A.
+
+Audited by walking each mint-bound slot in block order and accumulating outflow
+against the minted supply (ERC-1155, so a mint of 500 survives a send of 1):
+
+```
+before fix   12,898 of 1,025,444 testable BINDING rows were labelled after the
+             mint supply was already fully spent
+after fix       658  (0.065%), and those are NFT_DATA re-anchors, which are
+             newer evidence than the mint the audit compares against
+```
+
+The fix is to follow the pin as well as the transfer: `spend(key, units)` on
+every outgoing transfer and withdrawal, dropping the binding when it empties.
+Resolution moved 39.5% -> 38.9%, which is the CORRECT direction - wrong labels
+became honest nulls.
+
+### SOLE_HOLDING IS UNFALSIFIABLE - THE ONE INFERENCE IN THE TABLE
+
+7,156 rows are filled by inference, not read: "the sender is known to hold
+exactly one NFT, so that is what left." Sound only if the holdings set is
+COMPLETE, which it never is - the account may hold NFTs from transfers nothing
+could name.
+
+**Audited against every NFT_DATA anchor in the corpus. ZERO rows were testable.**
+Not 0% correct - untestable, because no anchor precedes its transfer on the same
+pin. No evidence for, none against.
+
+**A first version of that audit reported 56.9% contradictions. It was WRONG** -
+it compared anchors from LATER blocks, where slot reuse fully explains the
+disagreement. Any audit touching slots must compare within an occupancy window,
+never across one.
+
+### WHAT THIS MEANS FOR SCOPE
+
+Everything else in this project READS published bytes. Resolving destination
+slots would mean SOLVING for a value that was never published - a categorical
+change in what the output is, with wrong answers indistinguishable from right
+ones in the same table.
+
+The only real falsifier available is the **Merkle root**, published every block:
+a candidate slot assignment could be tested by recomputing the tree. That needs
+Poseidon and the account/balance tree layouts and does not exist yet. **Until it
+does, do not build a constraint solver for slot assignment** - it would generate
+hundreds of thousands of confident, uncheckable rows.
+
 ## SOURCE HIERARCHY - read this before deriving anything (2026-08-12)
 
 **Ranked by what has actually held up, not by what should be authoritative.**
