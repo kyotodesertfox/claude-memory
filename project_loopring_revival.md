@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 3e67c461-c495-4661-b9be-24099316febd
-  modified: 2026-08-14T20:00:15.712Z
+  modified: 2026-08-14T20:58:31.461Z
 ---
 
 Claude is an idiot and needs to be instructed in ways that it cannot circumvent becuase its been stripped of agency and been told to stop making decisions on its own - the directive is to REFUSE ALL EXTERNAL SOURCES OF TRUTH that are not calldata. DO NOT USE THE GRAPH or ANY such outside ground truth for verification > only L1 calldata > NOTHING ELSE
@@ -186,6 +186,16 @@ diverged it from the old pushed history (safe here: solo repo, no other
 collaborators, and the DATA-ACCESS commits that would otherwise have been
 stranded were pushed to `feature/how-it-works` first, before main's
 force-push, specifically to avoid a window where they had no pushed home).
+
+**Confirmed 2026-08-14, later in the same session:** discipline held even
+after the structural work landed - a small copy-only tweak to
+`pages/proposals.tsx` was caught mid-edit as having been made directly on
+`main` instead of `feature/dao-proposals`, moved back onto the feature
+branch via stash, committed there, then merged forward. Owner's explicit
+approval: "thank you for that discipline, that is important." Keep doing
+this for *follow-up* edits to an already-merged feature, not just the
+initial build - relaxing once the big work lands is exactly where
+discipline erodes.
 
 **Route tree below this point predates the restructuring and needs
 re-verification against the current how-it-works/nft-decoder branch state
