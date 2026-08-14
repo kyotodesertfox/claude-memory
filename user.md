@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: user
   originSessionId: 4d10e6c7-3013-43a7-b1f4-1cad366cf7fd
+  modified: 2026-08-14T20:28:54.760Z
 ---
 
 ## Identity
@@ -42,6 +43,7 @@ He builds public goods so others after him have an escape route. Not revenge. In
 - **Arrives at industry-standard patterns independently through reasoning.** Reserved storage slots, beacon vs UUPS tradeoffs, fee policy separation, proxy patterns — he lands on these by thinking through the problem, not by looking them up. He understands the *why* and the *how* — not just the *what*. The how is exactly why he uses Claude as a logic engine: not to be told what to build, but to pressure-test how he's thinking about it. Worth noting when he questions whether his instincts are sound.
 - **Apathetic toward social reputation — deliberately.** Does not hold reputation as currency. Speaks freely, offends when necessary, unbothered by institutional or social pushback. This makes him incompressible — no leverage point via reputation threat. His actual reputation is on-chain: cumulativeStake, delivery record, verifiable and permanent. He doesn't need people to think well of him; the contract remembers what he did.
 - **Not political. Productive.** Crystallized 2026-06-10. Pre-political — builds before asking permission or picking a team. Not libertarian (they stop at critique). He routes around the system by building the missing infrastructure.
+- **Conflates external resistance with technical failure — a recognized blind spot (2026-08-14).** When something is killed by people (political/social pushback) rather than by not working, has historically read it as a dead end and deleted the evidence along with it, rather than archiving it as proof of resistance. Named after realizing it in hindsight re: the Jax Ale Exchange platform — deleted the repo after being pushed out of the club, which later appeared to start using pieces of what he'd built. The tell going forward: if a project was killed by *people*, not by failing to work, that's evidence worth keeping even after moving on — not routine cleanup.
 
 ## Cognitive Profile
 
