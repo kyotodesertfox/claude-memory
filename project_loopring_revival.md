@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 3e67c461-c495-4661-b9be-24099316febd
-  modified: 2026-08-09T16:54:45.938Z
+  modified: 2026-08-14T20:00:15.712Z
 ---
 
 Claude is an idiot and needs to be instructed in ways that it cannot circumvent becuase its been stripped of agency and been told to stop making decisions on its own - the directive is to REFUSE ALL EXTERNAL SOURCES OF TRUTH that are not calldata. DO NOT USE THE GRAPH or ANY such outside ground truth for verification > only L1 calldata > NOTHING ELSE
@@ -146,6 +146,50 @@ There is no `/api/probe` and no `/api/pin`. The NFT page called both for weeks; 
 ## Priority Status (2026-07-14)
 
 The explorer revival is live and valid. The self-sovereign operator work (ZK prover, Sepolia deployment) has been deprioritized - Justin's assessment: "fun and experimentation, not appropriate for what I actually need." Not abandoned, just not the active thread. Resume only if Justin explicitly says to continue.
+
+## Branch Structure (2026-08-14 restructuring)
+
+`main` was reset to a clean base: the original Loopring fork + the L1 Decode
+block-calldata page only. Everything built since (NFT Decoder, How It Works,
+DAO Proposals) had accumulated as sequential commits directly merged into
+main with no branch discipline - not specified at the time, should have been.
+This pass retroactively separated them into independent sibling feature
+branches, each branching directly off `main`:
+
+- `feature/how-it-works` - methodology page + DATA-ACCESS attribution rewrite
+- `feature/nft-decoder` - the NFT decoder
+  - `feature/ipfs-work` - server-side IPFS removal, card polish, slot-allocation
+    probes; sits ON TOP of nft-decoder (a continuation, not a sibling)
+- `feature/dao-proposals` - Loopring DAO governance archive, **merged into
+  main and pushed 2026-08-14** - see [[project-loopring-snapshot-provenance]]
+
+**Why rebase was used here, once, deliberately - not the general rule:**
+the DATA-ACCESS attribution commits sat directly on main's own line, with no
+branch of their own, tangled in with how-it-works' actual page commits by
+proximity rather than by relationship. Untangling that meant reassembling
+which commits belonged to which never-built feature branch and giving them
+one - which is fundamentally a construction problem, not a sync problem.
+Merge preserves two histories that already both exist and just brings them
+together; there was no second branch here to preserve, only a pile of
+main-line commits that needed sorting into branches that were never made.
+Rebase was the tool that could build that structure after the fact.
+
+Ongoing sync between branches - keeping a feature branch current with main,
+or vice versa - should default to merge from here on, per the
+transparency-over-rewriting reasoning above. The rebase was a one-time
+corrective act to impose the structure that should have existed from the
+start, not a standing preference.
+
+`how-it-works` and `nft-decoder` are NOT yet merged into main - still local
+feature work. `main` itself needed a force-push to `origin` once this reset
+diverged it from the old pushed history (safe here: solo repo, no other
+collaborators, and the DATA-ACCESS commits that would otherwise have been
+stranded were pushed to `feature/how-it-works` first, before main's
+force-push, specifically to avoid a window where they had no pushed home).
+
+**Route tree below this point predates the restructuring and needs
+re-verification against the current how-it-works/nft-decoder branch state
+before trusting it.**
 
 ## Self-Sovereign Operator (Sepolia Testnet)
 
