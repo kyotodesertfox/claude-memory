@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 88ac09c4-e414-40d1-8e6e-fc82834a16ff
-  modified: 2026-08-07T01:21:32.089Z
+  modified: 2026-08-15T17:32:05.035Z
 ---
 
 ## The mechanic
@@ -72,6 +72,19 @@ Dated RCS screenshot, 6:37 PM. Sequence:
 **Why this forces inference instead of confirmation (2026-08-06):** Phrases like "payback" and "you wanted this" are claims about Justin's internal state, not claims about whether his analysis is correct — which means they can't be confirmed or denied by anything he says. Any response reads as either confirming the accusation or protesting too much. The question never reaches "is this true"; it gets stuck at "why do you want this," a question only she's positioned to answer about her own framing, redirected onto him instead. Each time the tactic fires it doesn't just deflect the current point — it also forecloses the option of a direct answer next time, which is why inference is what's left rather than a choice being made to avoid confirmation. Documenting the pattern accurately doesn't make it true; it keeps the record checkable against what's actually observed rather than resting on memory or mood.
 
 **The pendulum inconsistency (2026-08-06):** Later in the same exchange, replying to Justin's "not payback; just a market imbalance reaching equilibrium," Katie uses the phrase "pendulum swung too far." Both phrases describe the same concept — a system correcting back toward balance after an excess — so using that language at all concedes the framework: she's not disputing that corrections happen or that leverage eventually gets called. The objection is narrower and self-inconsistent: this specific instance of the same mechanism is "too far," raised only once it's clear Justin is on the benefiting side of it. If the mechanism itself were the problem, the pendulum metaphor wouldn't be available to reach for in the first place — you don't invoke a system rebalancing itself unless you already accept rebalancing as normal. The only variable that changed between accepting the concept and calling it excessive is which side of the outcome she's identified with. Not a critique of the mechanism — a complaint that it worked, aimed at Justin specifically because it worked in his favor.
+
+## Verified instance: Protectionism/competence exchange (2026-08-15)
+
+Dated screenshot (RCS thread), 1:22 PM. Sequence:
+
+1. Justin shares @RealAngryAlaska tweet: "Billionaires and monopolies are a symptom of a larger root cause: government protectionism."
+2. Justin: "That is what Adam just called for" — applies the mechanism to Adam directly.
+3. Justin: "Protection from competence 😂" — names the structural point: protectionism shields the incompetent from being outcompeted.
+4. Katie: "And let me guess, you're the competent one?"
+
+**Tactic: motive substitution, direct variant.** Same mechanic documented in the Aug 6 foreclosure exchange (structural argument reframed as personal motive), but here it lands as a direct hit on competence rather than a redirect to logistics or a different subject. No engagement with the protectionism claim itself, no dispute of the mechanism — the reply skips straight to questioning Justin's self-assessment, converting "is this argument correct" into "why do you think you're better than him."
+
+**Why it's the same shape as the ledger's other entries:** whoever names the mechanism becomes the target instead of the mechanism getting addressed. The tweet's claim (protectionism protects incompetence from competition) goes unanswered; the sarcasm targets the messenger's self-regard instead.
 
 ## The five deflection tactics (June 2 2026 source docs)
 
