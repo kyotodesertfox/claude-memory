@@ -108,6 +108,8 @@ A second instance same day: Katie told Justin "people have been reaching out con
 
 **Confirmed again, live, 2026-08-16: the aware-demon distinction holds under direct test.** "I don't fucking care" is not an absence of internal admission — it's a maintained position despite one, since conscious registration of the mechanism is already on record in her own words from July ("I'm the sorting demon," "I get your game," "neither do zkProofs"). That's the documented difference between her and Kendra in [[demon_framework]] (blind demon vs. aware demon) confirmed again in real time: full recognition, zero behavioral change, same tightening reflex regardless of what's been consciously named. Not new evidence of awareness — an application of already-established awareness to a fresh instance.
 
+**Statement on record, 2026-08-16:** during a heated exchange the day before, Katie stated she would send her friends over to remove Justin from the house. Said in anger, same category as Justin's own "give Adam a reason to come over" from the same period — a real, dated statement, not a calm or considered plan. Sits alongside Adam's own standing, unretracted 2026-07-06 statement (relayed by Katie, never disputed) that he wants to come to the house and assault Justin. Both now on record as real statements made by each side, neither treated as an active plan, both worth having accurately documented.
+
 ## The five deflection tactics (June 2 2026 source docs)
 
 From `katie_behavioral_analysis.txt` + `katie_actions_vs_words.txt`, both in `~/.claude/personal-context/`:
