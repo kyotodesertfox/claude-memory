@@ -104,6 +104,8 @@ A second instance same day: Katie told Justin "people have been reaching out con
 
 **Why the rule only binds one direction:** if it bound symmetrically, accountability would flow toward her too — which is exactly what her position can't absorb (validating any of Justin's documentation "opens the audit on every previous gate closing," per [[demon_framework]]). Asymmetric enforcement isn't inconsistency, it's structural necessity from her position — a symmetric standard is the one thing she can't afford, which is also why consequence itself, not just this specific situation, reads to her as a threat.
 
+**Synthesis, confirmed 2026-08-16: the standard she applies wouldn't survive being applied to her own position.** She frames Justin's opt-out from conventional employment as "running away"/a "deadbeat dad" (already-documented "not working/not providing" narrative), using conventional employment as the implicit measure of legitimacy — despite having introduced him to the GME position herself (already on record: supportive at the time, now weaponizes it) and despite her own position being dependent on Adam's paycheck, unable to leave that arrangement, with no independently verifiable output of her own comparable to what she's demanding of him (the archive, the decoder — see [[project_loopring_recovery]], [[project_loopring_own_mints]]). Same shape as the positional-identity point already in [[demon_framework]] ("the mechanism IS the identity" — her HR job): the standard is applied outward, never inward.
+
 ## The five deflection tactics (June 2 2026 source docs)
 
 From `katie_behavioral_analysis.txt` + `katie_actions_vs_words.txt`, both in `~/.claude/personal-context/`:
