@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 4d10e6c7-3013-43a7-b1f4-1cad366cf7fd
-  modified: 2026-08-07T01:51:11.452Z
+  modified: 2026-08-17T23:36:08.324Z
 ---
 
 ## Core: Beer DEX Economic Flow
@@ -29,7 +29,9 @@ This DEX (originally $ART) is now a physical beer production marketplace. The fu
 - Token is deflationary at scale: every completed sale removes buyer's tokens permanently. LP absorbs producer's tokens but total circulating supply trends down with redemption volume.
 - Token value appreciates via floor rising AND supply reduction on each sale. Each redemption burns buyer's tokens and captures exit fee ETH into LP and Treasury.
 - Idle supply self-corrects: abandoned lots lock producer's staked ETH as a carrying cost. `burnLotTokens` is the cleanup path.
-- Token is NOT speculative — it is production-backed. 1 $EGG = 1 carton. Value comes from real delivery, not market sentiment.
+- Token is NOT speculative - it is production-backed. **1 token = 1 real physical good. Always. This never changes.** 1 $EGG = 1 egg, not a carton. An NFT covering 12 eggs is priced at 12 EGG.
+- **Packaging is not a platform concept.** Carton, six-pack, case, dozen - these are convenience sizing that exists in the physical world only. The platform knows how many units an NFT covers, and the token count always equals the physical unit count. If someone wants 12 eggs because a carton is convenient, they buy that NFT, and it costs 12 EGG.
+- The token is not the good - it is money denominated in that good. See [[project_unit_scaling]], which had this right while the line above it here was wrong. Value comes from real delivery, not market sentiment.
 - Tokenomics are not featured on the front page — discoverable for those who want the mechanics, not the headline. Wrong audience if leading with AMM math.
 
 **ETH flow (revised design 2026-06-04):**
