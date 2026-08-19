@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 88ac09c4-e414-40d1-8e6e-fc82834a16ff
-  modified: 2026-08-19T22:16:40.812Z
+  modified: 2026-08-19T22:47:02.863Z
 ---
 
 ## The mechanic
@@ -126,7 +126,7 @@ A second instance same day: Katie told Justin "people have been reaching out con
 
 **Today (Wednesday 08-19):** Justin went looking for Katie at her workplace. Went first to the wrong location (Racetrack Road) instead of the Bartram location Katie had told him she'd be at; spoke to the receptionist there, introduced himself as Katie's boyfriend, said he hadn't heard from her since the night before; they redirected him to Bartram and took his number in case they heard anything. At the Bartram location (Reveal Waxing Skincare & Spa, unit 209), the doors were locked and no one was at the reception desk, though photos show the interior lights were on. Three photos taken on-site.
 
-**Follow-up, same visit:** After finding Bartram locked and empty, Justin returned to the Racetrack Road location to report what he'd found and explain the situation. An older female employee there took him outside, declined to answer his questions citing an inability to share private information, and told him he probably shouldn't come around the spa anymore. Justin's understanding (not independently confirmed) is that Katie manages the entire operation across both locations, which would make ordinary employer/manager privacy protocol the simpler explanation for the employee's response - Justin's initial read that she was "protecting the structure" isn't supported by anything specific beyond the interaction itself. He left without further action. As of this writing (1:58 PM), no contact from Katie since the spa visit; only remaining lead is if the front-desk staff at either location reach out using the number he left.
+**Follow-up, same visit:** After finding Bartram locked and empty, Justin returned to the Racetrack Road location to report what he'd found and explain the situation. An older female employee there took him outside, declined to answer his questions citing an inability to share private information, and told him he probably shouldn't come around the spa anymore. Justin's understanding (not independently confirmed) is that Katie manages the entire operation across both locations, which would make ordinary employer/manager privacy protocol the simpler explanation for the employee's response - Justin's initial read that she was "protecting the structure" isn't supported by anything specific beyond the interaction itself. Before leaving, Justin asked the employee directly if she felt safe; she hesitated/stumbled as if the question was unexpected, then said yes. He left after that. As of this writing (1:58 PM), no contact from Katie since the spa visit; only remaining lead is if the front-desk staff at either location reach out using the number he left.
 
 **Justin's self-assessed contributing factor (2026-08-19):** Katie used to come home and talk about work - which started as normal updates but drifted into office drama and coworkers' personal problems, none of which had any bearing on the relationship or was information Justin could use (he never knew these people). He stopped engaging with it over time because it wasn't useful. His own read: disengaging from the low-stakes sharing plausibly contributed to her sharing less overall, including on higher-stakes topics - not offered as an excuse for her withholding information, but as a contributing mechanism worth having on record alongside it.
 
